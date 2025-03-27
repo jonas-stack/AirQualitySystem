@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <MQUnifiedsensor.h>
 
-void setupMQ2Sensor();
+bool setupMQ2Sensor();
 float readMQ2Sensor();
 float readLPG();
 float readCO();

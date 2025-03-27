@@ -21,9 +21,15 @@ void setup() {
     while (true);
   }
 
-  // Initialize the built-in LED pin as an output
-  setupLCDDisplay();
-  setupMQ2Sensor();
+  if (!setupLCDDisplay()) {
+    Serial.println("Could not initialize the LCD display, check wiring!");
+    while (true);
+  }
+
+  if (!setupMQ2Sensor()) {
+    Serial.println("Could not initialize the MQ2 sensor, check wiring!");
+    while (true);
+  }
 }
 
 void loop() {

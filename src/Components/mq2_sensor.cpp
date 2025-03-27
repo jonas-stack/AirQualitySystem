@@ -11,11 +11,19 @@
 
 MQUnifiedsensor MQ2(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
 
-void setupMQ2Sensor() {
+bool setupMQ2Sensor() {
+    // Test if the analog pin is working
+    int testValue = analogRead(Pin);
     
-    // Set math model to calculate gas concentration
-    MQ2.setRegressionMethod(1); // _PPM = a*ratio^b
-    MQ2.setA(574.25); MQ2.setB(-2.222); // Configure equation for LPG
+    // A simple check - if reading is 0 or max value, something is probably wrong
+    if (testValue == 0 || testValue == 4095) {
+      Serial.println("MQ2 sensor might not be connected properly!");
+      return false;
+    }
+    
+    // Continue with your existing setup code
+    MQ2.setRegressionMethod(1);
+    MQ2.setA(574.25); MQ2.setB(-2.222);
     
     MQ2.init();
     
@@ -23,14 +31,16 @@ void setupMQ2Sensor() {
     Serial.println("Calibrating MQ-2 sensor...");
     float calcR0 = 0;
     for(int i = 1; i<=10; i++) {
-        MQ2.update();
-        calcR0 += MQ2.calibrate(RatioMQ2CleanAir);
-        Serial.print(".");
-        delay(1000);
+      MQ2.update();
+      calcR0 += MQ2.calibrate(RatioMQ2CleanAir);
+      Serial.print(".");
+      delay(1000);
     }
+
     MQ2.setR0(calcR0/10);
     Serial.println("\nCalibration completed!");
     Serial.println("MQ2 sensor initialized successfully");
+    return true;
 }
 
 float readMQ2Sensor() {
