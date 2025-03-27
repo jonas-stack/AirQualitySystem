@@ -25,28 +25,28 @@ void updateLCDDisplay(float temperature, float humidity, float gas) {
     case 0:
       // Show temperature
       lcd.setCursor(0, 0);
-      lcd.print("Temperature:");
+      lcd.print("Air Temperature: ");
       lcd.setCursor(0, 1);
       lcd.print(temperature);
-      lcd.print(" C");
+      lcd.print(" C ");
       break;
     
     case 1:
       // Show humidity
       lcd.setCursor(0, 0);
-      lcd.print("Humidity:");
+      lcd.print("Air Humidity: ");
       lcd.setCursor(0, 1);
       lcd.print(humidity);
-      lcd.print(" %");
+      lcd.print(" % ");
       break;
     
     case 2:
       // Show gas
       lcd.setCursor(0, 0);
-      lcd.print("Gas level:");
+      lcd.print("Air CO2 Level: ");
       lcd.setCursor(0, 1);
       lcd.print(gas);
-      lcd.print(" PPM");
+      lcd.print(" PPM ");
       break;
   }
   

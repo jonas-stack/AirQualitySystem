@@ -23,7 +23,7 @@ bool setupMQ2Sensor() {
     
     // Continue with your existing setup code
     MQ2.setRegressionMethod(1);
-    MQ2.setA(574.25); MQ2.setB(-2.222);
+    MQ2.setA(36974); MQ2.setB(-3.109);  // For smoke detection which is CO2 
     
     MQ2.init();
     
