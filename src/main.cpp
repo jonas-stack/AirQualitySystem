@@ -6,7 +6,7 @@
 
 // Global timer variables
 unsigned long previousMillis = 0;
-const unsigned long interval = 3000;  // 3 seconds between readings
+const unsigned long interval = 1000;  // 3 seconds between readings
 
 void setup() {
   Serial.begin(115200);
@@ -37,7 +37,8 @@ void loop() {
     
     float temp = readBME280Temperature();
     float fugt = readBME280Humidity();
-    updateLCDDisplay(temp, fugt);
+    float gas = readMQ2Sensor();
+    updateLCDDisplay(temp, fugt, gas);
   }
 
   // Blink built-in LED to see if the system is running

@@ -1,5 +1,4 @@
 #include "mq2_sensor.h"
-#include <MQUnifiedsensor.h>
 
 // Define MQ2 sensor parameters
 #define Board "ESP-32"  // Changed to ESP-32 from Arduino UNO

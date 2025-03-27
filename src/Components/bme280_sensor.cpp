@@ -1,5 +1,4 @@
 #include "bme280_sensor.h"
-#include <Adafruit_BME280.h>
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
