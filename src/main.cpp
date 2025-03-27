@@ -1,44 +1,39 @@
 #include <Arduino.h>
-#include "mq2_sensor.h"
+#include <Wire.h>
 #include "bme280_sensor.h"
-#include "pm25_sensor.h"
-#include "lcd_display.h"
+#include "mq2_sensor.h"
+
+// Global timer variables
+unsigned long previousMillis = 0;
+const unsigned long interval = 3000;  // 3 seconds between readings
 
 void setup() {
-  // Initialize serial communication
   Serial.begin(115200);
-  Serial.println("Air Quality System Starting...");
-  
-  // Initialize BME280 sensor
-  if (setupBME280Sensor()) {
-    Serial.println("BME280 ready!");
-  } else {
-    Serial.println("BME280 setup failed!");
+  Serial.println("Air Quality system starting...");
+
+  pinMode(2, OUTPUT);  // Built-in LED on most ESP32 boards
+
+  Wire.begin();
+
+  if (!setupBME280Sensor()) {
+    Serial.println("Could not initialize the BME280 sensor, check wiring!");
+    while (true);
   }
-  
-  // Additional setup code will go here later
 }
 
 void loop() {
-  // Read BME280 data
-  float temperature = readBME280Temperature();
-  float humidity = readBME280Humidity();
-  float pressure = readBME280Pressure();
+  unsigned long currentMillis = millis();
+
+  // Check if 10 seconds have passed since last reading
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;  // Save the current time
+    printBME280SensorData();
+    printMQ2SensorData();
+  }
   
-  // Output data to serial monitor
-  Serial.print("Temperature: ");
-  Serial.print(temperature);
-  Serial.println(" °C");
-  
-  Serial.print("Humidity: ");
-  Serial.print(humidity);
-  Serial.println(" %");
-  
-  Serial.print("Pressure: ");
-  Serial.print(pressure);
-  Serial.println(" hPa");
-  
-  Serial.println("---------------------");
-  
-  delay(2000); // Wait 2 seconds before next reading
+  // Blink built-in LED to see if the system is running
+  digitalWrite(2, HIGH);
+  delay(1000);
+  digitalWrite(2, LOW);
+  delay(1000);
 }

@@ -9,5 +9,6 @@ float readMQ2Sensor();
 float readLPG();
 float readCO();
 float readSmoke();
+void printMQ2SensorData();
 
 #endif

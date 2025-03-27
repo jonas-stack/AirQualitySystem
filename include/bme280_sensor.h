@@ -8,5 +8,6 @@ bool setupBME280Sensor();
 float readBME280Temperature();
 float readBME280Humidity();
 float readBME280Pressure();
+void printBME280SensorData();
 
 #endif
