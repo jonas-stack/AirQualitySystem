@@ -9,12 +9,13 @@ Device/.gcc-arm-toolchain/
 .vscode/ipch
 
 # === Server (.NET) ===
-Server/bin/
-Server/obj/
+**/bin/
+**/obj/
 **/.idea/
 **/*.dbmdl
 **/*.sln.cache
 **/*.csproj.user
+*.pdb
 
 # === Client (React/TypeScript) ===
 Client/node_modules/
