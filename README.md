@@ -20,7 +20,7 @@ This project is a prototype IoT-based environmental monitoring system designed t
 **Team & Roles**:
 - **[@jonas-stack](https://github.com/jonas-stack)** – IoT, Backend (.NET), Frontend (React)
 - **[@MadsFM](https://github.com/MadsFM)** – AI Module (Python + LLM)
-- **[ADD YOUR GIT PROFILE HERE]** – IoT, Backend (.NET), Frontend (React)
+- **[@based4real](https://github.com/based4real/based4real)** – IoT, Backend (.NET), Frontend (React)
 
 ## Project Description
 The prototype integrates multiple sensors with an ESP32E microcontroller to:
