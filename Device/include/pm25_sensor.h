@@ -3,10 +3,10 @@
 
 #include <Arduino.h>
 #include <PMS.h>
+#include <HardwareSerial.h>
 
-void setupPM25Sensor();
-int readPM25Value();
-int readPM10Value();
-int readPM1Value();
+bool setupPM25Sensor();
+void printPM25SensorData();
+float getPM25Value();
 
 #endif
