@@ -42,7 +42,7 @@ void printPM25SensorData()
   }
 }
 
-float getPM25Value() 
+float readPM25Value() 
 {
   // We can't request a read without TX, so we just wait for data
   if (pms.readUntil(data, 1000)) {

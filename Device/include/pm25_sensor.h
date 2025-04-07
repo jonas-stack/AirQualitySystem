@@ -7,6 +7,6 @@
 
 bool setupPM25Sensor();
 void printPM25SensorData();
-float getPM25Value();
+float readPM25Value();
 
 #endif
