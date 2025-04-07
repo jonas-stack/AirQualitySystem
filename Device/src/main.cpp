@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include "bme280_sensor.h"
-#include "mq135_sensor.h"
-#include "lcd_display.h"
-#include "pm25_sensor.h"
-#include "MQTT.h"
+#include "devices/bme280_sensor.h"
+#include "devices/mq135_sensor.h"
+#include "devices/lcd_display.h"
+#include "devices/pm25_sensor.h"
+#include "MQTT/MQTT.h"
 
 // Global timer variables
 unsigned long previousMillis = 0;

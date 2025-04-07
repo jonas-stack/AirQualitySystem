@@ -1,4 +1,4 @@
-#include "bme280_sensor.h"
+#include "devices/bme280_sensor.h"
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 

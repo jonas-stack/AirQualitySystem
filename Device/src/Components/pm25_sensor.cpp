@@ -1,4 +1,4 @@
-#include "pm25_sensor.h"
+#include "devices/pm25_sensor.h"
 
 
 #define PMS_SERIAL Serial2
