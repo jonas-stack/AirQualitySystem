@@ -1,27 +1,38 @@
-#include "bme280_sensor.h"
+#include "devices/bme280_sensor.h"
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 Adafruit_BME280 bme; // I2C
 
+float temperature = 0.0;
+float humidity = 0.0;
+float pressure = 0.0;
+
 bool setupBME280Sensor() {
-   // Try address 0x76 first
-   Serial.println("Trying BME280 at address 0x76...");
-   bool status = bme.begin(0x76);
-   
-   if (!status) {
-     // If that fails, try address 0x77
-     Serial.println("Trying BME280 at address 0x77...");
-     status = bme.begin(0x77);
-   }
+  Serial.println("Initializing BME280 sensor...");
+  
+  // Try address 0x76 first
+  bool status = bme.begin(0x76);
   
   if (!status) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring or try address 0x77!");
+    // If that fails, try address 0x77
+    status = bme.begin(0x77);
+  }
+ 
+  if (!status) {
+    Serial.println("BME280 sensor initialization failed!");
     return false;
   }
   
-  Serial.println("BME280 sensor initialized successfully");
+  Serial.println("BME280 sensor initialized successfully.");
   return true;
+  delay(5000);
+}
+
+void updateBME280SensorValues() {
+  temperature = bme.readTemperature(); // °C
+  humidity = bme.readHumidity(); // %
+  pressure = bme.readPressure() / 100.0F; // hPa
 }
 
 float readBME280Temperature() {
@@ -37,9 +48,8 @@ float readBME280Pressure() {
 }
 
 void printBME280SensorData() {
-  float temperature = readBME280Temperature();
-  float humidity = readBME280Humidity();
-  float pressure = readBME280Pressure();
+  updateBME280SensorValues();  
+
   Serial.print("Temperature: ");
   Serial.print(temperature);
   Serial.println(" °C");
