@@ -1,5 +1,5 @@
-#ifndef MQTT_CLIENT_H
-#define MQTT_CLIENT_H
+#ifndef MQTT_H
+#define MQTT_H
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -14,8 +14,7 @@ bool setupMQTTClient();
 void loopMQTTClient();
 bool publishSensorData(float temperature, float humidity, float gas, float particles);
 
-// External declaration of any variables that might be needed in main.cpp
 extern WiFiClientSecure espClient;
 extern PubSubClient* client;
 
-#endif // MQTT_CLIENT_H
+#endif // MQTT_H

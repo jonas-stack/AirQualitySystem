@@ -1,4 +1,4 @@
-#include "lcd_display.h"
+#include "devices/lcd_display.h"
 
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);

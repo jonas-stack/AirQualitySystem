@@ -1,4 +1,4 @@
-#include "mq135_sensor.h"
+#include "devices/mq135_sensor.h"
 
 // Define MQ135 sensor parameters
 #define Board "ESP-32"

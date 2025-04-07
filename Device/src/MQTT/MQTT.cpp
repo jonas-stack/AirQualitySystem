@@ -1,5 +1,5 @@
-#include "MQTT.h"
-#include "config.h"  // Add this include
+#include "MQTT.h"  
+#include "MQTT/config_template.h"  
 
 // Update these to use the config values
 const char* ssid = WIFI_SSID;
