@@ -4,6 +4,10 @@
 
 Adafruit_BME280 bme; // I2C
 
+float temperature = 0.0;
+float humidity = 0.0;
+float pressure = 0.0;
+
 bool setupBME280Sensor() {
   Serial.println("Initializing BME280 sensor...");
   
@@ -25,6 +29,12 @@ bool setupBME280Sensor() {
   delay(5000);
 }
 
+void updateBME280SensorValues() {
+  temperature = bme.readTemperature(); // °C
+  humidity = bme.readHumidity(); // %
+  pressure = bme.readPressure() / 100.0F; // hPa
+}
+
 float readBME280Temperature() {
   return bme.readTemperature(); // Returns temperature in °C
 }
@@ -38,9 +48,8 @@ float readBME280Pressure() {
 }
 
 void printBME280SensorData() {
-  float temperature = readBME280Temperature();
-  float humidity = readBME280Humidity();
-  float pressure = readBME280Pressure();
+  updateBME280SensorValues();  
+
   Serial.print("Temperature: ");
   Serial.print(temperature);
   Serial.println(" °C");
