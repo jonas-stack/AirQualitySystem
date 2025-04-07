@@ -5,23 +5,24 @@
 Adafruit_BME280 bme; // I2C
 
 bool setupBME280Sensor() {
-   // Try address 0x76 first
-   Serial.println("Trying BME280 at address 0x76...");
-   bool status = bme.begin(0x76);
-   
-   if (!status) {
-     // If that fails, try address 0x77
-     Serial.println("Trying BME280 at address 0x77...");
-     status = bme.begin(0x77);
-   }
+  Serial.println("Initializing BME280 sensor...");
+  
+  // Try address 0x76 first
+  bool status = bme.begin(0x76);
   
   if (!status) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring or try address 0x77!");
+    // If that fails, try address 0x77
+    status = bme.begin(0x77);
+  }
+ 
+  if (!status) {
+    Serial.println("BME280 sensor initialization failed!");
     return false;
   }
   
-  Serial.println("BME280 sensor initialized successfully");
+  Serial.println("BME280 sensor initialized successfully.");
   return true;
+  delay(5000);
 }
 
 float readBME280Temperature() {

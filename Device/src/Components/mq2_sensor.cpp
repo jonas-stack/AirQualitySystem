@@ -12,35 +12,37 @@
 MQUnifiedsensor MQ2(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
 
 bool setupMQ2Sensor() {
-    // Test if the analog pin is working
-    int testValue = analogRead(Pin);
-    
-    // A simple check - if reading is 0 or max value, something is probably wrong
-    if (testValue == 0 || testValue == 4095) {
-      Serial.println("MQ2 sensor might not be connected properly!");
-      return false;
-    }
-    
-    // Continue with your existing setup code
-    MQ2.setRegressionMethod(1);
-    MQ2.setA(36974); MQ2.setB(-3.109);  // For smoke detection which is CO2 
-    
-    MQ2.init();
-    
-    // Important calibration step
-    Serial.println("Calibrating MQ-2 sensor...");
-    float calcR0 = 0;
-    for(int i = 1; i<=10; i++) {
-      MQ2.update();
-      calcR0 += MQ2.calibrate(RatioMQ2CleanAir);
-      Serial.print(".");
-      delay(1000);
-    }
+  Serial.println("Initializing MQ2 sensor...");
+  
+  // Test if the analog pin is working
+  int testValue = analogRead(Pin);
+  
+  // A simple check - if reading is 0 or max value, something is probably wrong
+  if (testValue == 0 || testValue == 4095) {
+    Serial.println("MQ2 sensor initialization failed!");
+    return false;
+  }
+  
+  // Continue with your existing setup code
+  MQ2.setRegressionMethod(1);
+  MQ2.setA(36974); MQ2.setB(-3.109);
+  
+  MQ2.init();
+  
+  // Important calibration step
+  Serial.print("Calibrating MQ2 sensor");
+  float calcR0 = 0;
+  for(int i = 1; i<=10; i++) {
+    MQ2.update();
+    calcR0 += MQ2.calibrate(RatioMQ2CleanAir);
+    Serial.print(".");
+  }
+  Serial.println();
 
-    MQ2.setR0(calcR0/10);
-    Serial.println("\nCalibration completed!");
-    Serial.println("MQ2 sensor initialized successfully");
-    return true;
+  MQ2.setR0(calcR0/10);
+  Serial.println("MQ2 sensor initialized successfully.");
+  return true;
+  delay(5000);
 }
 
 float readMQ2Sensor() {

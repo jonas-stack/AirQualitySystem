@@ -5,17 +5,21 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 int displayState = 0;
 
 bool setupLCDDisplay() {
+  Serial.println("Initializing LCD display...");
+  
   Wire.beginTransmission(0x27);
   bool deviceFound = (Wire.endTransmission() == 0);
   
   if (!deviceFound) {
-    Serial.println("LCD not found at address 0x27!");
+    Serial.println("LCD display initialization failed!");
     return false;
   }
   
   lcd.init();
   lcd.backlight();
+  Serial.println("LCD display initialized successfully.");
   return true;
+  delay(5000);
 }
 
 void updateLCDDisplay(float temperature, float humidity, float gas) {
