@@ -4,10 +4,15 @@
 #include "mq135_sensor.h"
 #include "lcd_display.h"
 #include "pm25_sensor.h"
+#include "MQTT.h"
 
 // Global timer variables
 unsigned long previousMillis = 0;
 const unsigned long interval = 3000;  // 3 seconds between readings
+
+// MQTT timing (publish less frequently to reduce network traffic)
+unsigned long lastMqttPublish = 0;
+const unsigned long mqttInterval = 30000;  // 30 seconds between MQTT publishes
 
 void setup() {
   // Initialize serial communication at 115200 baud
@@ -65,6 +70,16 @@ if (setupMQ135Sensor()) {
     Serial.println("FAILED");
     success = false;
   }
+
+  delay(500);
+
+  Serial.print("MQTT client: ");
+  if (setupMQTTClient()) {
+    Serial.println("OK");
+  } else {
+    Serial.println("FAILED - Will retry later");
+    // Not considering this a critical failure
+  }
   
   // Handle initialization failure
   if (!success) {
@@ -93,6 +108,8 @@ if (setupMQ135Sensor()) {
 void loop() {
   unsigned long currentMillis = millis();
 
+  loopMQTTClient();  // Handle MQTT client loop
+
   // Read sensor data at regular intervals
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
@@ -118,6 +135,19 @@ void loop() {
     float gas = readMQ135Sensor();
     float particles = readPM25Value();
     updateLCDDisplay(temp, humidity, gas, particles);
+
+    // Publish MQTT data at the longer interval
+    if (currentMillis - lastMqttPublish >= mqttInterval) {
+      lastMqttPublish = currentMillis;
+      
+      Serial.println("\n>> PUBLISHING TO MQTT:");
+      bool published = publishSensorData(temp, humidity, gas, particles);
+      if (published) {
+        Serial.println("Data sent successfully");
+      } else {
+        Serial.println("Failed to send data");
+      }
+    }
     
     // Blink LED once to indicate successful reading cycle
     digitalWrite(2, HIGH);
