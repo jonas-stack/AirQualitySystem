@@ -22,7 +22,7 @@ bool setupLCDDisplay() {
   delay(5000);
 }
 
-void updateLCDDisplay(float temperature, float humidity, float gas) {
+void updateLCDDisplay(float temperature, float humidity, float gas, float particles) {
   lcd.clear();
   
   switch (displayState) {
@@ -45,16 +45,25 @@ void updateLCDDisplay(float temperature, float humidity, float gas) {
       break;
     
     case 2:
-      // Show gas
+      // Show CO2 level
       lcd.setCursor(0, 0);
-      lcd.print("Air CO2 Level: ");
+      lcd.print("CO2 Level: "); 
       lcd.setCursor(0, 1);
       lcd.print(gas);
       lcd.print(" PPM ");
       break;
+
+    case 3:
+      // Show PM2.5 particles
+      lcd.setCursor(0, 0);
+      lcd.print("PM2.5 Particles: ");
+      lcd.setCursor(0, 1);
+      lcd.print(particles);
+      lcd.print(" ug/m3 ");
+      break;
   }
   
   // Move to next state
-  displayState = (displayState + 1) % 3;
+  displayState = (displayState + 1) % 4; //increase loop sice for each case added
 }
 

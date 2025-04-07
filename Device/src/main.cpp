@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "bme280_sensor.h"
-#include "mq2_sensor.h"
+#include "mq135_sensor.h"
 #include "lcd_display.h"
 #include "pm25_sensor.h"
 
@@ -49,13 +49,13 @@ void setup() {
   }
   delay(500);
   
-  Serial.print("MQ2 sensor: ");
-  if (setupMQ2Sensor()) {
-    Serial.println("OK");
-  } else {
-    Serial.println("FAILED");
-    success = false;
-  }
+  Serial.print("MQ135 sensor: ");
+if (setupMQ135Sensor()) {  
+  Serial.println("OK");
+} else {
+  Serial.println("FAILED");
+  success = false;
+}
   delay(500);
   
   Serial.print("PM2.5 sensor: ");
@@ -104,8 +104,8 @@ void loop() {
     printBME280SensorData();
     delay(100);
     
-    Serial.println("\n>> MQ2 GAS SENSOR DATA:");
-    printMQ2SensorData();
+    Serial.println("\n>> MQ135 GAS SENSOR DATA:");
+    printMQ135SensorData();
     delay(100);
     
     Serial.println("\n>> PM2.5 PARTICULATE DATA:");
@@ -115,8 +115,9 @@ void loop() {
     // Update LCD display with current readings
     float temp = readBME280Temperature();
     float humidity = readBME280Humidity();
-    float gas = readMQ2Sensor();
-    updateLCDDisplay(temp, humidity, gas);
+    float gas = readMQ135Sensor();
+    float particles = readPM25Value();
+    updateLCDDisplay(temp, humidity, gas, particles);
     
     // Blink LED once to indicate successful reading cycle
     digitalWrite(2, HIGH);
