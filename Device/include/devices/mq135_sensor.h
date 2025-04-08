@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <MQUnifiedsensor.h>
+#include <WiFi.h>
 
 bool setupMQ135Sensor();
 float readMQ135Sensor();
