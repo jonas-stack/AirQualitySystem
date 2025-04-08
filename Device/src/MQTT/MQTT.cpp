@@ -12,9 +12,6 @@ const char* mqtt_password = MQTT_PASSWORD;
 // Topic to publish sensor data
 const char* sensor_topic = MQTT_TOPIC;
 
-// Use the certificate from config.h
-const char* rootCACertificate = ROOT_CA_CERTIFICATE;
-
 // Create instances of WiFiClientSecure and PubSubClient
 WiFiClientSecure espClient;
 PubSubClient* client;
@@ -140,9 +137,6 @@ bool setupMQTTClient() {
   
   // Set date and time (needed for SSL certificate validation)
   setDateTime();
-  
-  // Configure SSL with certificate
-  espClient.setCACert(rootCACertificate);
   
   // Create MQTT client
   client = new PubSubClient(espClient);
