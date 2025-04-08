@@ -1,5 +1,5 @@
 # Ignore configuration file with sensitive information
-include/config.h
+include/MQTT/config.h
 
 # PlatformIO specific
 .pio

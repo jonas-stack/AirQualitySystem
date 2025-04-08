@@ -1,5 +1,5 @@
 #include "MQTT.h"  
-#include "MQTT/config_template.h"
+#include "MQTT/config.h"
 #include "JsonSerializer.h"  
 
 // Update these to use the config values
