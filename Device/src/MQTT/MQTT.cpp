@@ -1,5 +1,6 @@
 #include "MQTT.h"  
-#include "MQTT/config_template.h"  
+#include "MQTT/config_template.h"
+#include "JsonSerializer.h"  
 
 // Update these to use the config values
 const char* ssid = WIFI_SSID;
@@ -15,52 +16,44 @@ const char* sensor_topic = MQTT_TOPIC;
 // Create instances of WiFiClientSecure and PubSubClient
 WiFiClientSecure espClient;
 PubSubClient* client;
+unsigned long lastMsg = 0;
 
 // Function to set up WiFi connection
 void setupWiFi() {
   delay(10);
-  Serial.print("Connecting to WiFi: ");
+  Serial.println();
+  Serial.print("Connecting to ");
   Serial.println(ssid);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  // Wait for WiFi connection
-  unsigned long startAttemptTime = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
 
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nWiFi connected");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-  } else {
-    Serial.println("\nWiFi connection failed");
-  }
+  randomSeed(micros());
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
 }
 
 // Function to set date and time via NTP
 void setDateTime() {
-  Serial.print("Setting time using NTP: ");
+  Serial.print("Waiting for NTP time sync: ");
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");
   
   time_t now = time(nullptr);
-  int retries = 0;
-  while (now < 8 * 3600 * 2 && retries < 20) {
-    delay(500);
+  while (now < 8 * 3600 * 2) {
+    delay(100);
     Serial.print(".");
     now = time(nullptr);
-    retries++;
   }
-  
-  if (now < 8 * 3600 * 2) {
-    Serial.println("Failed to set time via NTP");
-    return;
-  }
-  
-  Serial.println(" done");
+  Serial.println();
+
   struct tm timeinfo;
   gmtime_r(&now, &timeinfo);
   Serial.print("Current UTC time: ");
@@ -69,125 +62,89 @@ void setDateTime() {
 
 // MQTT message callback function
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message received [");
+  Serial.print("Message arrived [");
   Serial.print(topic);
-  Serial.print("]: ");
+  Serial.print("] ");
   
-  char message[length + 1];
+  // Print the payload content
   for (unsigned int i = 0; i < length; i++) {
-    message[i] = (char)payload[i];
     Serial.print((char)payload[i]);
   }
-  message[length] = '\0';
   Serial.println();
-  
-  // Process incoming messages if needed
-  // For example, you could parse JSON commands here using ArduinoJson
-  
-  // Example: Flash LED when message received
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(100);
-  digitalWrite(LED_BUILTIN, HIGH);
+
+  // Flash LED when message received
+  if (length > 0) {
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
 }
 
 // Function to reconnect to MQTT broker
-bool reconnectMQTT() {
-  // Loop until we're reconnected or timeout
-  unsigned long startAttemptTime = millis();
-  
-  while (!client->connected() && millis() - startAttemptTime < 5000) {
+void reconnectMQTT() {
+  // Loop until we're reconnected
+  while (!client->connected()) {
     Serial.print("Attempting MQTT connection...");
-    
-    // Create a client ID
-    String clientId = "ESP32-AirQuality-";
+    // Create a random client ID
+    String clientId = "ESP32Client-";
     clientId += String(random(0xffff), HEX);
     
     // Attempt to connect with username/password
     if (client->connect(clientId.c_str(), mqtt_username, mqtt_password)) {
       Serial.println("connected");
-      
       // Once connected, subscribe to any needed topics
       client->subscribe("airquality/commands");
       
-      return true;
+      // Publish a connection announcement
+      client->publish("airquality/status", "Device online", true);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client->state());
-      Serial.println(" retrying in 1 second");
-      delay(1000);
+      Serial.println(" try again in 5 seconds");
+      // Wait before retrying
+      delay(5000);
     }
   }
-  
-  return false;
 }
 
 // Initialize MQTT client and connection
 bool setupMQTTClient() {
-  // Initialize SPIFFS for certificate storage if needed
-  if (!SPIFFS.begin(true)) {
-    Serial.println("SPIFFS initialization failed");
-    return false;
-  }
+  pinMode(LED_BUILTIN, OUTPUT); // Initialize the LED_BUILTIN pin as an output
   
   // Set up WiFi connection
   setupWiFi();
-  if (WiFi.status() != WL_CONNECTED) {
-    return false;
-  }
-  
-  // Set date and time (needed for SSL certificate validation)
   setDateTime();
   
-  // Create MQTT client
+  // For ESP32, we can simply use setInsecure() for development purposes
+  espClient.setInsecure();
+  
   client = new PubSubClient(espClient);
   client->setServer(mqtt_server, mqtt_port);
   client->setCallback(mqttCallback);
   client->setBufferSize(1024); // Increase buffer size for larger messages
   
-  // Try to connect
-  bool success = reconnectMQTT();
-  if (success) {
-    return true;
-  } else {
-    Serial.println("Failed to connect to MQTT broker");
-    return false;
-  }
+  return true;
 }
 
 // MQTT client maintenance
 void loopMQTTClient() {
-  // Check if client is still connected
   if (!client->connected()) {
     reconnectMQTT();
   }
-  
-  // Process MQTT messages
   client->loop();
 }
 
 // Publish sensor data to MQTT broker
 bool publishSensorData(float temperature, float humidity, float gas, float particles) {
   if (!client->connected()) {
-    if (!reconnectMQTT()) {
-      return false;
-    }
+    reconnectMQTT();
   }
   
-  // Create JSON document for sensor data
-  StaticJsonDocument<256> doc;
-  doc["temperature"] = temperature;
-  doc["humidity"] = humidity;
-  doc["air_quality"] = gas;
-  doc["pm25"] = particles;
-  doc["device_id"] = DEVICE_ID;
-  doc["timestamp"] = time(nullptr);
-  
-  // Serialize JSON to string
-  char jsonBuffer[256];
-  serializeJson(doc, jsonBuffer);
+  // Use the JsonSerializer to create the JSON string
+  String jsonString = JsonSerializer::serializeSensorData(temperature, humidity, gas, particles, DEVICE_ID);
   
   // Publish to MQTT topic
-  bool success = client->publish(sensor_topic, jsonBuffer, true);
+  bool success = client->publish(sensor_topic, jsonString.c_str(), true);
   
   if (success) {
     Serial.println("Sensor data published to MQTT");
