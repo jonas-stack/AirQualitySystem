@@ -2,7 +2,7 @@
 
 // Define MQ135 sensor parameters
 #define Board "ESP-32"
-#define Pin 14
+#define Pin 14 // (ADC1 input-only)
 #define Type "MQ-135"
 #define Voltage_Resolution 3.3  // ESP32 ADC voltage
 #define ADC_Bit_Resolution 12   // ESP32 ADC resolution
@@ -18,12 +18,16 @@ float voltage = 0;
 
 bool setupMQ135Sensor() {
     Serial.println("Initializing MQ135 sensor...");
-    int testValue = analogRead(Pin);
     
+    int testValue = analogRead(Pin);
+    delay(10000); // Wait for the sensor to stabilize
+    Serial.print("Test Value: ");
+    Serial.println(testValue); // Print the test value for debugging
+
     // A simple check - if reading is 0 or max value, something is probably wrong
     if (testValue == 0 || testValue == 4095) {
-      Serial.println("MQ135 sensor initialization failed!");
-      return false;
+        Serial.println("MQ135 sensor initialization failed!");
+        return false;
     }
     
     // Configure for CO2 detection
