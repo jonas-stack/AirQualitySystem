@@ -2,6 +2,7 @@
 using Api.Websocket;
 using Application;
 using Application.Models;
+using Infrastructure.MQTT;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.AspNetCore.Builder;
@@ -62,6 +63,8 @@ public class Program
             conf.DocumentProcessors.Add(new AddStringConstantsProcessor());
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
+
+        services.AddMqttServices();
     }
 
     public static async Task ConfigureMiddleware(WebApplication app)
