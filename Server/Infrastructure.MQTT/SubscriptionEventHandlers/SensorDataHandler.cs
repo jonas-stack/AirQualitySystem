@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Application.Models.Dtos.MqttSubscriptionDto;
+using Core.Domain.Entities;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
 using Infrastructure.Postgres.Scaffolding;
@@ -36,9 +37,20 @@ public class SensorDataHandler : IMqttMessageHandler
             // Validate the DTO
             var context = new ValidationContext(dto);
             Validator.ValidateObject(dto, context);
-
-            // Save to the database
-            _dbContext.SensorData.Add(dto);
+            
+            // map dto to entity
+            var entity = new SensorData
+            {
+                Temperature = dto.Temperature,
+                Humidity = dto.Humidity,
+                AirQuality = dto.AirQuality,
+                Pm25 = dto.Pm25,
+                DeviceId = dto.DeviceId,
+                Timestamp = dto.Timestamp
+            };
+            
+            // Save entity to the database
+            _dbContext.SensorData.Add(entity);
             _dbContext.SaveChanges();
 
             _logger.LogInformation("Sensor data saved successfully: {Data}", dto);

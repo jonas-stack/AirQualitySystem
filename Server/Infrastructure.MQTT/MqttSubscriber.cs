@@ -14,12 +14,25 @@ public class MqttSubscriber : IMqttService
 {
     private readonly HiveMQClient _client;
     private readonly SensorDataHandler _dataHandler;
+    private const string DefaultTopic = "AirQuality/Data";
 
     public MqttSubscriber(HiveMQClient client, SensorDataHandler dataHandler)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _dataHandler = dataHandler ?? throw new ArgumentNullException(nameof(dataHandler));
-        
+        SubscribeToDefaultTopic().GetAwaiter().GetResult();
+    }
+    
+    private async Task SubscribeToDefaultTopic()
+    {
+        try
+        {
+            await SubscribeAsync(null!, DefaultTopic);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to subscribe to the default topic {DefaultTopic}.", ex);
+        }
     }
 
     public async Task SubscribeAsync(object _, string topic)
