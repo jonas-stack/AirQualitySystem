@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, ReactNode } from 'react';
 import clsx from 'clsx';
 
 type FlexProps = {
@@ -7,10 +7,10 @@ type FlexProps = {
   justifyContent?: 'center' | 'start' | 'end' | 'between' | 'around' | 'evenly';
   alignItems?: 'center' | 'start' | 'end' | 'stretch';
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
-const Flex: React.FC<FlexProps> = ({
+const Flex: FC<FlexProps> = ({
   direction = 'row',
   gap = '4',
   justifyContent = 'start',

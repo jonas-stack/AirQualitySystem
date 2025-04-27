@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import IndexPage from './pages/IndexPage'
+import LoginPage from '@/pages/public/LoginPage';
 
 export default function App() {
   return (
       <Routes>
-        <Route path="/" element={<IndexPage />} />
+        <Route path="/" element={<LoginPage />} />
       </Routes>
   )
 }
