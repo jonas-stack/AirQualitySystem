@@ -21,7 +21,7 @@ export function NavHeader() {
             <span className="truncate font-semibold">
               AirQualitySystem
             </span>
-            <span className="truncate text-xs text-muted-foreground">Free</span>
+            <span className="truncate text-xs text-muted-foreground">Panel</span>
           </div>
         </SidebarMenuButton>      
         </SidebarMenuItem>
