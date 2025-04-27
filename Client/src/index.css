@@ -131,6 +131,19 @@
 	animation: slideUp 200ms ease-out;
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 @keyframes slideDown {
 	from {
 		height: 0;
