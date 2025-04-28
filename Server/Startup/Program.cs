@@ -23,10 +23,18 @@ public class Program
 {
     public static async Task Main()
     {
-        
+        // Load environment variables from .env file
         DotNetEnv.Env.Load();
         
         var builder = WebApplication.CreateBuilder();
+        
+        // Add environment variables and JSON configuration
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables();
+        
+        // Resolve placeholders in configuration
+        ResolvePlaceholders(builder.Configuration);
         
         // this is for cheking the enviornemt, depending on usersecret (see id in startup.csproj)
         var environment = builder.Environment.EnvironmentName;
@@ -47,6 +55,22 @@ public class Program
         await app.RunAsync();
         
         
+    }
+    
+    private static void ResolvePlaceholders(IConfiguration configuration)
+    {
+        foreach (var key in configuration.AsEnumerable())
+        {
+            if (key.Value != null && key.Value.StartsWith("${") && key.Value.EndsWith("}"))
+            {
+                var envVar = key.Value.Replace("${", "").Replace("}", "");
+                var envValue = Environment.GetEnvironmentVariable(envVar);
+                if (envValue != null)
+                {
+                    configuration[key.Key] = envValue;
+                }
+            }
+        }
     }
 
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
