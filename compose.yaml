@@ -1,0 +1,24 @@
+﻿version: '3.8'
+services:
+  postgres-test-db:
+    build:
+      context: ./Server/Infrastructure.Postgres.Scaffolding
+      dockerfile: Dockerfile
+    container_name: postgres-test-db
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_database
+    ports:
+      - "15432:5432"
+      - "15433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test_user -d test_database" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

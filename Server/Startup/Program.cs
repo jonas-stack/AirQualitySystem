@@ -2,10 +2,10 @@
 using Api.Websocket;
 using Application;
 using Application.Models;
-using Infrastructure.MQTT;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +23,9 @@ public class Program
 {
     public static async Task Main()
     {
+        
+        DotNetEnv.Env.Load();
+        
         var builder = WebApplication.CreateBuilder();
         
         // this is for cheking the enviornemt, depending on usersecret (see id in startup.csproj)
@@ -64,7 +67,13 @@ public class Program
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
 
-        services.AddMqttServices();
+        services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
+                    options.UseNpgsql(appOptions.DbConnectionString));
+        
+        services.AddScoped<Infrastructure.Postgres.Seeder>();
+        
+        
+        
     }
 
     public static async Task ConfigureMiddleware(WebApplication app)
