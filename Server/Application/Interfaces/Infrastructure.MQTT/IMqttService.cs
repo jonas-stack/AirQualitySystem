@@ -2,5 +2,5 @@
 
 public interface IMqttService
 {
-    Task SubscribeAsync(object dto, string topic);
+    Task SubscribeAsync(string topic);
 }

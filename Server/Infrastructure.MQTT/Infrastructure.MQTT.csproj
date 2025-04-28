@@ -14,11 +14,11 @@
 
   <ItemGroup>
     <PackageReference Include="HiveMQtt" Version="0.26.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3.0" />
-    <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

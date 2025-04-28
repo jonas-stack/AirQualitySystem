@@ -1,7 +1,9 @@
 ﻿using Api.Rest;
 using Api.Websocket;
 using Application;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
+using Infrastructure.MQTT;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using NLog;
 using NSwag.Generation;
 using Startup.Documentation;
 using Startup.Proxy;
@@ -23,18 +26,13 @@ public class Program
 {
     public static async Task Main()
     {
-        // Load environment variables from .env file
-        DotNetEnv.Env.Load();
-        
         var builder = WebApplication.CreateBuilder();
         
         // Add environment variables and JSON configuration
         builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
-        
-        // Resolve placeholders in configuration
-        ResolvePlaceholders(builder.Configuration);
         
         // this is for cheking the enviornemt, depending on usersecret (see id in startup.csproj)
         var environment = builder.Environment.EnvironmentName;
@@ -57,25 +55,11 @@ public class Program
         
     }
     
-    private static void ResolvePlaceholders(IConfiguration configuration)
-    {
-        foreach (var key in configuration.AsEnumerable())
-        {
-            if (key.Value != null && key.Value.StartsWith("${") && key.Value.EndsWith("}"))
-            {
-                var envVar = key.Value.Replace("${", "").Replace("}", "");
-                var envValue = Environment.GetEnvironmentVariable(envVar);
-                if (envValue != null)
-                {
-                    configuration[key.Key] = envValue;
-                }
-            }
-        }
-    }
-
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         var appOptions = services.AddAppOptions(configuration);
+        Console.WriteLine($"Bound MQTT_USERNAME: {appOptions.MQTT_USERNAME}");
+        Console.WriteLine($"Bound MQTT_PASSWORD: {appOptions.MQTT_PASSWORD}");
 
         services.RegisterApplicationServices();
 
@@ -95,9 +79,10 @@ public class Program
                     options.UseNpgsql(appOptions.DbConnectionString));
         
         services.AddScoped<Infrastructure.Postgres.Seeder>();
-        
-        
-        
+
+        services.RegisterMqttInfrastructure();
+
+
     }
 
     public static async Task ConfigureMiddleware(WebApplication app)
@@ -118,6 +103,7 @@ public class Program
 
         app.ConfigureRestApi();
         await app.ConfigureWebsocketApi(appOptions.WS_PORT);
+        await app.ConfigureMqtt();
 
 
         app.MapGet("Acceptance", () => "Accepted");
