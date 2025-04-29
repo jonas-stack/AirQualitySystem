@@ -1,50 +1,58 @@
 ﻿using System.Text.Json;
-using Core.Domain.Entities;
+using Application.Models.Dtos;
+using Core.Domain.TestEntities;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
 using Infrastructure.Postgres.Scaffolding;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.MQTT.SubscriptionEventHandlers
 {
     public class SensorDataHandler : IMqttMessageHandler
     {
         private readonly MyDbContextTestDocker _dbContext;
+        private readonly ILogger<SensorDataHandler> _logger;
 
-        public SensorDataHandler(MyDbContextTestDocker dbContext)
+        public SensorDataHandler(MyDbContextTestDocker dbContext, ILogger<SensorDataHandler> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
-        public string TopicFilter => "airquality/data";
-        public QualityOfService QoS => QualityOfService.AtLeastOnceDelivery;
+        public string TopicFilter => "AirQuality/Data";
+        public QualityOfService QoS => QualityOfService.AtMostOnceDelivery;
 
         public void Handle(object? sender, OnMessageReceivedEventArgs args)
         {
             try
             {
+                _logger.LogInformation("Handling message for topic: {Topic}", args.PublishMessage.Topic);
                 var payload = args.PublishMessage.Payload;
-                if (payload == null)
-                {
-                    Console.WriteLine("Payload is null.");
-                    return;
-                }
-                var json = System.Text.Encoding.UTF8.GetString(payload);
-                Console.WriteLine($"Received payload: {json}");
+                if (payload == null) return;
 
-                var entity = JsonSerializer.Deserialize<SensorData>(json);
-                if (entity == null)
+                var json = System.Text.Encoding.UTF8.GetString(payload);
+                _logger.LogInformation("Received payload: {Payload}", json);
+
+                var dto = JsonSerializer.Deserialize<SensorDataDto>(json);
+                if (dto == null) return;
+
+                var entity = new Sensordata
                 {
-                    Console.WriteLine("Failed to deserialize payload.");
-                    return;
-                }
+                    Temperature = dto.Temperature,
+                    Humidity = dto.Humidity,
+                    Airquality = dto.AirQuality,
+                    Pm25 = dto.Pm25,
+                    Deviceid = dto.DeviceId,
+                    Timestamp = dto.GetDateTime()
+                };
 
                 _dbContext.Add(entity);
                 _dbContext.SaveChanges();
-                Console.WriteLine($"Data saved for device: {entity.DeviceId}");
+                _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.Deviceid);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error processing message: {ex.Message}");
+                _logger.LogError(ex, "Error processing message");
             }
         }
     }
