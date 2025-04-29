@@ -7,6 +7,6 @@ public class SensorData
     public float Humidity { get; set; }
     public float AirQuality { get; set; }
     public float Pm25 { get; set; }
-    public string DeviceId { get; set; }
+    public required string DeviceId { get; set; }
     public long Timestamp { get; set; }
 }
