@@ -2,6 +2,7 @@
 using Application.Models;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Exceptions;
+using Infrastructure.MQTT.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +29,7 @@ public static class MqttExtensions
 
         RegisterHandlers(services);
         services.AddSingleton<IMqttService, MqttSubscriber>();
+        services.AddSingleton<DeviceConnectionTracker>();
         return services;
     }
 
