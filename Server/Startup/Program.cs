@@ -58,9 +58,7 @@ public class Program
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         var appOptions = services.AddAppOptions(configuration);
-        Console.WriteLine($"Bound MQTT_USERNAME: {appOptions.MQTT_USERNAME}");
-        Console.WriteLine($"Bound MQTT_PASSWORD: {appOptions.MQTT_PASSWORD}");
-
+        
         services.RegisterApplicationServices();
 
         services.AddDataSourceAndRepositories();

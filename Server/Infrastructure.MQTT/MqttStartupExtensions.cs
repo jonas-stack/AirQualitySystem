@@ -106,6 +106,7 @@ public static class MqttExtensions
         foreach (var handler in handlerTypes)
         {
             services.AddScoped(handler);
+            services.AddScoped(typeof(IMqttMessageHandler), handler);
         }
     }
 
@@ -126,10 +127,22 @@ public static class MqttExtensions
         }
     }
 
+    // In MqttStartupExtensions.cs
     private static IEnumerable<Type> GetHandlerTypes()
     {
-        return typeof(IMqttMessageHandler).Assembly
-            .GetTypes()
-            .Where(t => typeof(IMqttMessageHandler).IsAssignableFrom(t) && !t.IsAbstract);
+        // Search across all assemblies, not just the interface's assembly
+        var handlers = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .Where(t => typeof(IMqttMessageHandler).IsAssignableFrom(t) && !t.IsAbstract)
+            .ToList();
+
+        // Log discovered handlers
+        Console.WriteLine($"Discovered {handlers.Count} message handlers:");
+        foreach (var handler in handlers)
+        {
+            Console.WriteLine($"  - {handler.Name}");
+        }
+
+        return handlers;
     }
 }

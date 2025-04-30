@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Events;
 using Application.Interfaces.Infrastructure.MQTT;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.MQTT
@@ -10,13 +11,13 @@ namespace Infrastructure.MQTT
     public class MqttSubscriber : IMqttService
     {
         private readonly HiveMQClient _client;
-        private readonly IEnumerable<IMqttMessageHandler> _handlers;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<MqttSubscriber> _logger;
 
-        public MqttSubscriber(HiveMQClient client, IEnumerable<IMqttMessageHandler> handlers, ILogger<MqttSubscriber> logger)
+        public MqttSubscriber(HiveMQClient client,IServiceProvider serviceProvider, ILogger<MqttSubscriber> logger)
         {
             _client = client;
-            _handlers = handlers;
+            _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
@@ -32,11 +33,24 @@ namespace Infrastructure.MQTT
 
         private void HandleMessageReceived(object? sender, OnMessageReceivedEventArgs args)
         {
-            _logger.LogInformation("Message received on topic: {Topic}", args.PublishMessage.Topic);
-    
-            foreach (var handler in _handlers)
+            var payload = args.PublishMessage.Payload;
+            string payloadString = payload != null 
+                ? System.Text.Encoding.UTF8.GetString(payload) 
+                : "(empty payload)";
+
+            _logger.LogInformation("Message received on topic: {Topic}, content: {Content}",
+                args.PublishMessage.Topic, payloadString);
+
+            // Create a fresh scope for each message
+            using var scope = _serviceProvider.CreateScope();
+            var handlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IMqttMessageHandler>>();
+
+            foreach (var handler in handlers)
             {
-                if (args.PublishMessage.Topic != null && 
+                _logger.LogInformation("Checking handler {HandlerType} for topic {HandlerTopic} against message topic {MessageTopic}", 
+                    handler.GetType().Name, handler.TopicFilter, args.PublishMessage.Topic);
+    
+                if (args.PublishMessage.Topic != null &&
                     string.Equals(args.PublishMessage.Topic, handler.TopicFilter, StringComparison.OrdinalIgnoreCase))
                 {
                     _logger.LogInformation("Invoking handler for topic: {Topic}", handler.TopicFilter);
