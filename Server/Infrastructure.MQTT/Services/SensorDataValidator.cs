@@ -5,9 +5,9 @@ namespace Infrastructure.MQTT.Services;
 
 public class SensorDataValidator
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<SensorDataValidator> _logger;
 
-    public SensorDataValidator(ILogger logger)
+    public SensorDataValidator(ILogger<SensorDataValidator> logger)
     {
         _logger = logger;
     }
