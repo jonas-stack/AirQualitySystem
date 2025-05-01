@@ -1,14 +1,18 @@
 ﻿using Api.Rest;
 using Api.Websocket;
 using Application;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
+using Infrastructure.MQTT;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using NLog;
 using NSwag.Generation;
 using Startup.Documentation;
 using Startup.Proxy;
@@ -23,6 +27,12 @@ public class Program
     public static async Task Main()
     {
         var builder = WebApplication.CreateBuilder();
+        
+        // Add environment variables and JSON configuration
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
         
         // this is for cheking the enviornemt, depending on usersecret (see id in startup.csproj)
         var environment = builder.Environment.EnvironmentName;
@@ -44,11 +54,11 @@ public class Program
         
         
     }
-
+    
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         var appOptions = services.AddAppOptions(configuration);
-
+        
         services.RegisterApplicationServices();
 
         services.AddDataSourceAndRepositories();
@@ -62,6 +72,15 @@ public class Program
             conf.DocumentProcessors.Add(new AddStringConstantsProcessor());
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
+
+        services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
+                    options.UseNpgsql(appOptions.DbConnectionString));
+        
+        services.AddScoped<Infrastructure.Postgres.Seeder>();
+
+        services.RegisterMqttInfrastructure();
+
+
     }
 
     public static async Task ConfigureMiddleware(WebApplication app)
@@ -82,6 +101,7 @@ public class Program
 
         app.ConfigureRestApi();
         await app.ConfigureWebsocketApi(appOptions.WS_PORT);
+        await app.ConfigureMqtt();
 
 
         app.MapGet("Acceptance", () => "Accepted");
