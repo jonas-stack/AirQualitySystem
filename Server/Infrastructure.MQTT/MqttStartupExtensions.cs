@@ -15,135 +15,133 @@ public static class MqttExtensions
 {
     public static IServiceCollection RegisterMqttInfrastructure(this IServiceCollection services)
     {
-        services.AddSingleton<HiveMQClient>(sp =>
+        services.AddSingleton<HiveMQClient>(serviceProvider =>
         {
-            var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<AppOptions>>();
-            var logger = sp.GetRequiredService<ILogger<HiveMQClient>>();
-            var lifetime = sp.GetRequiredService<IHostApplicationLifetime>();
+            var options = serviceProvider.GetRequiredService<IOptionsMonitor<AppOptions>>().CurrentValue;
+            var logger = serviceProvider.GetRequiredService<ILogger<HiveMQClient>>();
+            var appLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
 
-            var client = CreateMqttClient(optionsMonitor.CurrentValue, logger);
-            ConfigureConnectionLifecycle(client, logger, lifetime);
+
+            if (string.IsNullOrEmpty(options.MQTT_USERNAME) || string.IsNullOrEmpty(options.MQTT_PASSWORD))
+                throw new InvalidOperationException(
+                    "MQTT_USERNAME or MQTT_PASSWORD is not set in the environment variables.");
+
+            // Set up client options
+            var clientOptions = new HiveMQClientOptionsBuilder()
+                .WithWebSocketServer($"wss://{options.MQTT_BROKER_HOST}:8884/mqtt")
+                .WithClientId($"AirQualitySystem_{Environment.MachineName}")
+                .WithCleanStart(true)
+                .WithKeepAlive(30)
+                .WithAutomaticReconnect(true)
+                .WithSessionExpiryInterval(600)
+                .WithUserName(options.MQTT_USERNAME)
+                .WithPassword(options.MQTT_PASSWORD)
+                .Build();
+
+            // Create the client
+            var client = new HiveMQClient(clientOptions);
+
+            // Try connecting with retries
+            for (var attempt = 1; attempt <= 5; attempt++)
+                try
+                {
+                    logger.LogInformation("Connecting to MQTT broker (attempt {attempt}/5)", attempt);
+                    client.ConnectAsync().GetAwaiter().GetResult();
+                    logger.LogInformation("Connected to MQTT broker");
+                    break;
+                }
+                catch (HiveMQttClientException ex)
+                {
+                    logger.LogError(ex, "Error connecting to MQTT broker on attempt {attempt}", attempt);
+                    if (attempt == 5) throw;
+
+                    // Wait before next attempt with exponential backoff
+                    var waitSeconds = (int)Math.Pow(2, attempt);
+                    Thread.Sleep(TimeSpan.FromSeconds(waitSeconds));
+                }
+
+            // Set up disconnect handler
+            client.OnDisconnectReceived += (sender, args) => { logger.LogWarning("MQTT client disconnected"); };
+
+            // Set up graceful shutdown
+            appLifetime.ApplicationStopping.Register(async () =>
+            {
+                logger.LogInformation("Disconnecting from MQTT broker...");
+                try
+                {
+                    // Add timeout to avoid hanging on shutdown
+                    await Task.WhenAny(client.DisconnectAsync(), Task.Delay(3000));
+                    logger.LogInformation("Disconnected from MQTT broker.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error disconnecting MQTT client");
+                }
+            });
 
             return client;
         });
 
-        RegisterHandlers(services);
+        // Find and register all MQTT message handlers
+        var handlerTypes = FindAllMessageHandlers();
+        foreach (var handlerType in handlerTypes)
+        {
+            // Register each handler with DI
+            services.AddScoped(handlerType);
+            services.AddScoped(typeof(IMqttMessageHandler), handlerType);
+        }
+
+        // Register other MQTT services
         services.AddSingleton<IMqttService, MqttSubscriber>();
         services.AddSingleton<DeviceConnectionTracker>();
+
         return services;
     }
 
+    // Method to set up MQTT during application startup
     public static async Task<WebApplication> ConfigureMqtt(this WebApplication app)
     {
         var mqttClient = app.Services.GetRequiredService<HiveMQClient>();
         var logger = app.Services.GetRequiredService<ILogger<HiveMQClient>>();
+        var mqttService = app.Services.GetRequiredService<IMqttService>();
 
-        await SubscribeHandlers(app, mqttClient, logger);
+        // Find all message handlers we need to subscribe to
+        var handlerTypes = FindAllMessageHandlers();
+
+        // Subscribe to each handler's topic
+        foreach (var handlerType in handlerTypes)
+        {
+            // Create a scope for this handler
+            using var scope = app.Services.CreateScope();
+
+            // Get the handler instance
+            var handler = (IMqttMessageHandler)scope.ServiceProvider.GetRequiredService(handlerType);
+
+            // Log subscription attempt
+            logger.LogInformation("Subscribing to topic: {topic} with QoS: {qos}",
+                handler.TopicFilter, handler.QoS);
+
+            // Subscribe to the topic
+            await mqttService.SubscribeAsync(handler.TopicFilter);
+        }
+
         return app;
     }
 
-    private static HiveMQClient CreateMqttClient(AppOptions options, ILogger logger)
+    // Helper method to find all MQTT message handlers in the application
+    private static List<Type> FindAllMessageHandlers()
     {
-        if (string.IsNullOrEmpty(options.MQTT_USERNAME) || string.IsNullOrEmpty(options.MQTT_PASSWORD))
-            throw new InvalidOperationException("MQTT_USERNAME or MQTT_PASSWORD is not set in the environment variables.");
+        // Get all types from all loaded assemblies
+        var handlers = new List<Type>();
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        foreach (var type in assembly.GetTypes())
+            // Check if this type implements our handler interface and isn't abstract
+            if (typeof(IMqttMessageHandler).IsAssignableFrom(type) && !type.IsAbstract)
+                handlers.Add(type);
 
-        var clientOptions = new HiveMQClientOptionsBuilder()
-            .WithWebSocketServer($"wss://{options.MQTT_BROKER_HOST}:8884/mqtt")
-            .WithClientId($"AirQualitySystem_{Environment.MachineName}")  // Consistent ID
-            .WithCleanStart(true)
-            .WithKeepAlive(30)
-            .WithAutomaticReconnect(true)
-            .WithSessionExpiryInterval(600)  // 10-minute session expiry
-            .WithUserName(options.MQTT_USERNAME)
-            .WithPassword(options.MQTT_PASSWORD)
-            .Build();
-
-        return ConnectWithRetries(new HiveMQClient(clientOptions), logger);
-    }
-
-    private static HiveMQClient ConnectWithRetries(HiveMQClient client, ILogger logger, int maxRetries = 5)
-    {
-        for (var attempt = 1; attempt <= maxRetries; attempt++)
-        {
-            try
-            {
-                logger.LogInformation("Connecting to MQTT broker (attempt {attempt}/{maxRetries})", attempt, maxRetries);
-                client.ConnectAsync().GetAwaiter().GetResult();
-                logger.LogInformation("Connected to MQTT broker");
-                return client;
-            }
-            catch (HiveMQttClientException ex)
-            {
-                logger.LogError(ex, "Error connecting to MQTT broker on attempt {attempt}", attempt);
-                if (attempt == maxRetries) throw;
-                Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(2, attempt)));
-            }
-        }
-        throw new InvalidOperationException("Failed to connect to MQTT broker after retries.");
-    }
-
-    private static void ConfigureConnectionLifecycle(HiveMQClient client, ILogger logger, IHostApplicationLifetime lifetime)
-    {
-        client.OnDisconnectReceived += (sender, args) => logger.LogWarning("MQTT client disconnected");
-
-        lifetime.ApplicationStopping.Register(async () =>
-        {
-            logger.LogInformation("Disconnecting from MQTT broker...");
-            try
-            {
-                // Add timeout to avoid hanging on shutdown
-                await Task.WhenAny(client.DisconnectAsync(), Task.Delay(3000));
-                logger.LogInformation("Disconnected from MQTT broker.");
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error disconnecting MQTT client");
-            }
-        });
-    }
-
-    private static void RegisterHandlers(IServiceCollection services)
-    {
-        var handlerTypes = GetHandlerTypes();
-        foreach (var handler in handlerTypes)
-        {
-            services.AddScoped(handler);
-            services.AddScoped(typeof(IMqttMessageHandler), handler);
-        }
-    }
-
-    private static async Task SubscribeHandlers(WebApplication app, HiveMQClient mqttClient, ILogger logger)
-    {
-        // Get the MqttSubscriber service
-        var mqttService = app.Services.GetRequiredService<IMqttService>();
-        var handlerTypes = GetHandlerTypes();
-    
-        foreach (var handlerType in handlerTypes)
-        {
-            using var scope = app.Services.CreateScope();
-            var handler = (IMqttMessageHandler)scope.ServiceProvider.GetRequiredService(handlerType);
-
-            logger.LogInformation("Subscribing to topic: {topic} with QoS: {qos}", handler.TopicFilter, handler.QoS);
-            // Use the service instead of client directly
-            await mqttService.SubscribeAsync(handler.TopicFilter);
-        }
-    }
-
-    // In MqttStartupExtensions.cs
-    private static IEnumerable<Type> GetHandlerTypes()
-    {
-        // Search across all assemblies, not just the interface's assembly
-        var handlers = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(a => a.GetTypes())
-            .Where(t => typeof(IMqttMessageHandler).IsAssignableFrom(t) && !t.IsAbstract)
-            .ToList();
-
-        // Log discovered handlers
+        // Log what we found
         Console.WriteLine($"Discovered {handlers.Count} message handlers:");
-        foreach (var handler in handlers)
-        {
-            Console.WriteLine($"  - {handler.Name}");
-        }
+        foreach (var handler in handlers) Console.WriteLine($"  - {handler.Name}");
 
         return handlers;
     }
