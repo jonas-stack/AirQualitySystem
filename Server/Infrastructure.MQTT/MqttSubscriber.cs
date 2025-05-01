@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Formats.Asn1;
 using System.Threading.Tasks;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Events;
@@ -19,6 +20,8 @@ namespace Infrastructure.MQTT
             _client = client;
             _serviceProvider = serviceProvider;
             _logger = logger;
+            
+            _logger.LogInformation("Created new MQTT subscriber");
         }
 
         public async Task SubscribeAsync(string topic)
@@ -29,34 +32,70 @@ namespace Infrastructure.MQTT
             // Remove existing handler first to avoid duplicates
             _client.OnMessageReceived -= HandleMessageReceived;
             _client.OnMessageReceived += HandleMessageReceived;
+            
+            _logger.LogInformation("Message handler registered");
         }
 
         private void HandleMessageReceived(object? sender, OnMessageReceivedEventArgs args)
         {
-            var payload = args.PublishMessage.Payload;
-            string payloadString = payload != null 
-                ? System.Text.Encoding.UTF8.GetString(payload) 
-                : "(empty payload)";
+            byte[]? messagePayloadBytes = args.PublishMessage.Payload;
 
-            _logger.LogInformation("Message received on topic: {Topic}, content: {Content}",
-                args.PublishMessage.Topic, payloadString);
-
-            // Create a fresh scope for each message
-            using var scope = _serviceProvider.CreateScope();
-            var handlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IMqttMessageHandler>>();
-
-            foreach (var handler in handlers)
+            string messageContent;
+            if (messagePayloadBytes != null)
             {
-                _logger.LogInformation("Checking handler {HandlerType} for topic {HandlerTopic} against message topic {MessageTopic}", 
-                    handler.GetType().Name, handler.TopicFilter, args.PublishMessage.Topic);
-    
-                if (args.PublishMessage.Topic != null &&
-                    string.Equals(args.PublishMessage.Topic, handler.TopicFilter, StringComparison.OrdinalIgnoreCase))
+                messageContent = System.Text.Encoding.UTF8.GetString(messagePayloadBytes);
+            }
+            else
+            {
+                messageContent = "(Empty payload)";
+            }
+            
+            _logger.LogInformation("Recieved a message on topic: {Topic}", args.PublishMessage.Topic);
+            _logger.LogInformation("Message content: {Content}", messageContent);
+
+            IServiceScope scope = _serviceProvider.CreateScope();
+
+            IEnumerable<IMqttMessageHandler> allHandlers =
+                scope.ServiceProvider.GetRequiredService<IEnumerable<IMqttMessageHandler>>();
+            
+            // Check each handler to see if it should process this message
+            bool foundMatchingHandler = false;
+            foreach (IMqttMessageHandler handler in allHandlers)
+            {
+                string handlerName = handler.GetType().Name;
+                string handlerTopic = handler.TopicFilter;
+                string? messageTopic = args.PublishMessage.Topic;
+                
+                _logger.LogInformation("Checking if handler '{0}' can process message", handlerName);
+                _logger.LogInformation("Handler topic: {0}, Message topic: {1}", handlerTopic, messageTopic);
+                
+                // Check if this handler's topic matches the message topic
+                bool isTopicMatch = false;
+                if (messageTopic != null)
                 {
-                    _logger.LogInformation("Invoking handler for topic: {Topic}", handler.TopicFilter);
+                    if (string.Equals(messageTopic, handlerTopic, StringComparison.OrdinalIgnoreCase))
+                    {
+                        isTopicMatch = true;
+                    }
+                }
+                
+                // If topics match, invoke the handler
+                if (isTopicMatch)
+                {
+                    _logger.LogInformation("Found matching handler! Invoking handler for topic: {0}", handlerTopic);
                     handler.Handle(sender, args);
+                    foundMatchingHandler = true;
                 }
             }
+            
+            // Log warning if no handler was found
+            if (!foundMatchingHandler)
+            {
+                _logger.LogWarning("No handler found for topic: {0}", args.PublishMessage.Topic);
+            }
+            
+            // Dispose the scope when done
+            scope.Dispose();
         }
     }
 }
