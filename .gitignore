@@ -30,6 +30,8 @@ Client/.vite/
 Thumbs.db
 .env
 .env.local
+AI/.venv
+AI/venv
 
 # Configuration files with secrets
 **/appsettings.json
