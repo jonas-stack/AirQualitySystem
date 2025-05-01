@@ -14,13 +14,18 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
         private readonly MyDbContextTestDocker _dbContext;
         private readonly ILogger<SensorDataHandler> _logger;
         private readonly DeviceConnectionTracker _connectionTracker;
+        private readonly SensorDataValidator _validator;
 
-        public SensorDataHandler(MyDbContextTestDocker dbContext, ILogger<SensorDataHandler> logger,
-            DeviceConnectionTracker connectionTracker)
+        public SensorDataHandler(
+            MyDbContextTestDocker dbContext,
+            ILogger<SensorDataHandler> logger,
+            DeviceConnectionTracker connectionTracker,
+            SensorDataValidator validator)
         {
             _dbContext = dbContext;
             _logger = logger;
             _connectionTracker = connectionTracker;
+            _validator = validator;
         }
 
         public string TopicFilter => "AirQuality/Data";
@@ -40,8 +45,8 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                 // Update device connection status
                 _connectionTracker.UpdateDeviceStatus(dto.DeviceId, dto.GetDateTime());
 
-                // Validate data before saving
-                if (!IsDataComplete(dto))
+                // Validate data before saving using the dedicated validator
+                if (!_validator.IsDataComplete(dto))
                 {
                     _logger.LogWarning("Incomplete data received from device {DeviceId}. Skipping save.", dto.DeviceId);
                     return;
@@ -65,23 +70,6 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
             {
                 _logger.LogError(ex, "Error processing message");
             }
-        }
-
-        private bool IsDataComplete(SensorDataDto dto)
-        {
-            // Define what "complete data" means - these are examples
-            if (dto.Temperature <= -100 || dto.Temperature >= 100) return false;
-            if (dto.Humidity < 0 || dto.Humidity > 100) return false;
-            if (dto.AirQuality <= 0) return false;
-            if (dto.Pm25 < 0) return false;
-            if (string.IsNullOrEmpty(dto.DeviceId)) return false;
-
-            // Check if message timestamp is reasonable (not too old, not future)
-            var messageTime = dto.GetDateTime();
-            if (messageTime < DateTime.UtcNow.AddHours(-1) || messageTime > DateTime.UtcNow.AddMinutes(5))
-                return false;
-
-            return true;
         }
     }
 }
