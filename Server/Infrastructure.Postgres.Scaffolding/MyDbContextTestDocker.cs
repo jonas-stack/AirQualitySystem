@@ -12,31 +12,12 @@ public partial class MyDbContextTestDocker : DbContext
         : base(options)
     {
     }
-
-    public virtual DbSet<Devicestatus> Devicestatus { get; set; }
-
+    
     public virtual DbSet<Sensordata> Sensordata { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Devicestatus>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("devicestatus_pkey");
-
-            entity.ToTable("devicestatus");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Deviceid)
-                .HasMaxLength(50)
-                .HasColumnName("deviceid");
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasColumnName("status");
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("timestamp");
-        });
-
+        
         modelBuilder.Entity<Sensordata>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("sensordata_pkey");

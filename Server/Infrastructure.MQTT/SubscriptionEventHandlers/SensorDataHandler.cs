@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Application.Models.Dtos;
+using Core.Domain.Entities;
 using Core.Domain.TestEntities;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
@@ -11,13 +12,13 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
 {
     public class SensorDataHandler : IMqttMessageHandler
     {
-        private readonly MyDbContextTestDocker _dbContext;
+        private readonly MyDbContext _dbContext;
         private readonly ILogger<SensorDataHandler> _logger;
         private readonly DeviceConnectionTracker _connectionTracker;
         private readonly SensorDataValidator _validator;
 
         public SensorDataHandler(
-            MyDbContextTestDocker dbContext,
+            MyDbContext dbContext,
             ILogger<SensorDataHandler> logger,
             DeviceConnectionTracker connectionTracker,
             SensorDataValidator validator)
@@ -51,24 +52,46 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                     _logger.LogWarning("Incomplete data received from device {DeviceId}. Skipping save.", dto.DeviceId);
                     return;
                 }
+                
+                // Try to parse the device ID
+                Guid deviceGuid;
+                if (!Guid.TryParse(dto.DeviceId, out deviceGuid))
+                {
+                    // Create a deterministic GUID from the device name
+                    deviceGuid = CreateDeterministicGuid(dto.DeviceId);
+                    _logger.LogInformation("Created GUID {DeviceGuid} for device {DeviceId}", deviceGuid, dto.DeviceId);
+                }
 
-                var entity = new Sensordata
+                var entity = new SensorData()
                 {
                     Temperature = dto.Temperature,
                     Humidity = dto.Humidity,
-                    Airquality = dto.AirQuality,
+                    AirQuality = dto.AirQuality,
                     Pm25 = dto.Pm25,
-                    Deviceid = dto.DeviceId,
+                    DeviceId = deviceGuid,
                     Timestamp = dto.GetDateTime()
                 };
 
                 _dbContext.Add(entity);
                 _dbContext.SaveChanges();
-                _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.Deviceid);
+                _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing message");
+            }
+        }
+        
+        private Guid CreateDeterministicGuid(string input)
+        {
+            // Use MD5 to create a deterministic hash from the input string
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+            
+                // Convert hash to GUID format
+                return new Guid(hashBytes);
             }
         }
     }
