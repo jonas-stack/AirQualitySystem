@@ -17,7 +17,7 @@ public class SensorDataDto
     public double Pm25 { get; set; }
     
     [JsonPropertyName("device_id")]
-    public string DeviceId { get; set; } = null!;
+    public string DeviceId { get; set; } = null!;// recieves a string id in the json message from broker. parse it to guid before saving in db
     
     [JsonPropertyName("timestamp")]
     public long TimestampUnix { get; set; }
