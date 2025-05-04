@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/form/LoginForm";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 import Flex from "@/components/utils/Flex";
 import Grid from "@/components/utils/Grid";
 import { GalleryVerticalEnd } from "lucide-react";
@@ -24,13 +25,7 @@ export default function LoginPage() {
                     </div>
                 </Flex>
                 </Flex>
-            <div className="relative hidden bg-muted lg:block">
-            <img
-                src="/placeholder.svg"
-                alt="Image"
-                className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-            />
-            </div>
+                <AuroraBackground className="relative hidden lg:block h-full"/>
         </Grid>
       </Flex>
     )
