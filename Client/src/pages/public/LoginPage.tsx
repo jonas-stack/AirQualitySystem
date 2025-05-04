@@ -4,6 +4,7 @@ import Grid from "@/components/utils/Grid";
 import { GalleryVerticalEnd } from "lucide-react";
 
 export default function LoginPage() {
+    const appName = import.meta.env.VITE_APP_NAME;
 
     return (
         <Flex className="lg:h-screen lg:w-screen" gap="0" justifyContent="center" alignItems="center">
@@ -14,7 +15,7 @@ export default function LoginPage() {
                         <Flex className="h-6 w-6 rounded-md bg-primary text-primary-foreground" alignItems="center" justifyContent="center">
                             <GalleryVerticalEnd className="size-4" />
                         </Flex>
-                    Acme Inc.
+                    {appName}
                     </a>
                 </Flex>
                 <Flex className="flex-1" alignItems="center" justifyContent="center">
