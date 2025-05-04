@@ -9,6 +9,7 @@ import { SearchForm } from '../header/SearchForm';
 import { useEffect, useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchDialog } from '../command/SearchDialog';
+import { LogOut } from 'lucide-react';
 
 export const AuthenticatedLayout = () => {
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);
@@ -53,6 +54,12 @@ export const AuthenticatedLayout = () => {
                   <div className="flex items-center gap-0.5">
                     <ThemeToggle />
                   </div>
+                  <div className='h-5'>
+                    <Separator className='h-[20px]' orientation='vertical' />
+                  </div>
+                  <Button variant='ghost' size='icon'>
+                    <LogOut />
+                  </Button>
                 </div>
               </div>
             </header>
