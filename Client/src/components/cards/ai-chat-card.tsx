@@ -126,7 +126,7 @@ export function AIChatCard({
     <Card className={cn("flex flex-col", className)}>
       <CardHeader className="px-4 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg font-medium">
+          <CardTitle className="flex items-center gap-2 text-lg font-bold">
             <Bot className="h-5 w-5 text-indigo-500" />
             {title}
             <Sparkles className="h-4 w-4 text-amber-500" />
@@ -134,7 +134,7 @@ export function AIChatCard({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full hover:bg-indigo-100 dark:hover:bg-slate-800"
+            className="h-8 w-8 rounded-full"
             onClick={clearChat}
           >
             <RefreshCw className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function AIChatCard({
         </div>
       </CardHeader>
 
-      <ScrollArea className="flex-1 -mt-4 h-60 border-t px-4">
+      <ScrollArea className="flex-1 -mt-4 h-60 border-t p-4">
         <div className="flex flex-col gap-3">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full py-8 text-center text-muted-foreground">
@@ -254,7 +254,7 @@ export function AIChatCard({
             disabled={!input.trim() || isLoading}
             className="shrink-0 bg-indigo-500 hover:bg-indigo-600"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-4 w-4 dark:text-white" />
             <span className="sr-only">Send message</span>
           </Button>
         </div>

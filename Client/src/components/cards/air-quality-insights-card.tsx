@@ -1,6 +1,3 @@
-"use client"
-
-import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Wind, RefreshCw } from "lucide-react"
 import type { CardArray } from "@/types/card"
@@ -43,7 +40,7 @@ export function AirQualityInsightsCard({
       <CardHeader className="">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+            <CardTitle className="flex items-center gap-2 text-lg font-bold">
               <Wind className="h-5 w-5 text-emerald-500" />
               {title}
             </CardTitle>

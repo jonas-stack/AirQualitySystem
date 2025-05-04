@@ -7,6 +7,8 @@ import { ConnectionStatusCard } from "@/components/cards/connection-status-card"
 import { CardArray } from "@/types/card";
 import { AirQualityInsightsCard } from "@/components/cards/air-quality-insights-card";
 import { AIChatCard } from "@/components/cards/ai-chat-card";
+import { AirQualityChartsCard } from "@/components/cards/air-quality-charts-card";
+import { SimpleAirQualityChartsCard } from "@/components/cards/simple-air-quality-charts-card";
 
 const chartData = [
     { month: "January", amount: 80 },
@@ -190,18 +192,23 @@ export default function DashboardPage() {
 
             <div className="lg:col-span-3">
                 <ConnectionStatusCard className="h-60" isConnected={isConnected} onConnectionChange={setIsConnected} />
+            </div>
 
-          </div>
-          <div className="lg:col-span-4">
-          <AirQualityInsightsCard
-            cards={airQualityData}
-            onRefresh={() => console.log("Refreshing air quality data...")}
-            lastUpdated={new Date()}
-          />
-        </div>
-        <div className="lg:col-span-4">
-            <AIChatCard className="h-[400px] lg:h-[500px]" title="Air Quality Assistant" onSendMessage={handleSendMessage} />
-        </div>
+            <div className="lg:col-span-4">
+                <AirQualityInsightsCard
+                cards={airQualityData}
+                onRefresh={() => console.log("Refreshing air quality data...")}
+                lastUpdated={new Date()}
+                />
+            </div>
+
+            <div className="lg:col-span-4">
+                <AIChatCard className="h-[500px] lg:h-[496px]" title="Air Quality Assistant" onSendMessage={handleSendMessage} />
+            </div>
+
+            <div className="lg:col-span-4">
+                <SimpleAirQualityChartsCard className="h-[496px]" onRefresh={() => console.log("Refreshing chart data...")} />
+            </div>
         </div>
     )
 }

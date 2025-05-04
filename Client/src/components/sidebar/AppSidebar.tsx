@@ -1,23 +1,16 @@
 import * as React from "react"
 import {
-  Book,
-  Database,
-  DownloadIcon,
-  EthernetPort,
-  LifeBuoy,
-  Send,
-  SquareTerminal,
-  Tv2,
+  Bot,
+  ChartArea,
+  LayoutGrid,
   Wrench,
 } from "lucide-react"
 
 import { NavMain } from "./NavMain"
-import { NavUser } from "./NavUser"
 import { NavHeader } from "./NavHeader"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
@@ -34,17 +27,17 @@ const data = {
     {
       name: "Dashboard",
       url: ROUTE.DASHBOARD.INDEX,
-      icon: Tv2,
+      icon: LayoutGrid,
     },
     {
         name: "Data",
         url: ROUTE.DASHBOARD.DATA,
-        icon: Tv2,
+        icon: ChartArea,
       },
       {
         name: "AI",
         url: ROUTE.DASHBOARD.AI,
-        icon: Tv2,
+        icon: Bot,
       },
   ],
   navMain: [
