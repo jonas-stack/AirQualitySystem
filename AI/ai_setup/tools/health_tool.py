@@ -1,5 +1,5 @@
 from langchain_core.tools import Tool
-from ..llm_chain import get_health_chain
+from ..chains.llm_chain import get_health_chain
 
 health_chain = get_health_chain()
 

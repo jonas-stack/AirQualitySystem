@@ -3,8 +3,10 @@ from typing import List, Dict
 from langchain.tools import Tool
 import numpy as np
 from ..database.db_loader import get_connection
+from ..chains.live_data_chain import live_data_chain
 
 
+#Functions
 def get_live_sensor_data(minutes: int = 30) -> List[Dict]:
     conn = get_connection()
     cursor = conn.cursor()
@@ -35,7 +37,6 @@ def group_data_by_key(data: List[Dict]) -> Dict[str, List[Dict]]:
             if key in d:
                 result[key].append({"timestamp": d["timestamp"], key: d[key]})
     return result
-
 
 def predict_tendency_risk(measurements: List[Dict], param: str, max_value: float, unit: str, label: str, recommendation: str, max_minutes: int = 30) -> Dict:
     if len(measurements) < 2:
@@ -115,9 +116,13 @@ def environment_tendency_tool(measurements: Dict[str, List[Dict]]) -> str:
 def run_live_environment_tool(_: str = "") -> str:
     raw_data = get_live_sensor_data(30)
     grouped = group_data_by_key(raw_data)
-    return environment_tendency_tool(grouped)
+    warning_text = environment_tendency_tool(grouped)
 
+    explanation = live_data_chain.run({"data": warning_text})
 
+    return explanation
+
+#Tool
 live_environment_tool = Tool(
     name="Live Environment Tendency",
     func=run_live_environment_tool,

@@ -1,5 +1,6 @@
 from langchain.tools import Tool
 from ..database.db_loader import get_connection
+from ..chains.history_data_chain import history_data_chain
 from typing import List, Dict
 
 
@@ -44,10 +45,12 @@ def summarize_history(data: List[Dict]) -> str:
 
     return ", ".join(patterns) if patterns else "no significant patterns"
 
-def run_history_tool() -> str:
+def run_history_tool(_: str = "") -> str:
     data = get_history_data()
     summary = summarize_history(data)
-    return get_history_advice(summary)
+
+    explanation = history_data_chain.run({"history": summary})
+    return explanation
 
 
 def get_history_advice(summary: str) -> str:
@@ -59,7 +62,6 @@ def get_history_advice(summary: str) -> str:
         )
     except Exception as ex:
         return f"An error occurred, during analysis: {ex}"
-
 
 history_tool = Tool(
     name="History Pattern Analyzer",
