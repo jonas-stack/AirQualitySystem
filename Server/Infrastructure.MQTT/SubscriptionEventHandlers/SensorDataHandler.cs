@@ -69,7 +69,7 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                     AirQuality = dto.AirQuality,
                     Pm25 = dto.Pm25,
                     DeviceId = deviceGuid,
-                    Timestamp = dto.GetDateTime()
+                    Timestamp = dto.GetLocalDateTime()
                 };
 
                 _dbContext.Add(entity);

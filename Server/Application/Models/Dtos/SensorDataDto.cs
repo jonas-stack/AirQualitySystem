@@ -23,4 +23,11 @@ public class SensorDataDto
     public long TimestampUnix { get; set; }
     
     public DateTime GetDateTime() => DateTimeOffset.FromUnixTimeSeconds(TimestampUnix).DateTime;
+    
+    public DateTime GetLocalDateTime()
+    {
+        var utcTime = DateTimeOffset.FromUnixTimeSeconds(TimestampUnix).DateTime;
+        return TimeZoneInfo.ConvertTimeFromUtc(utcTime, 
+            TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+    }
 }
