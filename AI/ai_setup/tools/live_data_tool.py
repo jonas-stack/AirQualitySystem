@@ -81,4 +81,5 @@ live_environment_tool = Tool(
     ("Analyzes trends in live environmental sensor data (CO2, humidity, PM2.5, PM0.1). "
     "Predicts if values will exceed safe thresholds soon and returns warnings and recommendations."),
     return_direct=True,
+    verbose=True
 )
