@@ -112,7 +112,7 @@ def environment_tendency_tool(measurements: Dict[str, List[Dict]]) -> str:
     else:
         return "\n".join(result["alerts"])
 
-def run_live_environment_tool() -> str:
+def run_live_environment_tool(_: str = "") -> str:
     raw_data = get_live_sensor_data(30)
     grouped = group_data_by_key(raw_data)
     return environment_tendency_tool(grouped)

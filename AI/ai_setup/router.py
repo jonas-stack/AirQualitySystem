@@ -3,8 +3,11 @@ from enum import Enum
 from .llm_chain import get_health_chain
 from .agents.custom_agent import get_health_agent
 from .agents.communicator_agent import user_friendly_advice
+from .agents.environment_agent import ask_environment_ai
+from .agents.live_agent import get_live_agent
 from .tools.live_data_tool import live_environment_tool
 from .tools.history_tool import history_tool
+from pydantic import BaseModel
 
 # Initialize Router, Health Chain, and Custom Agent
 router = APIRouter()
@@ -17,6 +20,10 @@ class AdviceMode(str, Enum):
     friendly = "friendly",
     both = "both"
 
+#BaseModel
+class QuestionInput(BaseModel):
+    question: str
+
 
 @router.get("/analyze_live_data")
 def ask_sensor_data():
@@ -24,7 +31,7 @@ def ask_sensor_data():
     Automatically retrieves and analyzes live sensor data from the database.
     """
     try:
-        response = live_environment_tool.func()  # func er wrapper der ikke kræver input
+        response = live_environment_tool.func()
         return {
             "type": "live_data_analysis",
             "advice": response
@@ -107,3 +114,11 @@ def analyze_historical_data():
         }
     except Exception as ex:
         raise HTTPException(status_code=500, detail=f"Internal error analyzing historical data: {str(ex)}")
+
+@router.get("/ask_ai")
+def ask_ai(question: str = Query(..., description="Ask any question about air quality or environment.")):
+    try:
+        answer = ask_environment_ai(question)
+        return {"answer": answer}
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(ex)}")
