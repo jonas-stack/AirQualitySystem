@@ -2,6 +2,39 @@ from datetime import datetime
 from typing import List, Dict
 from langchain.tools import Tool
 import numpy as np
+from ..database.db_loader import get_connection
+
+
+def get_live_sensor_data(minutes: int = 30) -> List[Dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT "Timestamp", "Temperature", "Humidity", "AirQuality", "PM25"
+        FROM "SensorData"
+        WHERE "Timestamp" >= NOW() - INTERVAL %s 
+        ORDER BY "Timestamp" ASC;
+       """, (f"{minutes} minutes",))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0].isoformat(),
+            "temperature": row[1],
+            "humidity": row[2],
+            "airquality": row[3],
+            "pm25": row[4]
+        } for row in rows
+    ]
+
+def group_data_by_key(data: List[Dict]) -> Dict[str, List[Dict]]:
+    result = {"temperature": [], "humidity": [], "airquality": [], "pm25": []}
+    for d in data:
+        for key in result:
+            if key in d:
+                result[key].append({"timestamp": d["timestamp"], key: d[key]})
+    return result
 
 
 def predict_tendency_risk(measurements: List[Dict], param: str, max_value: float, unit: str, label: str, recommendation: str, max_minutes: int = 30) -> Dict:
@@ -42,10 +75,14 @@ def predict_environment_tendency(measurements: Dict[str, List[Dict]]) -> Dict[st
     results = []
 
     checks = [
-        {"key": "co2", "max_value": 1000, "unit": "ppm", "label": "CO₂", "recommendation": "Please ventilate the room."},
-        {"key": "humidity", "max_value": 70, "unit": "%", "label": "Humidity", "recommendation": "Dehumidification is recommended."},
-        {"key": "pm2_5", "max_value": 5.0, "unit": "µg/m³", "label": "PM2.5", "recommendation": "Consider cleaning or using an air purifier."},
-        {"key": "pm0_1", "max_value": 10000, "unit": "particles/cm³", "label": "PM0.1", "recommendation": "Use an air purifier or increase ventilation."},
+        {"key": "humidity", "max_value": 60, "unit": "%", "label": "Humidity",
+         "recommendation": "Ventilate or dehumidify the room."},
+        {"key": "airquality", "max_value": 100, "unit": "index", "label": "Air Quality",
+         "recommendation": "Consider cleaning or ventilation."},
+        {"key": "pm25", "max_value": 5.0, "unit": "µg/m³", "label": "PM2.5",
+         "recommendation": "Consider using an air purifier."},
+        {"key": "temperature", "max_value": 27, "unit": "°C", "label": "Temperature",
+         "recommendation": "Adjust heating/cooling as needed."}
     ]
 
     for check in checks:
@@ -67,6 +104,7 @@ def predict_environment_tendency(measurements: Dict[str, List[Dict]]) -> Dict[st
         "alerts": results
     }
 
+#Function for testing data input manual
 def environment_tendency_tool(measurements: Dict[str, List[Dict]]) -> str:
     result = predict_environment_tendency(measurements)
     if result["status"] == "OK":
@@ -74,11 +112,17 @@ def environment_tendency_tool(measurements: Dict[str, List[Dict]]) -> str:
     else:
         return "\n".join(result["alerts"])
 
+def run_live_environment_tool() -> str:
+    raw_data = get_live_sensor_data(30)
+    grouped = group_data_by_key(raw_data)
+    return environment_tendency_tool(grouped)
+
+
 live_environment_tool = Tool(
     name="Live Environment Tendency",
-    func=environment_tendency_tool,
+    func=run_live_environment_tool,
     description=
-    ("Analyzes trends in live environmental sensor data (CO2, humidity, PM2.5, PM0.1). "
+    ("Analyzes trends in live environmental sensor data (temperature, humidity, air quality, PM2.5)."
     "Predicts if values will exceed safe thresholds soon and returns warnings and recommendations."),
     return_direct=True,
     verbose=True

@@ -3,6 +3,8 @@ from enum import Enum
 from .llm_chain import get_health_chain
 from .agents.custom_agent import get_health_agent
 from .agents.communicator_agent import user_friendly_advice
+from .tools.live_data_tool import live_environment_tool
+from .tools.history_tool import history_tool
 
 # Initialize Router, Health Chain, and Custom Agent
 router = APIRouter()
@@ -17,20 +19,18 @@ class AdviceMode(str, Enum):
 
 
 @router.get("/analyze_live_data")
-def ask_sensor_data(query: str = Query(..., description="Live sensor data like CO₂, temperature, etc.")):
+def ask_sensor_data():
     """
-    Endpoint to retrieve health advice based on live sensor data.
-    :param query: Sensor data (e.g., CO₂, temperature)
-    :return: Health advice in natural language
+    Automatically retrieves and analyzes live sensor data from the database.
     """
     try:
-        response = health_chain.invoke({"prompt": query})
+        response = live_environment_tool.func()  # func er wrapper der ikke kræver input
         return {
-            "input": query,
-            "advise": response.content if hasattr(response, "content") else str(response)
+            "type": "live_data_analysis",
+            "advice": response
         }
     except Exception as ex:
-        raise HTTPException(status_code=500, detail=f"Internal error, failed to analyze live data: str(ex)")
+        raise HTTPException(status_code=500, detail=f"Internal error analyzing live data: {str(ex)}")
 
 @router.get("/planning_advice")
 def analyze_air_data(
@@ -87,3 +87,23 @@ def general_user_advice(
     except Exception as ex:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(ex)}")
 
+@router.get("/historical_analysis")
+def analyze_historical_data():
+    """
+    Henter og analyserer historiske data fra databasen og giver anbefalinger
+    baseret på identificerede mønstre (f.eks. høj CO₂, lav luftfugtighed).
+    """
+    try:
+
+        historical_data = history_tool.func()
+        raw_result = agent.run({"input": historical_data})
+        friendly_result = user_friendly_advice(raw_result)
+
+        return {
+            "type": "historical_data_analysis",
+            "raw_advise": raw_result,
+            "user_friendly_advise": friendly_result,
+            "data_used": historical_data
+        }
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail=f"Internal error analyzing historical data: {str(ex)}")
