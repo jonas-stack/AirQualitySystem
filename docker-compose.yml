@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  ai-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./AI:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - llama
+    environment:
+      - OLLAMA_HOST=http://llama:11434
+    networks:
+      - backend
+
+  llama:
+    image: ollama/ollama
+    container_name: llama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - backend
+    privileged: true
+
+volumes:
+  ollama_models:
+
+networks:
+  backend:
+    driver: bridge
