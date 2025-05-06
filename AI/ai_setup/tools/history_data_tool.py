@@ -56,7 +56,7 @@ def run_history_tool(_: str = "") -> str:
 def get_history_advice(summary: str) -> str:
     try:
         return (
-            f"The pattern '{summary}' suggest to take action"
+            f"The pattern '{summary}' suggests to take action"
             "consider ventilation before this pattern, recurses, "
             "or find out why this spike is caused."
         )
