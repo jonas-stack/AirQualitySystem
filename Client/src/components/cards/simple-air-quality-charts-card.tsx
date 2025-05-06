@@ -100,7 +100,7 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
   return (
     <Card className={`${className}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="flex gap-2 text-base font-medium"><CloudRainIcon className="text-yellow-600"/> Air Quality Metrics</CardTitle>
+        <CardTitle className="flex gap-2 text-lg font-bold"><CloudRainIcon className="text-yellow-600"/> Air Quality Metrics</CardTitle>
         <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8">
           <RefreshCcw className="h-4 w-4" />
           <span className="sr-only">Refresh data</span>

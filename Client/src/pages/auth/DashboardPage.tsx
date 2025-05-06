@@ -142,7 +142,7 @@ export default function DashboardPage() {
               <Card className="p-0 pt-6 overflow-hidden h-60">
                 <div className="flex flex-col space-y-1.5 pl-2">
                 <CardHeader>
-                  <CardTitle>
+                  <CardTitle className="text-lg font-bold">
                     Total measurements
                   </CardTitle>
                   <CardDescription className="truncate">

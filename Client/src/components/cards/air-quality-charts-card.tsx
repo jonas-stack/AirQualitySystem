@@ -26,10 +26,9 @@ import {
   PolarGrid,
   PolarAngleAxis,
 } from "recharts"
-import { RefreshCcw } from "lucide-react"
+import { CloudRainIcon, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-// Sample air quality data - replace with your actual data
 const airQualityData = {
   daily: [
     { time: "00:00", pm25: 12, pm10: 25, voc: 120, co2: 650, temperature: 21, humidity: 45 },
@@ -73,7 +72,6 @@ const airQualityData = {
   ],
 }
 
-// Chart configurations
 const lineChartConfig = {
   pm25: {
     label: "PM2.5 (μg/m³)",
@@ -156,7 +154,6 @@ export function AirQualityChartsCard({
   const [timeRange, setTimeRange] = useState("daily")
   const [chartType, setChartType] = useState("pollutants")
 
-  // Get the appropriate data based on the selected time range
   const getTimeData = () => {
     switch (timeRange) {
       case "daily":
@@ -170,7 +167,6 @@ export function AirQualityChartsCard({
     }
   }
 
-  // Get the appropriate x-axis key based on the selected time range
   const getTimeKey = () => {
     switch (timeRange) {
       case "daily":
@@ -204,7 +200,7 @@ export function AirQualityChartsCard({
     <Card className={`${className} flex flex-col`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
-          <CardTitle>Air Quality Metrics</CardTitle>
+          <CardTitle className="flex gap-2 text-lg font-bold"><CloudRainIcon className="text-yellow-600"/> Air Quality Metrics</CardTitle>
           <CardDescription>Last updated: {formatLastUpdated(lastUpdated)}</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={handleRefresh}>

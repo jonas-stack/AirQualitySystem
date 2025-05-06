@@ -35,7 +35,7 @@ export function ConnectionStatusCard({
     <Card className={`w-full ${className}`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-medium">{title}</CardTitle>
+          <CardTitle className="text-lg font-bold">{title}</CardTitle>
           {isConnected ? (
             <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">Connected</Badge>
           ) : (
