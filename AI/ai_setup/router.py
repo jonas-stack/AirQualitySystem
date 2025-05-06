@@ -49,7 +49,7 @@ def analyze_historical_data():
 
         return {
             "type": "historical_data_analysis",
-            "user_friendly_advise": friendly_result,
+            "user_friendly_advice": friendly_result,
         }
     except Exception as ex:
         raise HTTPException(status_code=500, detail=f"Internal error analyzing historical data: {str(ex)}")
