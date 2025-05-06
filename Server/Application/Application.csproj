@@ -5,7 +5,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Dtos\" />
     <Folder Include="Models\Enums\" />
   </ItemGroup>
 
