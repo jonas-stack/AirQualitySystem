@@ -2,7 +2,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_ollama import OllamaLLM
 
-llm = OllamaLLM(model="gemma2:9b", temperatur=0)
+llm = OllamaLLM(model="gemma2:9b", temperature=0)
 
 prompt = PromptTemplate(
     input_variables=["data"],
