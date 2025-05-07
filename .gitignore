@@ -32,3 +32,6 @@ Thumbs.db
 .env.local
 AI/.venv
 AI/venv
+
+# === Appsettings ===
+Server/Startup/appsettings.Development.json
