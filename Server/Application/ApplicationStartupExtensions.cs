@@ -9,8 +9,8 @@ public static class ApplicationStartupExtensions
 {
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
-        
         services.AddScoped<IEntityService, EntityService>();
+        services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
         return services;
     }
 }
