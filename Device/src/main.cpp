@@ -12,7 +12,7 @@ const unsigned long interval = 3000;  // 3 seconds between readings
 
 // MQTT timing (publish less frequently to reduce network traffic)
 unsigned long lastMqttPublish = 0;
-const unsigned long mqttInterval = 300000;  // 30 seconds between MQTT publishes
+const unsigned long mqttInterval = 300000;  // 5 minutes between MQTT publishes
 
 void setup() {
   // Initialize serial communication at 115200 baud
