@@ -1,0 +1,10 @@
+providers:
+  - ollama:llama3:8b
+  - ollama:gemma2:9b
+
+tests:
+  - evaluations/air_quality_tests.yaml
+  - evaluations/prompt_tests.yaml
+
+contextVars:
+  context: promptfoo.context.get_var
