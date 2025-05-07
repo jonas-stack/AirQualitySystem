@@ -1,10 +1,18 @@
 providers:
-  - ollama:llama3:8b
-  - ollama:gemma2:9b
+  - id: 'ollama:completion:gemma2:9b'
+    config:
+      method: POST
+      url: http://localhost:11434/api/generate
+      headers:
+        Content-Type: application/json
+      body:
+        model: "gemma2:9b"
+        prompt: "{{prompt}}"
+        stream: false
+      responsePath: response
 
 tests:
-  - evaluations/air_quality_tests.yaml
-  - evaluations/prompt_tests.yaml
+  - evaluations/tests.yaml
 
-contextVars:
-  context: promptfoo.context.get_var
+prompts:
+  - "dummy prompt"
