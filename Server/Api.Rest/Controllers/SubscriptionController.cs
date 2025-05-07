@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models.Dtos.RestDtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +6,6 @@ namespace Api.Rest.Controllers;
 
 [ApiController]
 public class SubscriptionController(
-    IConnectionManager connectionManager,
     IWebsocketSubscriptionService websocketSubscriptionService) : ControllerBase
 {
     public const string SubscriptionRoute = nameof(Subscribe);

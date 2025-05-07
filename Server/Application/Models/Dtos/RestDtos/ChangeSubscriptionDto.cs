@@ -2,6 +2,6 @@
 
 public class ChangeSubscriptionDto
 {
-    public string ClientId { get; set; }
-    public List<string> TopicIds { get; set; }
+    public required string ClientId { get; set; }
+    public required List<string> TopicIds { get; set; }
 }

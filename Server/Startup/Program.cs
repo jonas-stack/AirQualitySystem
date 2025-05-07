@@ -78,7 +78,7 @@ public class Program
         services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
                     options.UseNpgsql(appOptions.DbConnectionString));
         
-        services.AddScoped<Infrastructure.Postgres.Seeder>();
+        services.AddScoped<Seeder>();
 
         services.RegisterMqttInfrastructure();
 
