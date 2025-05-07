@@ -73,6 +73,8 @@ public class Program
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
 
+        Console.WriteLine(appOptions.DbConnectionString);
+        
         services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
                     options.UseNpgsql(appOptions.DbConnectionString));
         
