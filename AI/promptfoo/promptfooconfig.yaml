@@ -12,7 +12,5 @@ providers:
       responsePath: response
 
 tests:
-  - evaluations/tests.yaml
-
-prompts:
-  - "dummy prompt"
+  - evaluations/prompt_tests.yaml
+  - evaluations/air_quality_tests.yaml

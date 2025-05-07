@@ -1,19 +1,22 @@
 - id: friendly-co2
   prompt: "The CO2 levels are 1200 PPM. What does it mean for me?"
-  provider: gemma2
-  assert:
-    - llm-rubric: clarity
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: llm-rubric
+      value: clarity
 
 - id: low-humidity-check
   prompt: "The humidity levels are 20%. Is this acceptable?"
-  provider: gemma2
-  assert:
-    - contains: "no"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "no"
 
 - id: context-question
   vars:
     inquiry: air quality
   prompt: "Based on {context}, what should I do if CO2 is high and humidity is low?"
-  provider: gemma2
-  assert:
-    - llm-rubric: helpfulness
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: llm-rubric
+      value: helpfulness
