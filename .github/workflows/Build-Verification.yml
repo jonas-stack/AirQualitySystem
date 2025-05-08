@@ -1,0 +1,19 @@
+name: Build Verification
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x  # Adjust version as needed for your project
+      - name: Restore dependencies
+        run: cd template_onion_with_mqtt && dotnet restore
+      - name: Build
+        run: cd template_onion_with_mqtt && dotnet build --no-restore
