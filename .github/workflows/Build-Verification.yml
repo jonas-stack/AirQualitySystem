@@ -12,8 +12,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x  # Adjust version as needed for your project
+          dotnet-version: 7.0.x
       - name: Restore dependencies
-        run: cd template_onion_with_mqtt && dotnet restore
+        run: cd airqualitysystem && dotnet restore
       - name: Build
-        run: cd template_onion_with_mqtt && dotnet build --no-restore
+        run: cd airqualitysystem && dotnet build --no-restore
