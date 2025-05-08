@@ -6,7 +6,7 @@ set +a
 
 # Scaffold for the deployed database
 echo "Scaffolding for the deployed database..."
-dotnet ef dbcontext scaffold "$DEPLOYED_CONN_STR" Npgsql.EntityFrameworkCore.PostgreSQL \
+dotnet ef dbcontext scaffold "$DEPLOYED_CONN_STR_LOCAL" Npgsql.EntityFrameworkCore.PostgreSQL \
   --output-dir ../Core.Domain/Entities \
   --context-dir . \
   --context MyDbContext \

@@ -22,6 +22,8 @@ public partial class MyDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("SensorData_pkey");
 
+            entity.HasIndex(e => new { e.DeviceId, e.Timestamp }, "uq_deviceid_timestamp").IsUnique();
+
             entity.Property(e => e.Pm25).HasColumnName("PM25");
             entity.Property(e => e.Timestamp).HasColumnType("timestamp without time zone");
         });
