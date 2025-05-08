@@ -115,6 +115,6 @@ public class Program
         await File.WriteAllTextAsync("openapi.json", json);
         
         //TODO uncomment the line below. it's a function to generate a TypeScript client 
-        //app.GenerateTypeScriptClient("/../../client/src/generated-client.ts").GetAwaiter().GetResult();
+        app.GenerateTypeScriptClient("/../../client/src/generated-client.ts").GetAwaiter().GetResult();
     }
 }
