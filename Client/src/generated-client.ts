@@ -111,13 +111,16 @@ export interface ChangeSubscriptionDto {
     topicIds?: string[];
 }
 
-export interface BaseDto {
-    eventType?: string;
-    requestId?: string;
-}
-
 export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
+}
+
+export interface ExampleClientDto extends BaseDto {
+    somethingTheClientSends?: string;
+}
+
+export interface ExampleServerResponse extends BaseDto {
+    somethingTheServerSends?: string;
 }
 
 export interface Ping extends BaseDto {
@@ -129,6 +132,8 @@ export interface Pong extends BaseDto {
 /** Available eventType constants */
 export enum StringConstants {
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    ExampleClientDto = "ExampleClientDto",
+    ExampleServerResponse = "ExampleServerResponse",
     Ping = "Ping",
     Pong = "Pong",
 }

@@ -1,23 +1,28 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LoginPage from '@/pages/public/LoginPage';
-import { AuthenticatedLayout } from './components/layouts/AuthenticatedLayout';
-import { ROUTE } from './routes';
-import DashboardPage from './pages/auth/DashboardPage';
-import { ThemeProvider } from './context/ThemeContext';
-import DataPage from './pages/auth/DataPage';
+import ApplicationRoutes from '@/routes';
+import { ThemeProvider } from '@/context/ThemeContext';
+import {DevTools} from "jotai-devtools";
+import { useEffect, useState } from 'react';
+import { WsClientProvider } from 'ws-request-hook';
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL
+const prod = import.meta.env.PROD
+
+export const randomUid = crypto.randomUUID()
 
 export default function App() {
+  const [serverUrl, setServerUrl] = useState<string | undefined>(undefined)
+    
+  useEffect(() => {
+      const finalUrl = prod ? 'wss://' + baseUrl + '?id=' + randomUid : 'ws://' + baseUrl + '?id=' + randomUid;
+      setServerUrl(finalUrl);
+  }, [prod, baseUrl]);
+
   return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-
-          <Route element={<AuthenticatedLayout />}>
-            <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
-            <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
-          </Route>
-
-        </Routes>
+         {serverUrl && <WsClientProvider url={serverUrl}>
+            <ApplicationRoutes />
+         </WsClientProvider>}
+         {!prod && <DevTools/>}
       </ThemeProvider>
   )
 }

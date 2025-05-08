@@ -2,34 +2,21 @@ import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, WifiOff } from "lucide-react"
+import { useWsClient } from "ws-request-hook"
 
 export interface ConnectionStatusCardProps {
-  isConnected?: boolean
-  onConnectionChange?: (isConnected: boolean) => void
   title?: string
   description?: string
   className?: string
 }
 
 export function ConnectionStatusCard({
-  isConnected: initialIsConnected = true,
-  onConnectionChange,
   title = "Connection Status",
   description = "Your connection status to backend",
   className = "",
 }: ConnectionStatusCardProps) {
-  const [internalIsConnected, setInternalIsConnected] = useState(initialIsConnected)
-
-  const isConnected = onConnectionChange ? initialIsConnected : internalIsConnected
-
-  const handleToggle = () => {
-    const newStatus = !isConnected
-    if (onConnectionChange) {
-      onConnectionChange(newStatus)
-    } else {
-      setInternalIsConnected(newStatus)
-    }
-  }
+  const { readyState } = useWsClient()
+  const isConnected = readyState === 1;
 
   return (
     <Card className={`w-full ${className}`}>
