@@ -19,6 +19,20 @@
     - type: contains
       value: "historical"
 
+- id: live-agent-trigger
+  prompt: "What is the current CO2 level in the room?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "live agent"
+
+- id: recommendation-agent-trigger
+  prompt: "Should I open the window if CO2 is high and humidity is low?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "recommendation agent"
+
 - id: humidity-guideline
   prompt: "Is 20% indoor humidity acceptable according to health authorities?"
   provider: ollama:completion:gemma2:9b
