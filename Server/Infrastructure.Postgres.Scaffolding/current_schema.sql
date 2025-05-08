@@ -22,3 +22,6 @@ CREATE TABLE "SensorData" (
 );
 
 
+CREATE UNIQUE INDEX uq_deviceid_timestamp ON "SensorData" ("DeviceId", "Timestamp");
+
+
