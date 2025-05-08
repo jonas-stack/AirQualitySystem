@@ -1,16 +1,62 @@
+prompts:
+  - file://prompts.json
+
 providers:
-  - id: 'ollama:completion:gemma2:9b'
+  - id: 'ollama:chat:llama3:8b'
     config:
       method: POST
-      url: http://localhost:11434/api/generate
+      url: http://localhost:11434/api/chat
       headers:
         Content-Type: application/json
-      body:
-        model: "gemma2:9b"
-        prompt: "{{prompt}}"
-        stream: false
-      responsePath: response
+      body: |
+        {
+          "model": "llama3:8b",
+          "messages": {{messages}},
+          "stream": false
+        }
+      responsePath: message.content
 
 tests:
-  - evaluations/prompt_tests.yaml
-  - evaluations/air_quality_tests.yaml
+  - vars:
+      question: "The CO2 level is 1800 PPM. What does that mean for me?"
+    assertions:
+      - type: contains
+        value: "risk"
+  - vars:
+      question: "Humidity is 20%. Is that acceptable indoors?"
+    assertions:
+      - type: contains
+        value: "no"
+  - vars:
+      question: "Should I open a window if CO2 is high?"
+    assertions:
+      - type: contains
+        value: "ventilate"
+      - type: notContains
+        value: "not recommended"
+  - vars:
+      question: "Is 35 µg/m³ of PM2.5 harmful to my health?"
+    assertions:
+      - type: contains
+        value: "PM2.5"
+      - type: contains
+        value: "health"
+      - type: contains
+        value: "AirPollutantAgent"
+  - vars:
+      question: "What were the PM2.5 levels last week?"
+    assertions:
+      - type: contains
+        value: "Agent: history_data_agent"
+  - vars:
+      question: "What is the CO2 level right now?"
+    assertions:
+      - type: contains
+        value: "Agent: live_data_agent"
+  - vars:
+      question: "Historical data shows that CO2 levels are between 1100-1400 PPM and humidity is 25%. What should I do to improve air quality?"
+    assertions:
+      - type: contains
+        value: "ventilate"
+      - type: contains
+        value: "Agent: history_data_agent"
