@@ -1,0 +1,22 @@
+name: Fly Deploy API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: cd template_onion_with_mqtt && flyctl deploy
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          APPOPTIONS__DbConnectionString: ${{ secrets.DBCONNECTIONSTRING }}
+          APPOPTIONS__JwtSecret: ${{ secrets.JWT_SECRET }}
+          APPOPTIONS__MQTT_BROKER_HOST: ${{ secrets.MQTT_BROKER_HOST }}
+          APPOPTIONS__MQTT_USERNAME: ${{ secrets.MQTT_USERNAME }}
+          APPOPTIONS__MQTT_PASSWORD: ${{ secrets.MQTT_PASSWORD }}
