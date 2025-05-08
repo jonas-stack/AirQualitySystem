@@ -5,9 +5,8 @@ using WebSocketBoilerplate;
 
 namespace Api.Websocket.Handlers;
 
-public class Ping : BaseDto;
-
-public class Pong : BaseDto;
+public class Ping : BaseDto { }
+public class Pong : BaseDto { }
 
 public class PingEventHandler(IConnectionManager connectionManager, ILogger<PingEventHandler> logger)
     : BaseEventHandler<Ping>

@@ -7,12 +7,11 @@ using Fleck;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using WebSocketBoilerplate;
 
 namespace Api.Websocket;
 
-public static class SocketStartupExtensions
+public static class Extensions
 {
     public static IServiceCollection RegisterWebsocketApiServices(this IServiceCollection services)
     {
@@ -31,6 +30,7 @@ public static class SocketStartupExtensions
         var logger = app.Services.GetRequiredService<ILogger<NonStaticWsExtensionClassForLogger>>();
         logger.LogInformation("WS running on url: " + url);
         var server = new WebSocketServer(url);
+
         Action<IWebSocketConnection> config = ws =>
         {
             var queryString = ws.ConnectionInfo.Path.Split('?').Length > 1
@@ -39,10 +39,10 @@ public static class SocketStartupExtensions
 
             var id = HttpUtility.ParseQueryString(queryString)["id"] ??
                      throw new Exception("Please specify ID query param for websocket connection");
+            
             using var scope = app.Services.CreateScope();
             var manager = scope.ServiceProvider.GetRequiredService<IConnectionManager>();
-
-
+            
             ws.OnOpen = () => manager.OnOpen(ws, id);
             ws.OnClose = () => manager.OnClose(ws, id);
             ws.OnError = ex => ws.SendDto(new ServerSendsErrorMessage { Message = ex.Message });

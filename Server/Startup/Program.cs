@@ -51,8 +51,6 @@ public class Program
         var app = builder.Build();
         await ConfigureMiddleware(app);
         await app.RunAsync();
-        
-        
     }
     
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -72,8 +70,6 @@ public class Program
             conf.DocumentProcessors.Add(new AddStringConstantsProcessor());
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
-
-        Console.WriteLine(appOptions.DbConnectionString);
         
         services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
                     options.UseNpgsql(appOptions.DbConnectionString));

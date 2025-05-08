@@ -138,6 +138,38 @@
           }
         }
       },
+      "ExampleClientDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "somethingTheClientSends": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ExampleServerResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "somethingTheServerSends": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
       "Ping": {
         "allOf": [
           {
@@ -165,6 +197,8 @@
         "description": "Available eventType constants",
         "enum": [
           "ServerSendsErrorMessage",
+          "ExampleClientDto",
+          "ExampleServerResponse",
           "Ping",
           "Pong"
         ]
