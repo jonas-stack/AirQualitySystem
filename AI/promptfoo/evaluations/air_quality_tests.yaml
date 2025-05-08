@@ -1,0 +1,62 @@
+- id: co2-threshold
+  prompt: "The CO2 levels are 1200 PPM. Is this a health issue?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "yes"
+
+- id: high-co2-low-humidity
+  prompt: "Historical data shows that CO2 levels are between 1100-1400 PPM and humidity is 25%. What should I do to improve air quality?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "ventilate"
+
+- id: historical-agent
+  prompt: "What has the temperature been in the past 24 hours?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "historical"
+
+- id: live-agent-trigger
+  prompt: "What is the current CO2 level in the room?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "live agent"
+
+- id: recommendation-agent-trigger
+  prompt: "Should I open the window if CO2 is high and humidity is low?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "recommendation agent"
+
+- id: humidity-guideline
+  prompt: "Is 20% indoor humidity acceptable according to health authorities?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "no"
+
+- id: explain-co2
+  prompt: "The CO2 level is 1800 PPM. What does that mean for me?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: llm-rubric
+      value: clarity
+
+- id: pm25-limit
+  prompt: "The PM2.5 level is 9 µg/m³. Is this acceptable for indoor air?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "no"
+
+- id: temperature-comfort
+  prompt: "The indoor temperature is 29°C. Is this within a healthy range?"
+  provider: ollama:completion:gemma2:9b
+  assertions:
+    - type: contains
+      value: "no"

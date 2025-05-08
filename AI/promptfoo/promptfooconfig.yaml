@@ -1,0 +1,16 @@
+providers:
+  - id: 'ollama:completion:gemma2:9b'
+    config:
+      method: POST
+      url: http://localhost:11434/api/generate
+      headers:
+        Content-Type: application/json
+      body:
+        model: "gemma2:9b"
+        prompt: "{{prompt}}"
+        stream: false
+      responsePath: response
+
+tests:
+  - evaluations/prompt_tests.yaml
+  - evaluations/air_quality_tests.yaml
