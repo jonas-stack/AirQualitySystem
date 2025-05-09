@@ -13,6 +13,7 @@
 bool setupMQTTClient();
 void loopMQTTClient();
 bool publishSensorData(float temperature, float humidity, float gas, float particles);
+bool clearRetainedMessage(const char* topic);
 
 extern WiFiClientSecure espClient;
 extern PubSubClient* client;

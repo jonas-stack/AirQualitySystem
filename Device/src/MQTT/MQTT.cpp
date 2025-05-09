@@ -144,12 +144,33 @@ bool publishSensorData(float temperature, float humidity, float gas, float parti
   String jsonString = JsonSerializer::serializeSensorData(temperature, humidity, gas, particles, DEVICE_ID);
   
   // Publish to MQTT topic
-  bool success = client->publish(sensor_topic, jsonString.c_str(), true);
+  bool success = client->publish(sensor_topic, jsonString.c_str(), false); //true or false for retaining messages in broker
   
   if (success) {
     Serial.println("Sensor data published to MQTT");
   } else {
     Serial.println("Failed to publish sensor data");
+  }
+  
+  return success;
+}
+
+// Function to clear retained messages on a topic
+bool clearRetainedMessage(const char* topic) {
+  if (!client->connected()) {
+    reconnectMQTT();
+  }
+  
+  Serial.print("Clearing retained message on topic: ");
+  Serial.println(topic);
+  
+  // Publishing an empty message with retain flag set to true will clear the retained message
+  bool success = client->publish(topic, "", true);
+  
+  if (success) {
+    Serial.println("Retained message cleared successfully");
+  } else {
+    Serial.println("Failed to clear retained message");
   }
   
   return success;

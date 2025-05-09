@@ -5,6 +5,7 @@
 #include "devices/lcd_display.h"
 #include "devices/pm25_sensor.h"
 #include "MQTT/MQTT.h"
+#include "MQTT/config.h"
 
 // Global timer variables
 unsigned long previousMillis = 0;
@@ -76,6 +77,12 @@ if (setupMQ135Sensor()) {
   Serial.print("MQTT client: ");
   if (setupMQTTClient()) {
     Serial.println("OK");
+    
+    // Add code to clear retained messages here
+    Serial.println("Clearing retained MQTT messages...");
+    clearRetainedMessage(MQTT_TOPIC); 
+    Serial.println("Retained messages cleared");
+    
   } else {
     Serial.println("FAILED - Will retry later");
     // Not considering this a critical failure

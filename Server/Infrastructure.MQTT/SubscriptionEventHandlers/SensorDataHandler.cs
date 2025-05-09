@@ -40,6 +40,14 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                 if (payload == null) return;
 
                 var json = System.Text.Encoding.UTF8.GetString(payload);
+                
+                
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    _logger.LogInformation("Received empty message. Likely a retained message clear operation.");
+                    return;
+                }
+        
                 var dto = JsonSerializer.Deserialize<SensorDataDto>(json);
                 if (dto == null) return;
 
