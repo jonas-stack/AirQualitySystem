@@ -31,8 +31,7 @@ public class WsOnlyTests
 
     private HttpClient _httpClient;
     private IServiceProvider _scopedServiceProvider;
-
-
+    
     [Test]
     public async Task WhenConnectingToApi_ServerAddsWsConnection_CanBeRetrievedById()
     {
