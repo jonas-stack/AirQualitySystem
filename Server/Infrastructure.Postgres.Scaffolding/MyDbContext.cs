@@ -16,7 +16,11 @@ public partial class MyDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresExtension("repmgr", "repmgr");
+        // Det her bliver oprettet af database fra fly.io
+        // vi har ikke brug for det pt. det skaber en del bøvl i form af 
+        // tests, lokal database osv..
+        // under scaffold kørelse skal den kommenteres ud igen.
+      //  modelBuilder.HasPostgresExtension("repmgr", "repmgr");
 
         modelBuilder.Entity<SensorData>(entity =>
         {
