@@ -9,4 +9,8 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ASubscription_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhipex_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003F2f97cc5635d88be0ee547a66de4b8c72c790efb3d4ab5b4fc6ca4219ea376d5e_003FSubscription_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\hipex\.nuget\packages\hivemqtt\0.26.1\lib\net8.0\HiveMQtt.dll" /&gt;&#xD;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	
+	
+	
+	</wpf:ResourceDictionary>
