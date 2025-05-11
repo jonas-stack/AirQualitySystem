@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {ChangeSubscriptionDto, StringConstants} from "../generated-client.ts";
+import {ChangeSubscriptionDto, StringConstants, WebsocketTopics} from "../generated-client.ts";
 import {useWsClient} from "ws-request-hook";
 import { subscriptionClient } from "@/api/api-controller-clients.ts";
 import { randomUid } from "@/App.tsx";
@@ -14,7 +14,7 @@ export default function useSubscribeToTopics() {
             return;
         const subscribeDto: ChangeSubscriptionDto = {
             clientId: randomUid,
-            topicIds: [StringConstants.ExampleServerResponse],
+            topicIds: [WebsocketTopics.Dashboard],
         };
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
             console.log("you are subscribed")
