@@ -16,6 +16,8 @@ export default function useSubscribeToTopics() {
             clientId: randomUid,
             topicIds: [WebsocketTopics.Dashboard],
         };
+
+        //TODO: Vis en form for modal, det har shadcn indbygget.
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
             console.log("you are subscribed")
         })

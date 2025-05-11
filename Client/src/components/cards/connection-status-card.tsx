@@ -17,10 +17,6 @@ export function ConnectionStatusCard({
 }: ConnectionStatusCardProps) {
   const { readyState } = useWsClient()
 
-  useEffect(() => {
-    console.log(readyState)
-  },[readyState])
-
   // WebSocket readyState:
   // 0: CONNECTING
   // 1: OPEN (connected)
