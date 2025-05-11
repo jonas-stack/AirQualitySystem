@@ -111,10 +111,7 @@ export interface ChangeSubscriptionDto {
     topicIds?: string[];
 }
 
-export interface BaseDto {
-    eventType?: string;
-    requestId?: string;
-}
+
 
 export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;

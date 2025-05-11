@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NJsonSchema.CodeGeneration.TypeScript;
@@ -31,15 +32,12 @@ public static class GenerateTypescriptClient
         var generator = new TypeScriptClientGenerator(document, settings);
         var code = generator.GenerateFile();
 
-        var lines = code.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
-        var startIndex = lines.FindIndex(l => l.Contains("export interface BaseDto"));
-        if (startIndex >= 0 && lines.Count >= startIndex + 4)
-            lines.RemoveRange(startIndex, 4); // Remove 3 lines (interface declaration and two properties)
+        // alex metode inkluderede stadigvæk baseDto.. ændret til et regex
+        string pattern = @"export\s+interface\s+BaseDto\s*\{\s*eventType\?\:\s*string\;\s*requestId\?\:\s*string\;\s*\}";
+        var modifiedCode = Regex.Replace(code, pattern, string.Empty);
 
-        lines.Insert(0, "import { BaseDto } from 'ws-request-hook';");
-
-        var modifiedCode = string.Join(Environment.NewLine, lines);
-
+        modifiedCode = "import { BaseDto } from 'ws-request-hook';" + Environment.NewLine + modifiedCode;
+    
         var outputPath = Path.Combine(Directory.GetCurrentDirectory() + path);
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
 
