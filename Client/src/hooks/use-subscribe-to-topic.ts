@@ -3,6 +3,7 @@ import {ChangeSubscriptionDto, StringConstants, WebsocketTopics} from "../genera
 import {useWsClient} from "ws-request-hook";
 import { subscriptionClient } from "@/api/api-controller-clients.ts";
 import { randomUid } from "@/App.tsx";
+import { toast } from "sonner";
 
 export default function useSubscribeToTopics() {
 
@@ -17,9 +18,14 @@ export default function useSubscribeToTopics() {
             topicIds: [WebsocketTopics.Dashboard],
         };
 
-        //TODO: Vis en form for modal, det har shadcn indbygget.
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
-            console.log("you are subscribed")
+        toast.success("Subscription", {
+          description: "Successfully subscribing to " + WebsocketTopics.Dashboard,
+          action: {
+            label: "OK",
+            onClick: () => {}, // lidt dumt, men ellers kan man ik trykke ok
+          }
+        })
         })
 
     }, [readyState, jwt])
