@@ -15,7 +15,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { NavTop } from "./NavTop"
-import { ROUTE } from "@/routes"
+import { ROUTE } from "@/routes-constants"
 
 const data = {
   user: {
