@@ -68,6 +68,7 @@ public class Program
         {
             conf.DocumentProcessors.Add(new AddAllDerivedTypesProcessor());
             conf.DocumentProcessors.Add(new AddStringConstantsProcessor());
+            conf.DocumentProcessors.Add(new AddWebsocketTopicsEnumProcessor());
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
         

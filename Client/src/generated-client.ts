@@ -143,6 +143,11 @@ export enum StringConstants {
     Pong = "Pong",
 }
 
+/** Websocket Topic Enums */
+export enum WebsocketTopics {
+    Dashboard = "Dashboard",
+}
+
 export interface FileResponse {
     data: Blob;
     status: number;

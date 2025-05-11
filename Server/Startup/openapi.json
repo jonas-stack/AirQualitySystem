@@ -202,6 +202,13 @@
           "Ping",
           "Pong"
         ]
+      },
+      "WebsocketTopics": {
+        "type": "string",
+        "description": "Websocket Topic Enums",
+        "enum": [
+          "Dashboard"
+        ]
       }
     }
   }

@@ -14,7 +14,7 @@ export default function useSubscribeToTopics() {
             return;
         const subscribeDto: ChangeSubscriptionDto = {
             clientId: randomUid,
-            topicIds: ["Dashboard"],
+            topicIds: [StringConstants.ExampleServerResponse],
         };
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
             console.log("you are subscribed")
