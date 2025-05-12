@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
+using Application.Services;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Exceptions;
 using Infrastructure.MQTT.Services;

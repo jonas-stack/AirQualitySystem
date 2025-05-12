@@ -1,9 +1,11 @@
-﻿using Application.Models.Dtos;
+﻿using Application.Interfaces.Infrastructure.MQTT;
+using Application.Models.Dtos;
+using Core.Domain.Constants;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.MQTT.Services;
+namespace Application.Services;
 
-public class SensorDataValidator
+public class SensorDataValidator : IDataValidator<SensorDataDto>
 {
     private readonly ILogger<SensorDataValidator> _logger;
 

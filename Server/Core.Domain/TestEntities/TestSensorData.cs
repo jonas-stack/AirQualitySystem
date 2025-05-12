@@ -1,6 +1,9 @@
-﻿namespace Core.Domain.TestEntities;
+﻿using System;
+using System.Collections.Generic;
 
-public partial class Sensordata
+namespace Core.Domain.Entities;
+
+public partial class TestSensorData
 {
     public int Id { get; set; }
 
@@ -8,11 +11,11 @@ public partial class Sensordata
 
     public double Humidity { get; set; }
 
-    public double Airquality { get; set; }
+    public double AirQuality { get; set; }
 
     public double Pm25 { get; set; }
 
-    public string Deviceid { get; set; } = null!;
+    public Guid DeviceId { get; set; }
 
     public DateTime Timestamp { get; set; }
 }

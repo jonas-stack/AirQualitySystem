@@ -1,5 +1,11 @@
+-- Drop tables in correct order (dependent tables first)
+DROP TABLE IF EXISTS "DeviceConnectionHistory";
+DROP TABLE IF EXISTS "Devices";
+DROP TABLE IF EXISTS "SensorData";
+DROP TABLE IF EXISTS "InvalidPayloads";
+
 -- Existing SensorData table
-CREATE TABLE IF NOT EXISTS "SensorData" (
+CREATE TABLE IF NOT EXISTS "TestSensorData" (
         "Id" SERIAL PRIMARY KEY,
         "Temperature" DOUBLE PRECISION NOT NULL,
         "Humidity" DOUBLE PRECISION NOT NULL,

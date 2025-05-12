@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="TestEntities\" />
   </ItemGroup>
 
 </Project>
