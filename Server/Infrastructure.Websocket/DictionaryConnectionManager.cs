@@ -112,6 +112,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
                 return newSet;
             });
 
+        _logger.LogInformation("Added to topic {Topic} for client {ClientId}", topic, memberId);
         await LogCurrentState();
     }
 
