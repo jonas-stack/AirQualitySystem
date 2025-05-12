@@ -5,7 +5,6 @@ using Core.Domain.Entities;
 using Core.Domain;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
-using Infrastructure.MQTT.Services;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
 

@@ -3,7 +3,6 @@ using Application.Models;
 using Application.Services;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Exceptions;
-using Infrastructure.MQTT.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
