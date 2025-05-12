@@ -3,6 +3,7 @@ using Application.Models.Dtos;
 using Application.Services;
 using Core.Domain.Entities;
 using Core.Domain;
+using Core.Domain.TestEntities;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
 using Infrastructure.Postgres.Scaffolding;
@@ -12,13 +13,13 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
 {
     public class SensorDataHandler : IMqttMessageHandler
     {
-        private readonly MyDbContext _dbContext;
+        private readonly MyDbContextDocker _dbContext;//TODO change this between actual db context or test
         private readonly ILogger<SensorDataHandler> _logger;
         private readonly DeviceConnectionTracker _connectionTracker;
         private readonly SensorDataValidator _validator;
 
         public SensorDataHandler(
-            MyDbContext dbContext,
+            MyDbContextDocker dbContext,//TODO change this between actual db context or test
             ILogger<SensorDataHandler> logger,
             DeviceConnectionTracker connectionTracker,
             SensorDataValidator validator)
@@ -70,7 +71,7 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                     _logger.LogInformation("Created GUID {DeviceGuid} for device {DeviceId}", deviceGuid, dto.DeviceId);
                 }
 
-                var entity = new SensorData()
+                var entity = new TestSensorData() //TODO change this between the actual entity or test
                 {
                     Temperature = dto.Temperature,
                     Humidity = dto.Humidity,

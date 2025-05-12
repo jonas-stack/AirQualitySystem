@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Domain.Entities;
+using Core.Domain.TestEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Postgres.Scaffolding;
