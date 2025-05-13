@@ -1,33 +1,34 @@
 ﻿using System.Text.Json;
-using Application.Models.Dtos;
+using Application.Mappers;
+using Application.Models.Dtos.MQTT;
 using Application.Services;
-using Core.Domain.Entities;
-using Core.Domain;
-using Core.Domain.TestEntities;
+using Application.Interfaces.Infrastructure.Postgres;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
-using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.MQTT.SubscriptionEventHandlers
 {
     public class SensorDataHandler : IMqttMessageHandler
     {
-        private readonly MyDbContextDocker _dbContext;//TODO change this between actual db context or test
         private readonly ILogger<SensorDataHandler> _logger;
         private readonly DeviceConnectionTracker _connectionTracker;
         private readonly SensorDataValidator _validator;
+        private readonly SensorDataMapper _mapper;
+        private readonly IDeviceRepository _deviceRepository;
 
         public SensorDataHandler(
-            MyDbContextDocker dbContext,//TODO change this between actual db context or test
             ILogger<SensorDataHandler> logger,
             DeviceConnectionTracker connectionTracker,
-            SensorDataValidator validator)
+            SensorDataValidator validator,
+            SensorDataMapper mapper,
+            IDeviceRepository deviceRepository)
         {
-            _dbContext = dbContext;
             _logger = logger;
             _connectionTracker = connectionTracker;
             _validator = validator;
+            _mapper = mapper;
+            _deviceRepository = deviceRepository;
         }
 
         public string TopicFilter => "AirQuality/Data";
@@ -42,7 +43,6 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
 
                 var json = System.Text.Encoding.UTF8.GetString(payload);
                 
-                
                 if (string.IsNullOrWhiteSpace(json))
                 {
                     _logger.LogInformation("Received empty message. Likely a retained message clear operation.");
@@ -53,7 +53,8 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                 if (dto == null) return;
 
                 // Update device connection status
-                _connectionTracker.UpdateDeviceStatus(dto.DeviceId, dto.GetDateTime());
+                var timestamp = _mapper.GetLocalDateTime(dto.TimestampUnix);
+                _connectionTracker.UpdateDeviceStatus(dto.DeviceId, timestamp);
 
                 // Validate data before saving using the dedicated validator
                 if (!_validator.IsDataComplete(dto))
@@ -62,45 +63,17 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
                     return;
                 }
                 
-                // Try to parse the device ID
-                Guid deviceGuid;
-                if (!Guid.TryParse(dto.DeviceId, out deviceGuid))
-                {
-                    // Create a deterministic GUID from the device name
-                    deviceGuid = CreateDeterministicGuid(dto.DeviceId);
-                    _logger.LogInformation("Created GUID {DeviceGuid} for device {DeviceId}", deviceGuid, dto.DeviceId);
-                }
-
-                var entity = new TestSensorData() //TODO change this between the actual entity or test
-                {
-                    Temperature = dto.Temperature,
-                    Humidity = dto.Humidity,
-                    AirQuality = dto.AirQuality,
-                    Pm25 = dto.Pm25,
-                    DeviceId = deviceGuid,
-                    Timestamp = dto.GetLocalDateTime()
-                };
-
-                _dbContext.Add(entity);
-                _dbContext.SaveChanges();
+                // Use mapper to create entity
+                var entity = _mapper.MapToTestEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
+                
+                // Use repository to save data
+                _deviceRepository.SaveSensorData(entity);
+                
                 _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing message");
-            }
-        }
-        
-        private Guid CreateDeterministicGuid(string input)
-        {
-            // Use MD5 to create a deterministic hash from the input string
-            using (var md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-            
-                // Convert hash to GUID format
-                return new Guid(hashBytes);
             }
         }
     }

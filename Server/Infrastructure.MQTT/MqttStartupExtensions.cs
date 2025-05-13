@@ -123,7 +123,7 @@ public static class MqttExtensions
                 handler.TopicFilter, handler.QoS);
 
             // Subscribe to the topic
-            await mqttService.SubscribeAsync(handler.TopicFilter);
+            await mqttService.SetupMqttSubscriptionAsync(handler.TopicFilter);
         }
 
         return app;

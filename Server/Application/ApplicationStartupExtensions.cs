@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.EntityServices;
+using Application.Mappers;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class ApplicationStartupExtensions
     {
         services.AddScoped<IEntityService, EntityService>();
         services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
+        services.AddScoped<SensorDataMapper>();
         return services;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.MQTT
@@ -8,13 +9,13 @@ namespace Infrastructure.MQTT
         private readonly ConcurrentDictionary<string, (DateTime LastSeen, bool IsConnected)> _devices = new();
         private readonly ILogger<DeviceConnectionTracker> _logger;
         private readonly System.Timers.Timer _connectionCheckTimer;
-        private readonly TimeSpan _deviceTimeout = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan _deviceTimeout = TimeSpan.FromMinutes(6); //6 minutes before device connection is lost log
 
         public DeviceConnectionTracker(ILogger<DeviceConnectionTracker> logger)
         {
             _logger = logger;
             
-            _connectionCheckTimer = new System.Timers.Timer(5000); // 5 seconds
+            _connectionCheckTimer = new System.Timers.Timer(30000); // 30 seconds between checks for activity of device
             _connectionCheckTimer.Elapsed += (_, _) => CheckConnections();
             _connectionCheckTimer.Start();
         }
