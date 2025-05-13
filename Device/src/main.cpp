@@ -4,8 +4,43 @@
 #include "devices/mq135_sensor.h"
 #include "devices/lcd_display.h"
 #include "devices/pm25_sensor.h"
-#include "MQTT/MQTT.h"
+#include "MQTT/MQTTClient.h"
+#include "MQTT/WiFiManager.h"
+#include "MQTT/TimeManager.h"
 #include "MQTT/config.h"
+
+// Create class instances
+WiFiManager wifiManager(WIFI_SSID, WIFI_PASSWORD);
+TimeManager timeManager;
+MQTTClient mqttClient(
+    &wifiManager,
+    &timeManager,
+    MQTT_SERVER,
+    MQTT_PORT,
+    MQTT_USERNAME,
+    MQTT_PASSWORD,
+    DEVICE_ID
+);
+
+// Default MQTT callback function
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  
+  // Print the payload content
+  for (unsigned int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+
+  // Flash LED when message received
+  if (length > 0) {
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
+}
 
 // Global timer variables
 unsigned long previousMillis = 0;
@@ -37,6 +72,25 @@ void setup() {
   // Initialize sensors with basic error checking
   bool success = true;
   
+  // Connect to WiFi
+  Serial.print("WiFi connection: ");
+  if (wifiManager.connect()) {
+    Serial.println("OK");
+  } else {
+    Serial.println("FAILED");
+    success = false;
+  }
+  delay(500);
+  
+  // Sync time
+  Serial.print("NTP Time sync: ");
+  if (timeManager.syncNTP()) {
+    Serial.println("OK");
+  } else {
+    Serial.println("FAILED");
+  }
+  delay(500);
+  
   Serial.print("BME280 sensor: ");
   if (setupBME280Sensor()) {
     Serial.println("OK");
@@ -44,7 +98,7 @@ void setup() {
     Serial.println("FAILED");
     success = false;
   }
-  delay(500);  // Small delay between initializations
+  delay(500);
   
   Serial.print("LCD display: ");
   if (setupLCDDisplay()) {
@@ -56,12 +110,12 @@ void setup() {
   delay(500);
   
   Serial.print("MQ135 sensor: ");
-if (setupMQ135Sensor()) {  
-  Serial.println("OK");
-} else {
-  Serial.println("FAILED");
-  success = false;
-}
+  if (setupMQ135Sensor()) {  
+    Serial.println("OK");
+  } else {
+    Serial.println("FAILED");
+    success = false;
+  }
   delay(500);
   
   Serial.print("PM2.5 sensor: ");
@@ -75,12 +129,14 @@ if (setupMQ135Sensor()) {
   delay(500);
 
   Serial.print("MQTT client: ");
-  if (setupMQTTClient()) {
+  // Setup MQTT and set the callback
+  mqttClient.setCallback(mqttCallback);
+  if (mqttClient.setup()) {
     Serial.println("OK");
     
-    // Add code to clear retained messages here
+    // Clear retained messages
     Serial.println("Clearing retained MQTT messages...");
-    clearRetainedMessage(MQTT_TOPIC); 
+    mqttClient.clearRetainedMessage(MQTT_TOPIC); 
     Serial.println("Retained messages cleared");
     
   } else {
@@ -109,13 +165,12 @@ if (setupMQ135Sensor()) {
   Serial.println("ALL SENSORS INITIALIZED SUCCESSFULLY");
   Serial.println("Starting monitoring loop...");
   Serial.println("=============================\n");
-  
 }
 
 void loop() {
   unsigned long currentMillis = millis();
 
-  loopMQTTClient();  // Handle MQTT client loop
+  mqttClient.loop();  // Handle MQTT client loop
 
   // Read sensor data at regular intervals
   if (currentMillis - previousMillis >= interval) {
@@ -148,7 +203,7 @@ void loop() {
       lastMqttPublish = currentMillis;
       
       Serial.println("\n>> PUBLISHING TO MQTT:");
-      bool published = publishSensorData(temp, humidity, gas, particles);
+      bool published = mqttClient.publishSensorData(temp, humidity, gas, particles);
       if (published) {
         Serial.println("Data sent successfully");
       } else {

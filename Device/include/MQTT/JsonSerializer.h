@@ -8,15 +8,14 @@
 class JsonSerializer {
 public:
     JsonSerializer();
-
-    // Serialize sensor data to JSON string
+    
+    // Updated method with a formatted timestamp
     static String serializeSensorData(float temperature, float humidity, float gas, float particles, const char* device_id);
     
-    // Serialize status message to JSON string
+    // Helper method to get formatted time
+    static String getFormattedTime();
+    
     static String serializeStatusMessage(const char* status, const char* device_id);
-
-private:
-    static const size_t JSON_CAPACITY = 256;
 };
 
-#endif // JSON_SERIALIZER_H
+#endif

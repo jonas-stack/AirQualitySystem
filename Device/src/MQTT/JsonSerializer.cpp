@@ -1,25 +1,32 @@
 #include "JsonSerializer.h"
 
-JsonSerializer::JsonSerializer() {
-    // Constructor (empty for now as we're using static methods)
-}
+const size_t JSON_CAPACITY = 256; //represent the memory alocated to JSON documents
 
 String JsonSerializer::serializeSensorData(float temperature, float humidity, float gas, float particles, const char* device_id) {
-    // Create JSON document for sensor data
-    StaticJsonDocument<JSON_CAPACITY> doc;
+    DynamicJsonDocument doc(256);
     
+    // Sensor data
     doc["temperature"] = temperature;
     doc["humidity"] = humidity;
     doc["air_quality"] = gas;
     doc["pm25"] = particles;
     doc["device_id"] = device_id;
-    doc["timestamp"] = time(nullptr);
     
-    // Serialize JSON to string
-    String jsonString;
-    serializeJson(doc, jsonString);
+    // Get formatted time instead of timestamp
+    doc["timestamp"] = getFormattedTime();
     
-    return jsonString;
+    String output;
+    serializeJson(doc, output);
+    return output;
+}
+
+String JsonSerializer::getFormattedTime() {
+    time_t now = time(nullptr);
+    struct tm timeinfo;
+    gmtime_r(&now, &timeinfo);
+    char timeString[30];
+    strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
+    return String(timeString);
 }
 
 String JsonSerializer::serializeStatusMessage(const char* status, const char* device_id) {
@@ -28,7 +35,7 @@ String JsonSerializer::serializeStatusMessage(const char* status, const char* de
     
     doc["status"] = status;
     doc["device_id"] = device_id;
-    doc["timestamp"] = time(nullptr);
+    doc["timestamp"] = getFormattedTime();  // Use formatted time instead of Unix timestamp
     
     // Serialize JSON to string
     String jsonString;
