@@ -1,7 +1,7 @@
 #include "MqttManager.h"
 #include <ArduinoJson.h>
 
-MQTTClient::MQTTClient(
+MqttManager::MqttManager(
     WiFiManager* wifiManager, 
     TimeManager* timeManager, 
     const char* server, 
@@ -27,29 +27,38 @@ MQTTClient::MQTTClient(
     _clientId += String(random(0xffff), HEX);
 }
 
-MQTTClient::~MQTTClient() {
-    if (_mqttClient) {
-        delete _mqttClient;
+MqttManager::~MqttManager() {
+    if (_mqttManager) {
+        delete _mqttManager;
     }
 }
 
-bool MQTTClient::setup() {
+bool MqttManager::setup() {
     _wifiClient.setInsecure();
-    _mqttClient = new PubSubClient(_wifiClient);
-    _mqttClient->setServer(_server, _port);
-    _mqttClient->setBufferSize(1024);
+    _mqttManager = new PubSubClient(_wifiClient);
+    _mqttManager->setServer(_server, _port);
+    _mqttManager->setBufferSize(1024);
     
     return connect();
 }
 
-bool MQTTClient::connect() {
+bool MqttManager::connect() {
     if (!_wifiManager->isConnected()) {
         return false;
     }
     
-    String offlineMsg = createStatusJson(false);
+    // Don't set LastSeen in the offline message
+    DynamicJsonDocument doc(256);
+    doc["DeviceName"] = _deviceId;
+    doc["IsConnected"] = false;
+    doc["LastSeen"] = _timeManager->getCurrentTime();
     
-    bool connected = _mqttClient->connect(
+    String offlineMsg;
+    serializeJson(doc, offlineMsg);
+    
+    // Here's where the LWT is configured - these parameters set up the LWT:
+    // LWT acts as a failsafe to infor other client connected to broker when a device disconnects
+    bool connected = _mqttManager->connect(
         _clientId.c_str(), 
         _username, 
         _password,
@@ -62,51 +71,42 @@ bool MQTTClient::connect() {
     if (connected) {
         _connectionTime = _timeManager->getCurrentTime();
         String onlineMsg = createStatusJson(true);
-        _mqttClient->publish(_statusTopic, onlineMsg.c_str(), true);
+        _mqttManager->publish(_statusTopic, onlineMsg.c_str(), true);
     }
     
     return connected;
 }
 
-void MQTTClient::loop() {
-    if (!_mqttClient->connected()) {
+void MqttManager::loop() {
+    if (!_mqttManager->connected()) {
         connect();
     }
     
-    _mqttClient->loop();
+    _mqttManager->loop();
     
     // Update status every 5 minutes
     unsigned long now = millis();
     if (now - _lastStatusUpdate > 300000) {
         _lastStatusUpdate = now;
-        if (_mqttClient->connected()) {
+        if (_mqttManager->connected()) {
             String statusMsg = createStatusJson(true);
-            _mqttClient->publish(_statusTopic, statusMsg.c_str(), true);
+            _mqttManager->publish(_statusTopic, statusMsg.c_str(), true);
         }
     }
 }
 
-String MQTTClient::createStatusJson(bool isConnected) {
+String MqttManager::createStatusJson(bool isConnected) {
     DynamicJsonDocument doc(256);
     doc["DeviceName"] = _deviceId;
     doc["IsConnected"] = isConnected;
     doc["LastSeen"] = _timeManager->getCurrentTime();
-    
-    if (isConnected) {
-        if (_connectionTime.isEmpty()) {
-            _connectionTime = _timeManager->getCurrentTime();
-        }
-        doc["ConnectedSince"] = _connectionTime;
-    } else if (!_connectionTime.isEmpty()) {
-        doc["ConnectedSince"] = _connectionTime;
-    }
     
     String message;
     serializeJson(doc, message);
     return message;
 }
 
-String MQTTClient::createSensorJson(float temperature, float humidity, float gas, float particles) {
+String MqttManager::createSensorJson(float temperature, float humidity, float gas, float particles) {
     DynamicJsonDocument doc(256);
     
     doc["temperature"] = temperature;
@@ -121,22 +121,22 @@ String MQTTClient::createSensorJson(float temperature, float humidity, float gas
     return output;
 }
 
-bool MQTTClient::publishSensorData(float temperature, float humidity, float gas, float particles) {
-    if (!_mqttClient->connected()) {
+bool MqttManager::publishSensorData(float temperature, float humidity, float gas, float particles) {
+    if (!_mqttManager->connected()) {
         if (!connect()) {
             return false;
         }
     }
     
     String jsonString = createSensorJson(temperature, humidity, gas, particles);
-    return _mqttClient->publish(_dataTopic, jsonString.c_str(), false);
+    return _mqttManager->publish(_dataTopic, jsonString.c_str(), false);
 }
 
-bool MQTTClient::clearRetainedMessage(const char* topic) {
-    if (!_mqttClient->connected()) {
+bool MqttManager::clearRetainedMessage(const char* topic) {
+    if (!_mqttManager->connected()) {
         if (!connect()) {
             return false;
         }
     }
-    return _mqttClient->publish(topic, "", true);
+    return _mqttManager->publish(topic, "", true);
 }

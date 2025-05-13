@@ -9,7 +9,6 @@ public:
     TimeManager();
     bool syncNTP();
     String getCurrentTime();
-    time_t getNow();
 };
 
 #endif

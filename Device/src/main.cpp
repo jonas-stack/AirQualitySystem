@@ -16,7 +16,7 @@ const char* MQTT_STATUS_TOPIC = "airquality/status";
 // Create class instances
 WiFiManager wifiManager(WIFI_SSID, WIFI_PASSWORD);
 TimeManager timeManager;
-MQTTClient mqttClient(
+MqttManager mqttClient(
     &wifiManager,
     &timeManager,
     MQTT_SERVER,

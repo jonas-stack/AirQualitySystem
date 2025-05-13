@@ -6,9 +6,9 @@
 #include "WiFiManager.h"
 #include "TimeManager.h"
 
-class MQTTClient {
+class MqttManager {
 public:
-    MQTTClient(WiFiManager* wifiManager, 
+    MqttManager(WiFiManager* wifiManager, 
               TimeManager* timeManager,
               const char* server,
               int port,
@@ -18,7 +18,7 @@ public:
               const char* dataTopic,
               const char* statusTopic);
     
-    ~MQTTClient();
+    ~MqttManager();
     
     bool setup();
     void loop();
@@ -28,7 +28,7 @@ public:
 private:
     WiFiManager* _wifiManager;
     TimeManager* _timeManager;
-    PubSubClient* _mqttClient;
+    PubSubClient* _mqttManager;
     WiFiClientSecure _wifiClient;
     
     const char* _server;

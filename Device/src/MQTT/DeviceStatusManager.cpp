@@ -28,7 +28,6 @@ String DeviceStatusManager::prepareOfflineMessage() {
     doc["DeviceName"] = _deviceId;
     doc["IsConnected"] = false;
     doc["LastSeen"] = timeString;
-    doc["ConnectedSince"] = _connectionTime;
     
     String message;
     serializeJson(doc, message);
@@ -47,7 +46,6 @@ bool DeviceStatusManager::publishOnlineStatus() {
     doc["DeviceName"] = _deviceId;
     doc["IsConnected"] = true;
     doc["LastSeen"] = timeString;
-    doc["ConnectedSince"] = _connectionTime;
     
     String message;
     serializeJson(doc, message);
@@ -69,7 +67,6 @@ bool DeviceStatusManager::updateDeviceStatus() {
     doc["DeviceName"] = _deviceId;
     doc["IsConnected"] = true;
     doc["LastSeen"] = timeString;
-    doc["ConnectedSince"] = _connectionTime;
     
     String message;
     serializeJson(doc, message);
