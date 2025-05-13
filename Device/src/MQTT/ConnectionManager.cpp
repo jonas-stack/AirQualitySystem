@@ -9,7 +9,8 @@ ConnectionManager::ConnectionManager(WiFiManager* wifiManager,
     _server(server),
     _port(port),
     _username(username),
-    _password(password) {
+    _password(password), 
+    _configured(false) {
     
     // Generate a random client ID
     _clientId = "ESP32Client-";

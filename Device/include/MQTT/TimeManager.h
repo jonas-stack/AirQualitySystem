@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TIME_MANAGER_H
+#define TIME_MANAGER_H
 
 #include <Arduino.h>
 #include <time.h>
@@ -10,3 +11,5 @@ public:
     String getCurrentTime();
     time_t getNow();
 };
+
+#endif

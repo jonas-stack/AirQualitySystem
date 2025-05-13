@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DEVICE_STATUS_MANAGER_H
+#define DEVICE_STATUS_MANAGER_H
 
 #include <Arduino.h>
 #include "ConnectionManager.h"
@@ -43,3 +44,5 @@ public:
     // Clear retained status message
     bool clearRetainedStatus();
 };
+
+#endif // DEVICE_STATUS_MANAGER_H
