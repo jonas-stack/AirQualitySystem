@@ -169,6 +169,19 @@ export interface NotifyMessageDto {
     message?: string;
 }
 
+export interface ApplicationBaseDto {
+    eventType?: string;
+}
+
+export interface GraphModel_1 extends ApplicationBaseDto {
+    name?: string;
+    amount?: T;
+    eventType?: string;
+}
+
+export interface T {
+}
+
 
 
 export interface ServerSendsErrorMessage extends BaseDto {

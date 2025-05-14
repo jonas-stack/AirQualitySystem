@@ -155,6 +155,42 @@
           }
         }
       },
+      "ApplicationBaseDto": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "eventType": {
+            "type": "string"
+          }
+        }
+      },
+      "GraphModel_1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApplicationBaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "amount": {
+                "$ref": "#/components/schemas/T"
+              },
+              "eventType": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "T": {
+        "type": "object",
+        "additionalProperties": false
+      },
       "ServerSendsErrorMessage": {
         "allOf": [
           {
