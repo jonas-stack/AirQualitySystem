@@ -1,24 +1,47 @@
 import { Area, AreaChart } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { useEffect, useState } from "react";
+import { useWsClient } from "ws-request-hook";
+import { GraphModel_1, StringConstants } from "@/generated-client";
 
 export default function AirQualityTotalMeasurementCard() {
-const chartData = [
+    const {onMessage, readyState} = useWsClient()
+
+    const [chartData, setChartData] = useState([
     { month: "January", amount: 80 },
     { month: "February", amount: 200 },
     { month: "March", amount: 120 },
     { month: "April", amount: 190 },
     { month: "May", amount: 130 },
     { month: "June", amount: 140 },
-    { month: "test", amount: 2}
-]
+    ]);
 
-const chartConfig = {
-    amount: {
-      label: "Amount",
-      color: "var(--chart-2)",
-    },
+    const chartConfig = {
+        amount: {
+        label: "Amount",
+        color: "var(--chart-2)",
+        },
   } satisfies ChartConfig
+
+    useEffect(() => {
+        if (readyState != 1)
+            return;
+
+        const reactToMessageSetup = onMessage<GraphModel_1>
+        ("TotalMeasurementsOfDevice", (dto) => {
+            setChartData(prevData => {
+            const newEntry = {
+                month: dto.eventType ?? `Month ${prevData.length + 1}`,
+                amount: dto.amount ?? 0, // amount is now guaranteed to be a number
+            };
+
+            return [...prevData, newEntry];
+            });
+        })
+        return () => reactToMessageSetup();
+    }, [readyState]);
+
 
     return (
         <Card className="p-0 pt-6 overflow-hidden h-60">

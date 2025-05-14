@@ -15,7 +15,7 @@ export default function useSubscribeToTopics() {
             return;
         const subscribeDto: ChangeSubscriptionDto = {
             clientId: randomUid,
-            topicIds: [WebsocketTopics.Dashboard],
+            topicIds: ["measurements"],
         };
 
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
