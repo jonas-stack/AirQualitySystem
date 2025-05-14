@@ -13,7 +13,7 @@ dotnet ef dbcontext scaffold "${DOCKER_CONN_STR}" Npgsql.EntityFrameworkCore.Pos
   --context MyDbContextDocker \
   --no-onconfiguring \
   --no-pluralize \
-  --namespace Core.Domain.Entities \
+  --namespace Core.Domain.TestEntities \
   --context-namespace Infrastructure.Postgres.Scaffolding \
   --schema public \
   --force

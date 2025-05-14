@@ -13,31 +13,31 @@ public partial class MyDbContextDocker : DbContext
     {
     }
 
-    public virtual DbSet<DeviceConnectionHistory> DeviceConnectionHistory { get; set; }
+    public virtual DbSet<TestDeviceConnection> TestDeviceConnection { get; set; }
 
-    public virtual DbSet<Devices> Devices { get; set; }
+    public virtual DbSet<TestDevices> TestDevices { get; set; }
 
-    public virtual DbSet<InvalidPayloads> InvalidPayloads { get; set; }
+    public virtual DbSet<TestInvalidPayloads> TestInvalidPayloads { get; set; }
 
     public virtual DbSet<TestSensorData> TestSensorData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DeviceConnectionHistory>(entity =>
+        modelBuilder.Entity<TestDeviceConnection>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("DeviceConnectionHistory_pkey");
+            entity.HasKey(e => e.Id).HasName("TestDeviceConnection_pkey");
 
-            entity.Property(e => e.Timestamp).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
 
-            entity.HasOne(d => d.Device).WithMany(p => p.DeviceConnectionHistory)
+            entity.HasOne(d => d.Device).WithMany(p => p.TestDeviceConnection)
                 .HasForeignKey(d => d.DeviceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_device");
+                .HasConstraintName("FK_DeviceConnection_Devices");
         });
 
-        modelBuilder.Entity<Devices>(entity =>
+        modelBuilder.Entity<TestDevices>(entity =>
         {
-            entity.HasKey(e => e.DeviceId).HasName("Devices_pkey");
+            entity.HasKey(e => e.DeviceId).HasName("TestDevices_pkey");
 
             entity.Property(e => e.DeviceId).ValueGeneratedNever();
             entity.Property(e => e.DeviceName).HasMaxLength(100);
@@ -45,9 +45,9 @@ public partial class MyDbContextDocker : DbContext
             entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
         });
 
-        modelBuilder.Entity<InvalidPayloads>(entity =>
+        modelBuilder.Entity<TestInvalidPayloads>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("InvalidPayloads_pkey");
+            entity.HasKey(e => e.Id).HasName("TestInvalidPayloads_pkey");
 
             entity.Property(e => e.DeviceId).HasMaxLength(100);
             entity.Property(e => e.ErrorReason).HasMaxLength(255);
@@ -62,6 +62,11 @@ public partial class MyDbContextDocker : DbContext
 
             entity.Property(e => e.Pm25).HasColumnName("PM25");
             entity.Property(e => e.Timestamp).HasColumnType("timestamp without time zone");
+
+            entity.HasOne(d => d.Device).WithMany(p => p.TestSensorData)
+                .HasForeignKey(d => d.DeviceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TestSensorData_Devices");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -2,9 +2,9 @@
 
 namespace Application.Interfaces.Infrastructure.Postgres;
 
-public interface IDeviceRepository
+public interface ISensorDataRepository
 {
     
-    public void SaveDevices(TestDevices devices);
+    public void SaveSensorData (TestSensorData sensorData);
     
 }

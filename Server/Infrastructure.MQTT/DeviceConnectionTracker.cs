@@ -20,14 +20,15 @@ namespace Infrastructure.MQTT
             _connectionCheckTimer.Start();
         }
 
-        public void UpdateDeviceStatus(string deviceId, DateTime timestamp)
+        public void UpdateDeviceStatus(Guid deviceId, DateTime timestamp)
         {
-            var wasConnected = _devices.TryGetValue(deviceId, out var status) && status.IsConnected;
-            
-            _devices[deviceId] = (timestamp, true);
-            
+            var deviceKey = deviceId.ToString();
+            var wasConnected = _devices.TryGetValue(deviceKey, out var status) && status.IsConnected;
+
+            _devices[deviceKey] = (timestamp, true);
+
             if (!wasConnected)
-                _logger.LogInformation("Device {DeviceId} {ConnectionStatus}", 
+                _logger.LogInformation("Device {DeviceId} {ConnectionStatus}",
                     deviceId, wasConnected ? "reconnected" : "connected");
         }
 

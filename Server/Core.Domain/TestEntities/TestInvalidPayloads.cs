@@ -1,6 +1,6 @@
 ﻿namespace Core.Domain.TestEntities;
 
-public partial class InvalidPayloads
+public partial class TestInvalidPayloads
 {
     public int Id { get; set; }
 

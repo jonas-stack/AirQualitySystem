@@ -1,5 +1,4 @@
-﻿using Application.Interfaces.Infrastructure.MQTT;
-using Application.Interfaces.Infrastructure.Postgres;
+﻿using Application.Interfaces.Infrastructure.Postgres;
 using Core.Domain.TestEntities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
@@ -8,27 +7,44 @@ namespace Infrastructure.Postgres.Posetgresql.Data;
 
 public class DeviceRepository : IDeviceRepository
 {
+    
     private readonly MyDbContextDocker _dbContext;
-    private readonly ILogger<DeviceRepository> _logger;
-
-    public DeviceRepository(MyDbContextDocker dbContext, ILogger<DeviceRepository> logger)
+    private readonly ILogger<SensorDataRepository> _logger;
+    
+    public DeviceRepository(MyDbContextDocker dbContext, ILogger<SensorDataRepository> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
     }
     
-    public void SaveSensorData(TestSensorData sensorData)
+    public void SaveDevices(TestDevices devices)
     {
         try
         {
-            _dbContext.Add(sensorData);
+            // Check if the device already exists
+            var existingDevice = _dbContext.TestDevices.Find(devices.DeviceId);
+        
+            if (existingDevice != null)
+            {
+                // Update existing device
+                existingDevice.DeviceName = devices.DeviceName;
+                existingDevice.IsConnected = devices.IsConnected;
+                existingDevice.LastSeen = devices.LastSeen;
+                _dbContext.Update(existingDevice);
+            }
+            else
+            {
+                // Add new device
+                _dbContext.Add(devices);
+            }
+        
             _dbContext.SaveChanges();
-            _logger.LogDebug("Sensor data saved successfully for device: {DeviceId}", sensorData.DeviceId);
+            _logger.LogDebug("Device saved successfully: {DeviceId}", devices.DeviceId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving sensor data for device {DeviceId}", sensorData.DeviceId);
-            throw; // Re-throw to allow higher layers to handle or report the error
+            _logger.LogError(ex, "Error saving device {DeviceId}", devices.DeviceId);
+            throw;
         }
     }
 }

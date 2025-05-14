@@ -1,4 +1,6 @@
-﻿namespace Core.Domain.TestEntities;
+﻿using Core.Domain.Entities;
+
+namespace Core.Domain.TestEntities;
 
 public partial class TestSensorData
 {
@@ -15,4 +17,6 @@ public partial class TestSensorData
     public Guid DeviceId { get; set; }
 
     public DateTime Timestamp { get; set; }
+
+    public virtual TestDevices Device { get; set; } = null!;
 }
