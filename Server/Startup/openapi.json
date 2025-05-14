@@ -91,6 +91,39 @@
           }
         }
       }
+    },
+    "/NotifyRoute": {
+      "post": {
+        "tags": [
+          "WebsocketNotifier"
+        ],
+        "operationId": "WebsocketNotifier_Notify",
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotifyMessageDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -107,6 +140,18 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "NotifyMessageDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "topic": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
           }
         }
       },
@@ -137,6 +182,38 @@
             "type": "string"
           }
         }
+      },
+      "RequestAirQualityDataDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "somethingTheClientSends": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "AirQualityDataGraph": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "somethingTheServerSends": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "ExampleClientDto": {
         "allOf": [
@@ -197,6 +274,8 @@
         "description": "Available eventType constants",
         "enum": [
           "ServerSendsErrorMessage",
+          "RequestAirQualityDataDto",
+          "AirQualityDataGraph",
           "ExampleClientDto",
           "ExampleServerResponse",
           "Ping",
