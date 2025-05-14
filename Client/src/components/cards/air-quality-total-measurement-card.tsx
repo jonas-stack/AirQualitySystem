@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
 import { useWsClient } from "ws-request-hook";
-import { GraphModel_1, StringConstants } from "@/generated-client";
+import { GraphModel_1, StringConstants, WebsocketEvents, WebsocketTopics } from "@/generated-client";
 
 export default function AirQualityTotalMeasurementCard() {
     const {onMessage, readyState} = useWsClient()
@@ -29,11 +29,11 @@ export default function AirQualityTotalMeasurementCard() {
             return;
 
         const reactToMessageSetup = onMessage<GraphModel_1>
-        ("TotalMeasurementsOfDevice", (dto) => {
+        (WebsocketEvents.GraphTotalMeasurement, (dto) => {
             setChartData(prevData => {
             const newEntry = {
                 month: dto.eventType ?? `Month ${prevData.length + 1}`,
-                amount: dto.amount ?? 0, // amount is now guaranteed to be a number
+                amount: dto.amount ?? 0,
             };
 
             return [...prevData, newEntry];

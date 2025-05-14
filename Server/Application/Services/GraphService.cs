@@ -1,8 +1,7 @@
-﻿using Application.Enums;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Websocket;
+using Application.Models;
 using Application.Models.Dtos.Graph;
-using Application.Models.Websocket;
 
 namespace Application.Services;
 
@@ -16,7 +15,7 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
         {
             Name = "TotalMeasurements",
             Amount = _random.Next(0, 500),
-            eventType = GraphEnum.TOTAL_MEASUREMENTS.GetTopicName()
+            eventType = WebsocketEvents.GraphTotalMeasurement
         };
         connectionManager.BroadcastToTopic("measurements", graphModel);
         return graphModel;

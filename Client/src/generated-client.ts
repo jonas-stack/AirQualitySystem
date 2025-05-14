@@ -226,6 +226,11 @@ export enum WebsocketTopics {
     Dashboard = "Dashboard",
 }
 
+/** Websocket Events enums */
+export enum WebsocketEvents {
+    GraphTotalMeasurement = "GraphTotalMeasurement",
+}
+
 export interface FileResponse {
     data: Blob;
     status: number;
