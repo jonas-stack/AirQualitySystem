@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models.Dtos.RestDtos;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Rest.Controllers;
