@@ -16,12 +16,7 @@ public class DeviceRepository : IDeviceRepository
         _dbContext = dbContext;
         _logger = logger;
     }
-
-    public void SaveConnectionEvent(Guid deviceGuid, string deviceName, DateTime timeStamp, bool isConnected)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public void SaveSensorData(TestSensorData sensorData)
     {
         try
@@ -35,10 +30,5 @@ public class DeviceRepository : IDeviceRepository
             _logger.LogError(ex, "Error saving sensor data for device {DeviceId}", sensorData.DeviceId);
             throw; // Re-throw to allow higher layers to handle or report the error
         }
-    }
-
-    public void SaveLoginValidPayload(string? deviceId, string rawPayload, string errorReason)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -30,6 +30,7 @@ public static class PostgresStartupExtensions
         
         // Register repositories
         services.AddScoped<IDeviceRepository, DeviceRepository>();
+        services.AddScoped<IDeviceConnectionRepository, DeviceConnectionRepository>();
 
         return services;
     }

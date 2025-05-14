@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Domain.Entities;
 
-namespace Core.Domain.Entities;
+namespace Core.Domain.TestEntities;
 
 public partial class DeviceConnectionHistory
 {

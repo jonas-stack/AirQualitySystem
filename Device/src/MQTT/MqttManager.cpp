@@ -51,7 +51,7 @@ bool MqttManager::connect() {
     DynamicJsonDocument doc(256);
     doc["DeviceName"] = _deviceId;
     doc["IsConnected"] = false;
-    doc["LastSeen"] = _timeManager->getCurrentTime();
+    doc["LastSeen"] = _timeManager->getUnixTime();
     
     String offlineMsg;
     serializeJson(doc, offlineMsg);
@@ -69,7 +69,7 @@ bool MqttManager::connect() {
     );
     
     if (connected) {
-        _connectionTime = _timeManager->getCurrentTime();
+        _connectionTime = _timeManager->getUnixTime();
         String onlineMsg = createStatusJson(true);
         _mqttManager->publish(_statusTopic, onlineMsg.c_str(), true);
     }
@@ -99,7 +99,7 @@ String MqttManager::createStatusJson(bool isConnected) {
     DynamicJsonDocument doc(256);
     doc["DeviceName"] = _deviceId;
     doc["IsConnected"] = isConnected;
-    doc["LastSeen"] = _timeManager->getCurrentTime();
+    doc["LastSeen"] = _timeManager->getUnixTime();
     
     String message;
     serializeJson(doc, message);
@@ -114,7 +114,7 @@ String MqttManager::createSensorJson(float temperature, float humidity, float ga
     doc["air_quality"] = gas;
     doc["pm25"] = particles;
     doc["device_id"] = _deviceId;
-    doc["timestamp"] = _timeManager->getCurrentTime();
+    doc["timestamp"] = _timeManager->getUnixTime();
     
     String output;
     serializeJson(doc, output);

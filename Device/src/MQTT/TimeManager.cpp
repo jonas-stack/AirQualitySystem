@@ -27,3 +27,7 @@ String TimeManager::getCurrentTime() {
     strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
     return String(timeString);
 }
+
+time_t TimeManager::getUnixTime() {
+    return time(nullptr);
+}

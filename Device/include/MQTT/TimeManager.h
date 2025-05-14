@@ -9,6 +9,7 @@ public:
     TimeManager();
     bool syncNTP();
     String getCurrentTime();
+    time_t getUnixTime();
 };
 
 #endif

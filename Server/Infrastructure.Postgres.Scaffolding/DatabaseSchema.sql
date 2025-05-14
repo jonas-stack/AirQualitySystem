@@ -25,11 +25,11 @@ CREATE TABLE IF NOT EXISTS "Devices" (
     );
 
 -- New table for connection history
-CREATE TABLE IF NOT EXISTS "DeviceConnectionHistory" (
+CREATE TABLE IF NOT EXISTS "DeviceConnection" (
         "Id" SERIAL PRIMARY KEY,
         "DeviceId" UUID NOT NULL,
         "IsConnected" BOOLEAN NOT NULL,
-        "Timestamp" TIMESTAMP NOT NULL,
+        "LastSeen" TIMESTAMP NOT NULL,
         CONSTRAINT fk_device FOREIGN KEY ("DeviceId") REFERENCES "Devices"("DeviceId")
     );
 
