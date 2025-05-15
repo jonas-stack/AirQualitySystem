@@ -6,6 +6,7 @@ from .agents.live_data_agent import get_live_agent
 from .agents.history_data_agent import get_history_agent
 from .agents.combined_health_agent import get_combined_health_agent, ask_environment_ai
 from .agents.communicator_agent import user_friendly_advice
+from .agents.communicator_agent import data_summary
 
 
 router = APIRouter()
@@ -29,22 +30,20 @@ def analyze_sensor_data():
     try:
         agent = get_live_agent()
         raw_result = agent.run("Analyze current live sensor data and give recommendations.")
-        friendly_result = user_friendly_advice(raw_result)
-        return {
-            "type": "live_data_analysis",
-            "user_friendly_advice": friendly_result
-        }
+        short_result = data_summary()
+        return  short_result
+
     except Exception as ex:
         raise HTTPException(status_code=500, detail=f"Internal error analyzing live data: {str(ex)}")
 
 @router.get("/historical_analysis")
-def analyze_historical_data():
+def analyze_historical_data(range: str = Query("7d", description="Time range, e.g., '24h', '5d', '30d'")):
     """
     Gets and analyzes historical data from the database.
     """
     try:
         agent = get_history_agent()
-        raw_result = agent.run("Analyze historical air quality data and give recommendations.")
+        raw_result = agent.run(f"Analyze historical air quality data for the last {range} and give recommendations.")
         friendly_result = user_friendly_advice(raw_result)
 
         return {

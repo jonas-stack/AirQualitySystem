@@ -5,6 +5,7 @@ import { ROUTE } from './routes';
 import DashboardPage from './pages/auth/DashboardPage';
 import { ThemeProvider } from './context/ThemeContext';
 import DataPage from './pages/auth/DataPage';
+import AIPage from './pages/auth/AIPage';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route element={<AuthenticatedLayout />}>
             <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
             <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
+            <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
           </Route>
 
         </Routes>

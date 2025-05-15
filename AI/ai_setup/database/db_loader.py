@@ -2,7 +2,6 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 
-# Gå 3 niveauer op: database/ → ai_setup/ → AI/ → så ned i Server/Startup
 dotenv_path = os.path.join(os.path.dirname(__file__), '../../../Server/Startup/.env')
 load_dotenv(dotenv_path)
 
