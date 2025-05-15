@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Infrastructure.Postgres;
+using Application.Models.Dtos.MQTT;
 using Core.Domain.TestEntities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
@@ -65,6 +66,41 @@ public class DeviceRepository : IDeviceRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving device {DeviceId}", devices.DeviceId);
+            throw;
+        }
+    }
+
+    public bool DeviceExists(Guid deviceId)
+    {
+        try
+        {
+            return _dbContext.TestDevices.Any(d => d.DeviceId == deviceId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking if device {DeviceId} exists", deviceId);
+            throw;
+        }
+    }
+
+    public void RegisterNewDevice(Guid deviceId, string deviceName, DateTime lastSeen)
+    {
+        try
+        {
+            var newDevice = new TestDevices
+            {
+                DeviceId = deviceId,
+                DeviceName = deviceName,
+                IsConnected = true,
+                LastSeen = new DateTime(lastSeen.Ticks, DateTimeKind.Unspecified)
+            };
+            
+            SaveDevices(newDevice);
+            _logger.LogInformation("Device {DeviceId} automatically registered", deviceId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error registering new device {DeviceId}", deviceId);
             throw;
         }
     }
