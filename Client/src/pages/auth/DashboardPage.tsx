@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Area, AreaChart } from "recharts";
 import { ConnectionStatusCard } from "@/components/cards/connection-status-card";
 import { CardArray } from "@/types/card";
 import { AirQualityInsightsCard } from "@/components/cards/air-quality-insights-card";
 import { LiveDataCard } from "@/components/cards/live_data_card.tsx";
-import { AirQualityChartsCard } from "@/components/cards/air-quality-charts-card";
 import { SimpleAirQualityChartsCard } from "@/components/cards/simple-air-quality-charts-card";
+import { useWsClient } from "ws-request-hook";
 
 const chartData = [
     { month: "January", amount: 80 },
@@ -81,13 +81,10 @@ const chartConfig = {
 
 
 export default function DashboardPage() {
-    const [isConnected, setIsConnected] = useState(true)
-
     const handleSendMessage = async (message: string): Promise<string> => {
-        // Simulate API delay
         await new Promise((resolve) => setTimeout(resolve, 1500))
 
-        // Simple response logic based on keywords
+
         if (message.toLowerCase().includes("air quality")) {
           return "Based on today's readings, your indoor air quality is good overall, with PM2.5 levels at 8 μg/m³. However, I've noticed slightly elevated VOC levels in the kitchen area."
         } else if (message.toLowerCase().includes("purifier")) {
@@ -191,7 +188,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="lg:col-span-3">
-                <ConnectionStatusCard className="h-60" isConnected={isConnected} onConnectionChange={setIsConnected} />
+                <ConnectionStatusCard className="h-60" />
             </div>
 
             <div className="lg:col-span-4">

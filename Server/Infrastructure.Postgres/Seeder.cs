@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Postgres;
 
-public class Seeder(MyDbContext context, IOptionsMonitor<AppOptions> optionsMonitor) : ISeeder
+public class Seeder(MyDbContext context) : ISeeder
 {
     public async Task Seed()
     {

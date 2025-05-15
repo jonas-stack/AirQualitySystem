@@ -5,8 +5,111 @@
     "title": "My Title",
     "version": "1.0.0"
   },
+  "paths": {
+    "/Subscribe": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "operationId": "Subscription_Subscribe",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSubscriptionDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Unsubscribe": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "operationId": "Subscription_Unsubscribe",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSubscriptionDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {
+      "ChangeSubscriptionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "topicIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "ServerSendsErrorMessage": {
         "allOf": [
           {
@@ -35,11 +138,76 @@
           }
         }
       },
+      "ExampleClientDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "somethingTheClientSends": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ExampleServerResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "somethingTheServerSends": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Ping": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "Pong": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
       "StringConstants": {
         "type": "string",
         "description": "Available eventType constants",
         "enum": [
-          "ServerSendsErrorMessage"
+          "ServerSendsErrorMessage",
+          "ExampleClientDto",
+          "ExampleServerResponse",
+          "Ping",
+          "Pong"
+        ]
+      },
+      "WebsocketTopics": {
+        "type": "string",
+        "description": "Websocket Topic Enums",
+        "enum": [
+          "Dashboard"
         ]
       }
     }

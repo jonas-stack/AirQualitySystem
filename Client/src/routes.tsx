@@ -9,19 +9,19 @@ import { Toaster } from "@/components/ui/sonner";
 import AIPage from "@/pages/auth/AIPage.tsx";
 
 export default function ApplicationRoutes() {
-    return (
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <Toaster />
-    <Routes>
+  return (
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Toaster />
+      <Routes>
         <Route path="/" element={<LoginPage />} />
 
-    <Route element={<AuthenticatedLayout />}>
-        <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
-        <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
+        <Route element={<AuthenticatedLayout />}>
+          <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
+          <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
         <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
     </Route>
 
-    </Routes>
+      </Routes>
     </ThemeProvider>
-)
+  )
 }

@@ -10,8 +10,11 @@ import { useEffect, useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchDialog } from '../command/SearchDialog';
 import { LogOut } from 'lucide-react';
+import useSubscribeToTopics from '@/hooks/use-subscribe-to-topic';
 
 export const AuthenticatedLayout = () => {
+    useSubscribeToTopics();
+  
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);
 
     useEffect(() => {
