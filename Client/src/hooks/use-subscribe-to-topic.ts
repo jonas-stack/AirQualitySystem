@@ -4,11 +4,6 @@ import { subscriptionClient } from "@/api/api-controller-clients.ts";
 import { toast } from "sonner";
 import { randomUid } from "@/App.tsx";
 
-interface UseSubscriptionHookParams {
-  jwt: string;
-  clientId: string;
-}
-
 export function useSubscriptionHook() {
   const clientId = randomUid;
   const jwt = "totallysecretjwt";

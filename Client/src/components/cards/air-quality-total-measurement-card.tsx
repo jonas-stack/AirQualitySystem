@@ -24,23 +24,29 @@ export default function AirQualityTotalMeasurementCard() {
         },
   } satisfies ChartConfig
 
-    useEffect(() => {
-        if (readyState != 1)
-            return;
+useEffect(() => {
+    if (readyState !== 1)
+        return;
 
-        const reactToMessageSetup = onMessage<GraphModel_1>
-        (WebsocketEvents.GraphTotalMeasurement, (dto) => {
+    const reactToMessageSetup = onMessage<GraphModel_1>(
+        WebsocketEvents.GraphTotalMeasurement,
+        (dto) => {
             setChartData(prevData => {
-            const newEntry = {
-                month: dto.eventType ?? `Month ${prevData.length + 1}`,
-                amount: dto.amount ?? 0,
-            };
+                const newEntry = {
+                    month: dto.eventType ?? `Month ${prevData.length + 1}`,
+                    amount: dto.amount ?? 0,
+                };
 
-            return [...prevData, newEntry];
+                const updatedData = [...prevData, newEntry];
+
+                // max vis 6 af gangen og ikke flere
+                return updatedData.length > 6 ? updatedData.slice(-6) : updatedData;
             });
-        })
-        return () => reactToMessageSetup();
-    }, [readyState]);
+        }
+    );
+
+    return () => reactToMessageSetup();
+}, [readyState]);
 
 
     return (

@@ -10,13 +10,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchDialog } from '../command/SearchDialog';
 import { LogOut } from 'lucide-react';
-import { useSubscriptionHook } from '@/hooks/use-subscribe-to-topic';
-import { useWsClient } from 'ws-request-hook';
 import { useAutoSubscription } from '@/hooks/use-auto-subscription';
 import { WebsocketTopics } from '@/generated-client';
 
 export const AuthenticatedLayout = () => {
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);
+
+    // brug memo for at sikre den ikke bliver oprettet på ny heletiden og kalder flere gange
     const topicIds = useMemo(() => [WebsocketTopics.Dashboard], []);
     useAutoSubscription(topicIds);
   

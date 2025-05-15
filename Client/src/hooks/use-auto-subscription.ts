@@ -11,6 +11,5 @@ export function useAutoSubscription(topicIds: string[]) {
       subscribe(topicIds);
     }
 
-    // unsubscribe når komponenet bliver unmount
   }, [readyState, subscribe, unsubscribe, topicIds]);
 }
