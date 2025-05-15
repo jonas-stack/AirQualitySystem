@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Application.Interfaces;
 using Application.Models.Dtos;
 using Core.Domain.Entities;
 using Core.Domain.TestEntities;
@@ -16,17 +17,22 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
         private readonly ILogger<SensorDataHandler> _logger;
         private readonly DeviceConnectionTracker _connectionTracker;
         private readonly SensorDataValidator _validator;
+        
+        // så vi kan broadcast graphs
+        private readonly IGraphService _graphService;
 
         public SensorDataHandler(
             MyDbContext dbContext,
             ILogger<SensorDataHandler> logger,
             DeviceConnectionTracker connectionTracker,
-            SensorDataValidator validator)
+            SensorDataValidator validator,
+            IGraphService graphService)
         {
             _dbContext = dbContext;
             _logger = logger;
             _connectionTracker = connectionTracker;
             _validator = validator;
+            _graphService = graphService;
         }
 
         public string TopicFilter => "AirQuality/Data";
@@ -74,6 +80,8 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers
 
                 _dbContext.Add(entity);
                 _dbContext.SaveChanges();
+
+                _graphService.BroadcastMeasurementsAsync(entity);
                 _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
             }
             catch (Exception ex)
