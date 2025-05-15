@@ -33,11 +33,3 @@ CREATE TABLE IF NOT EXISTS "TestSensorData" (
     CONSTRAINT "FK_TestSensorData_Devices" FOREIGN KEY ("DeviceId") REFERENCES "TestDevices" ("DeviceId"),
     CONSTRAINT "uq_deviceid_timestamp" UNIQUE ("DeviceId", "Timestamp")
 );
-
-CREATE TABLE IF NOT EXISTS "TestInvalidPayloads" (
-    "Id" SERIAL PRIMARY KEY,
-    "DeviceId" VARCHAR(100) NULL,
-    "RawPayload" TEXT NOT NULL,
-    "ErrorReason" VARCHAR(255) NOT NULL,
-    "Timestamp" TIMESTAMP NOT NULL
-);

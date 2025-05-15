@@ -16,8 +16,6 @@ public partial class MyDbContextDocker : DbContext
 
     public virtual DbSet<TestDevices> TestDevices { get; set; }
 
-    public virtual DbSet<TestInvalidPayloads> TestInvalidPayloads { get; set; }
-
     public virtual DbSet<TestSensorData> TestSensorData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,15 +40,6 @@ public partial class MyDbContextDocker : DbContext
             entity.Property(e => e.DeviceName).HasMaxLength(100);
             entity.Property(e => e.IsConnected).HasDefaultValue(false);
             entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
-        });
-
-        modelBuilder.Entity<TestInvalidPayloads>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("TestInvalidPayloads_pkey");
-
-            entity.Property(e => e.DeviceId).HasMaxLength(100);
-            entity.Property(e => e.ErrorReason).HasMaxLength(255);
-            entity.Property(e => e.Timestamp).HasColumnType("timestamp without time zone");
         });
 
         modelBuilder.Entity<TestSensorData>(entity =>
