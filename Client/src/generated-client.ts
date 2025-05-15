@@ -171,12 +171,14 @@ export interface NotifyMessageDto {
 
 export interface ApplicationBaseDto {
     eventType?: string;
+    topic?: string;
 }
 
 export interface GraphModel_1 extends ApplicationBaseDto {
     name?: string;
     amount?: T;
     eventType?: string;
+    topic?: string;
 }
 
 export interface T {
@@ -224,6 +226,7 @@ export enum StringConstants {
 /** Websocket Topic Enums */
 export enum WebsocketTopics {
     Dashboard = "Dashboard",
+    GraphTotalMeasurements = "GraphTotalMeasurements",
 }
 
 /** Websocket Events enums */

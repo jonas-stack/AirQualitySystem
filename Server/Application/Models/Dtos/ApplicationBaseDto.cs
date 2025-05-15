@@ -3,4 +3,5 @@
 public abstract class ApplicationBaseDto
 {
     public abstract string eventType { get; set; }
+    public abstract string topic { get; set; }
 }

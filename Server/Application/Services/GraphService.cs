@@ -15,9 +15,11 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
         {
             Name = "TotalMeasurements",
             Amount = _random.Next(0, 500),
-            eventType = WebsocketEvents.GraphTotalMeasurement
+            eventType = WebsocketEvents.GraphTotalMeasurement,
+            topic = WebsocketTopics.Dashboard
         };
-        connectionManager.BroadcastToTopic("measurements", graphModel);
+        
+        connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, graphModel);
         return graphModel;
     }
 }

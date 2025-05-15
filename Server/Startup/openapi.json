@@ -162,6 +162,9 @@
         "properties": {
           "eventType": {
             "type": "string"
+          },
+          "topic": {
+            "type": "string"
           }
         }
       },
@@ -181,6 +184,9 @@
                 "$ref": "#/components/schemas/T"
               },
               "eventType": {
+                "type": "string"
+              },
+              "topic": {
                 "type": "string"
               }
             }
@@ -322,7 +328,8 @@
         "type": "string",
         "description": "Websocket Topic Enums",
         "enum": [
-          "Dashboard"
+          "Dashboard",
+          "GraphTotalMeasurements"
         ]
       },
       "WebsocketEvents": {
