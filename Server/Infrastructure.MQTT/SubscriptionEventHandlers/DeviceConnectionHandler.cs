@@ -52,7 +52,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
                 return;
             }
 
-            var dto = result.Data;
+            var dto = result.Data!;
             
             // Validate data before processing
             if (!_validator.IsIdValid(dto))

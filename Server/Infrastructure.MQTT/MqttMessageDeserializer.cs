@@ -16,7 +16,7 @@ public class MqttMessageDeserializer : IMqttMessageDeserializer
         _logger = logger;
     }
 
-    public DeserializationResult<T> Deserialize<T>(byte[] payload) where T : class
+    public DeserializationResult<T> Deserialize<T>(byte[]? payload) where T : class
     {
         if (payload == null || payload.Length == 0)
         {
@@ -43,7 +43,7 @@ public class MqttMessageDeserializer : IMqttMessageDeserializer
 
             if (dto == null)
             {
-                _logger.LogWarning("JSON deserialized to null: {Json}", json);
+                _logger.LogDebug("JSON deserialized to null: {Json}", json);
                 return DeserializationResult<T>.Failed("Deserialized to null", json);
             }
 
@@ -51,7 +51,7 @@ public class MqttMessageDeserializer : IMqttMessageDeserializer
         }
         catch (JsonException ex)
         {
-            _logger.LogWarning("JSON deserialization failed: {Error}. Content: {Json}", 
+            _logger.LogError("JSON deserialization failed: {Error}. Content: {Json}", 
                 ex.Message, json);
             return DeserializationResult<T>.Failed($"Invalid JSON: {ex.Message}", json);
         }

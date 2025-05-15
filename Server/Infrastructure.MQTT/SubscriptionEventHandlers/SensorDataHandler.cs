@@ -55,7 +55,7 @@ public class SensorDataHandler : IMqttMessageHandler
                 return;
             }
 
-            var dto = result.Data;
+            var dto = result.Data!;
             
             // Validate data before saving
             if (!_validator.IsIdValid(dto))
