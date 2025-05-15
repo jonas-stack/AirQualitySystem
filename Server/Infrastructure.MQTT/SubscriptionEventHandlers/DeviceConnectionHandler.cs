@@ -18,17 +18,19 @@ public class DeviceConnectionHandler : IMqttMessageHandler
     private readonly IDeviceRepository _deviceRepository;
     private readonly IDataValidator _validator;
     private readonly DevicesMapper _mapper;
+    private readonly IMqttMessageDeserializer _deserializer;
     
     public DeviceConnectionHandler(
         ILogger<DeviceConnectionHandler> logger,
         DeviceConnectionTracker connectionTracker,
-        IDeviceRepository deviceRepository, IDataValidator validator, DevicesMapper mapper)
+        IDeviceRepository deviceRepository, IDataValidator validator, DevicesMapper mapper, IMqttMessageDeserializer deserializer)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
         _deviceRepository = deviceRepository;
         _validator = validator;
         _mapper = mapper;
+        _deserializer = deserializer;
     }
 
     public string TopicFilter => "airquality/status";
@@ -41,16 +43,16 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             var payload = args.PublishMessage.Payload;
             if (payload == null) return;
 
-            var json = System.Text.Encoding.UTF8.GetString(payload);
-                
-            if (string.IsNullOrWhiteSpace(json))
+            var result = _deserializer.Deserialize<DeviceDto>(payload);
+            
+            if (!result.Success)
             {
-                _logger.LogInformation("Received empty status message");
+                _logger.LogWarning("Failed to deserialize message: {Error}. Raw content: {Content}", 
+                    result.ErrorMessage, result.RawContent);
                 return;
             }
-        
-            var dto = JsonSerializer.Deserialize<DeviceDto>(json);
-            if (dto == null) return;
+
+            var dto = result.Data;
             
             // Validate data before processing
             if (!_validator.IsIdValid(dto))
@@ -80,7 +82,8 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             var entity = _mapper.MapToTestEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
             _deviceRepository.SaveDevices(entity);
                 
-            _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
+            _logger.LogInformation("Device status saved successfully for device: {DeviceId}", entity.DeviceId);
+            
         }
         catch (Exception ex)
         {

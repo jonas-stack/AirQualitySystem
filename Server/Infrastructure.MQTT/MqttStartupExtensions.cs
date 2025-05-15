@@ -94,7 +94,8 @@ public static class MqttExtensions
         // Register other MQTT services
         services.AddSingleton<IMqttService, MqttSubscriber>();
         services.AddSingleton<DeviceConnectionTracker>();
-        services.AddScoped<DataValidator>();
+        services.AddScoped<IDataValidator, DataValidator>();
+        services.AddScoped<IMqttMessageDeserializer, MqttMessageDeserializer>();
 
         return services;
     }

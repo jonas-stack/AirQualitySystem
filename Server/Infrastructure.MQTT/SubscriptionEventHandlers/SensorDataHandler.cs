@@ -19,19 +19,21 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly SensorDataMapper _mapper;
     private readonly ISensorDataRepository _sensorDataRepository;
     private readonly IDataValidator _validator;
+    private readonly IMqttMessageDeserializer _deserializer;
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
         DeviceConnectionTracker connectionTracker,
         IDataValidator validator,
         SensorDataMapper mapper,
-        ISensorDataRepository sensorDataRepository)
+        ISensorDataRepository sensorDataRepository, IMqttMessageDeserializer deserializer)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
         _validator = validator;
         _mapper = mapper;
         _sensorDataRepository = sensorDataRepository;
+        _deserializer = deserializer;
     }
 
     public string TopicFilter => "AirQuality/Data";
@@ -44,16 +46,16 @@ public class SensorDataHandler : IMqttMessageHandler
             var payload = args.PublishMessage.Payload;
             if (payload == null) return;
 
-            var json = Encoding.UTF8.GetString(payload);
-
-            if (string.IsNullOrWhiteSpace(json))
+            var result = _deserializer.Deserialize<SensorDataDto>(payload);
+            
+            if (!result.Success)
             {
-                _logger.LogInformation("Received empty Data message. Likely a retained message clear operation.");
+                _logger.LogWarning("Failed to deserialize message: {Error}. Raw content: {Content}", 
+                    result.ErrorMessage, result.RawContent);
                 return;
             }
 
-            var dto = JsonSerializer.Deserialize<SensorDataDto>(json);
-            if (dto == null) return;
+            var dto = result.Data;
             
             // Validate data before saving
             if (!_validator.IsIdValid(dto))
