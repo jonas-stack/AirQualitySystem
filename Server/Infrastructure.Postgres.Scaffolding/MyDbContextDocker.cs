@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.Domain.Entities;
 using Core.Domain.TestEntities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +12,7 @@ public partial class MyDbContextDocker : DbContext
     {
     }
 
-    public virtual DbSet<TestDeviceConnection> TestDeviceConnection { get; set; }
+    public virtual DbSet<TestDeviceConnectionHistory> TestDeviceConnectionHistory { get; set; }
 
     public virtual DbSet<TestDevices> TestDevices { get; set; }
 
@@ -23,13 +22,13 @@ public partial class MyDbContextDocker : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TestDeviceConnection>(entity =>
+        modelBuilder.Entity<TestDeviceConnectionHistory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("TestDeviceConnection_pkey");
+            entity.HasKey(e => e.Id).HasName("TestDeviceConnectionHistory_pkey");
 
             entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
 
-            entity.HasOne(d => d.Device).WithMany(p => p.TestDeviceConnection)
+            entity.HasOne(d => d.Device).WithMany(p => p.TestDeviceConnectionHistory)
                 .HasForeignKey(d => d.DeviceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DeviceConnection_Devices");

@@ -1,6 +1,9 @@
-﻿namespace Core.Domain.TestEntities;
+﻿using System;
+using System.Collections.Generic;
 
-public partial class TestDeviceConnection
+namespace Core.Domain.TestEntities;
+
+public partial class TestDeviceConnectionHistory
 {
     public int Id { get; set; }
 

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "TestDevices" (
 );
 
 -- Device connection history
-CREATE TABLE IF NOT EXISTS "TestDeviceConnection" (
+CREATE TABLE IF NOT EXISTS "TestDeviceConnectionHistory" (
     "Id" SERIAL PRIMARY KEY,
     "DeviceId" UUID NOT NULL,
     "IsConnected" BOOLEAN NOT NULL,

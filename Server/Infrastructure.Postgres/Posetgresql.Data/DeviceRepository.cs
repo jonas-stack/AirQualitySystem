@@ -37,6 +37,15 @@ public class DeviceRepository : IDeviceRepository
                 // Add new device
                 _dbContext.Add(devices);
             }
+            
+            var newDeviceHistory = new TestDeviceConnectionHistory()
+            {
+                DeviceId = devices.DeviceId,
+                IsConnected = devices.IsConnected,
+                LastSeen = devices.LastSeen
+            };
+
+            _dbContext.Add(newDeviceHistory);
         
             _dbContext.SaveChanges();
             _logger.LogDebug("Device saved successfully: {DeviceId}", devices.DeviceId);

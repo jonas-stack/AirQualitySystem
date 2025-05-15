@@ -1,4 +1,5 @@
-﻿using Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Core.Domain.TestEntities;
 
@@ -11,8 +12,8 @@ public partial class TestDevices
     public bool IsConnected { get; set; }
 
     public DateTime LastSeen { get; set; }
-
-    public virtual ICollection<TestDeviceConnection> TestDeviceConnection { get; set; } = new List<TestDeviceConnection>();
+    
+    public virtual ICollection<TestDeviceConnectionHistory> TestDeviceConnectionHistory { get; set; } = new List<TestDeviceConnectionHistory>();
 
     public virtual ICollection<TestSensorData> TestSensorData { get; set; } = new List<TestSensorData>();
 }

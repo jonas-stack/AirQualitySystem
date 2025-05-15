@@ -1,4 +1,7 @@
-﻿namespace Core.Domain.TestEntities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Core.Domain.TestEntities;
 
 public partial class TestInvalidPayloads
 {
