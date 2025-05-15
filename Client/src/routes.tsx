@@ -16,9 +16,9 @@ export default function ApplicationRoutes() {
         <Route path="/" element={<LoginPage />} />
 
     <Route element={<AuthenticatedLayout />}>
-    <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
-    <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
-    <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
+        <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
+        <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
+        <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
     </Route>
 
     </Routes>
