@@ -11,7 +11,6 @@ public static class ApplicationStartupExtensions
 {
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<IEntityService, EntityService>();
         services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
         services.AddScoped<IDataValidator, DataValidator>();
         services.AddScoped<SensorDataMapper>();

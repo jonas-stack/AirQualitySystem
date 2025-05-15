@@ -3,6 +3,7 @@ using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Mappers;
 using Application.Models.Dtos.MQTT;
+using Application.Utility;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
 using Microsoft.Extensions.Logging;
@@ -51,16 +52,29 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             var dto = JsonSerializer.Deserialize<DeviceDto>(json);
             if (dto == null) return;
             
-            var timestamp = DataTypeConverter.GetLocalDateTime(dto.LastSeen);
-            var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceName);
-            _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp);
-
-            // Validate data before saving using the dedicated validator
-            if (!_validator.IsDataComplete(dto))
+            // Validate data before processing
+            if (!_validator.IsIdValid(dto))
             {
-                _logger.LogWarning("Incomplete data received from device {DeviceId}. Skipping save.", dto.DeviceGuid);
+                _logger.LogWarning("Invalid device ID format for device {DeviceId}. Skipping save.", dto.DeviceName);
                 return;
             }
+
+            if (!_validator.IsTimeStampValid(dto))
+            {
+                _logger.LogWarning("Invalid timestamp for device {DeviceId}. Skipping save.", dto.DeviceName);
+                return;
+            }
+
+            if (!_validator.IsDataComplete(dto))
+            {
+                _logger.LogWarning("Incomplete device data for device {DeviceId}. Skipping save.", dto.DeviceName);
+                return;
+            }
+            
+            // Only update connection status if data is valid
+            var timestamp = DataTypeConverter.GetLocalDateTime(dto.LastSeen);
+            var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceName);
+            _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp, dto.IsConnected);
                 
             // Use mapper to create entity
             var entity = _mapper.MapToTestEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER

@@ -1,4 +1,4 @@
-﻿namespace Application.Mappers;
+﻿namespace Application.Utility;
 
 public class DataTypeConverter
 {

@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Mappers;
 using Application.Models.Dtos.MQTT;
+using Application.Utility;
 using Core.Domain.Constants;
 using Microsoft.Extensions.Logging;
 

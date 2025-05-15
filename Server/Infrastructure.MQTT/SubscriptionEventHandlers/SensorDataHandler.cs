@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Mappers;
 using Application.Models.Dtos.MQTT;
 using Application.Services;
+using Application.Utility;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
 using Microsoft.Extensions.Logging;
@@ -16,12 +18,12 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly ILogger<SensorDataHandler> _logger;
     private readonly SensorDataMapper _mapper;
     private readonly ISensorDataRepository _sensorDataRepository;
-    private readonly DataValidator _validator;
+    private readonly IDataValidator _validator;
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
         DeviceConnectionTracker connectionTracker,
-        DataValidator validator,
+        IDataValidator validator,
         SensorDataMapper mapper,
         ISensorDataRepository sensorDataRepository)
     {
@@ -52,18 +54,29 @@ public class SensorDataHandler : IMqttMessageHandler
 
             var dto = JsonSerializer.Deserialize<SensorDataDto>(json);
             if (dto == null) return;
+            
+            // Validate data before saving
+            if (!_validator.IsIdValid(dto))
+            {
+                _logger.LogWarning("Invalid device ID format for device {DeviceId}. Skipping save.", dto.DeviceId);
+                return;
+            }
 
+            if (!_validator.IsTimeStampValid(dto)) 
+            {
+                _logger.LogWarning("Invalid timestamp for device {DeviceId}. Skipping save.", dto.DeviceId);
+                return;
+            }
 
+            if (!_validator.IsDataComplete(dto))
+            {
+                _logger.LogWarning("Incomplete sensor data for device {DeviceId}. Skipping save.", dto.DeviceId);
+                return;
+            }
+            
             var timestamp = DataTypeConverter.GetLocalDateTime(dto.TimestampUnix);
             var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceId);
             _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp);
-
-            // Validate data before saving using the dedicated validator
-            if (!_validator.IsDataComplete(dto))
-            {
-                _logger.LogWarning("Incomplete data received from device {DeviceId}. Skipping save.", dto.DeviceId);
-                return;
-            }
 
             // Use mapper to create entity
             var entity = _mapper.MapToTestEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER

@@ -1,4 +1,5 @@
 ﻿using Application.Models.Dtos.MQTT;
+using Application.Utility;
 using Core.Domain.Entities;
 using Core.Domain.TestEntities;
 
