@@ -8,7 +8,12 @@ namespace Application.Services;
 
 public class GraphService(IConnectionManager connectionManager) : IGraphService
 {
-    public async Task<GraphModel<int>> GetTotalMeasurementsAsync(SensorData sensorData)
+    public async Task BroadcastMeasurementsAsync(SensorData sensorData)
+    {
+        await BroadcastTemperatureGraph(sensorData);
+    }
+
+    public async Task  BroadcastTemperatureGraph(SensorData sensorData)
     {
         String currentTime = DateTime.Now.ToString("HH:mm");
         int tempInt = (int)Math.Round(sensorData.Temperature);
@@ -21,7 +26,6 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
             topic = WebsocketTopics.Dashboard
         };
         
-        connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, graphModel);
-        return graphModel;
+        await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, graphModel);
     }
 }

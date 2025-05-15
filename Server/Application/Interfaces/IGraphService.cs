@@ -5,5 +5,7 @@ namespace Application.Interfaces;
 
 public interface IGraphService
 {
-    Task<GraphModel<int>> GetTotalMeasurementsAsync(SensorData sensorData);
+    Task  BroadcastTemperatureGraph(SensorData sensorData);
+    
+    Task BroadcastMeasurementsAsync(SensorData sensorData);
 }
