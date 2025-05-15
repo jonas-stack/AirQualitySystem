@@ -6,7 +6,7 @@ import { useWsClient } from "ws-request-hook";
 import { GraphModel_1, WebsocketEvents } from "@/generated-client";
 import { Thermometer } from "lucide-react";
 
-export default function AirQualityCurrentDegreesCard() {
+export default function AirQualityTemperatureCard() {
     const {onMessage, readyState} = useWsClient()
 
     const [chartData, setChartData] = useState([
@@ -35,7 +35,7 @@ export default function AirQualityCurrentDegreesCard() {
             (dto) => {
                 setChartData(prevData => {
                     const newEntry = {
-                        month: dto.eventType ?? `Month ${prevData.length + 1}`,
+                        time: dto.identifier,
                         amount: dto.amount ?? 0,
                     };
 

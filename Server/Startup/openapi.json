@@ -177,7 +177,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "name": {
+              "identifier": {
                 "type": "string"
               },
               "amount": {

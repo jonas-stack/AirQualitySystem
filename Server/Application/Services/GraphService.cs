@@ -2,19 +2,21 @@
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
 using Application.Models.Dtos.Graph;
+using Core.Domain.Entities;
 
 namespace Application.Services;
 
 public class GraphService(IConnectionManager connectionManager) : IGraphService
 {
-    private readonly Random _random = new();
-
-    public async Task<GraphModel<int>> GetTotalMeasurementsAsync(string userId)
+    public async Task<GraphModel<int>> GetTotalMeasurementsAsync(SensorData sensorData)
     {
+        String currentTime = DateTime.Now.ToString("HH:mm");
+        int tempInt = (int)Math.Round(sensorData.Temperature);
+
         GraphModel<int> graphModel = new()
         {
-            Name = "TotalMeasurements",
-            Amount = _random.Next(0, 500),
+            Identifier = currentTime,
+            Amount = tempInt,
             eventType = WebsocketEvents.GraphTotalMeasurement,
             topic = WebsocketTopics.Dashboard
         };

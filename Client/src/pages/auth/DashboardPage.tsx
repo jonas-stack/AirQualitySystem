@@ -5,7 +5,7 @@ import { CardArray } from "@/types/card";
 import { AirQualityInsightsCard } from "@/components/cards/air-quality-insights-card";
 import { AIChatCard } from "@/components/cards/ai-chat-card";
 import { SimpleAirQualityChartsCard } from "@/components/cards/simple-air-quality-charts-card";
-import AirQualityCurrentDegreesCard from "@/components/cards/air-quality-current-degrees-card";
+import AirQualityTemperatureCard from "@/components/cards/air-quality-temperature-card";
 
   const airQualityData: CardArray = [
     {
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="lg:col-span-4">
-              <AirQualityCurrentDegreesCard />
+              <AirQualityTemperatureCard />
             </div>
 
             <div className="lg:col-span-3">

@@ -175,7 +175,7 @@ export interface ApplicationBaseDto {
 }
 
 export interface GraphModel_1 extends ApplicationBaseDto {
-    name?: string;
+    identifier?: string;
     amount?: T;
     eventType?: string;
     topic?: string;
