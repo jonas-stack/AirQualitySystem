@@ -23,6 +23,18 @@ public class DeviceRepository : IDeviceRepository
         {
             // Check if the device already exists
             var existingDevice = _dbContext.TestDevices.Find(devices.DeviceId);
+            
+            // For disconnection events, use current time rather than the reported LastSeen
+            if (!devices.IsConnected)
+            {
+                // Create DateTime with Kind.Unspecified to avoid PostgreSQL error
+                devices.LastSeen = new DateTime(DateTime.Now.Ticks, DateTimeKind.Unspecified);
+            }
+            else 
+            {
+                // Ensure connected events also have the correct Kind
+                devices.LastSeen = new DateTime(devices.LastSeen.Ticks, DateTimeKind.Unspecified);
+            }
         
             if (existingDevice != null)
             {
