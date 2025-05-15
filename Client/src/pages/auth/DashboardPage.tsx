@@ -1,14 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { useEffect, useState } from "react";
-import { Area, AreaChart } from "recharts";
 import { ConnectionStatusCard } from "@/components/cards/connection-status-card";
 import { CardArray } from "@/types/card";
 import { AirQualityInsightsCard } from "@/components/cards/air-quality-insights-card";
 import { AIChatCard } from "@/components/cards/ai-chat-card";
 import { SimpleAirQualityChartsCard } from "@/components/cards/simple-air-quality-charts-card";
-import AirQualityTotalMeasurementCard from "@/components/cards/air-quality-total-measurement-card";
+import AirQualityCurrentDegreesCard from "@/components/cards/air-quality-current-degrees-card";
 
   const airQualityData: CardArray = [
     {
@@ -119,7 +116,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="lg:col-span-4">
-              <AirQualityTotalMeasurementCard />
+              <AirQualityCurrentDegreesCard />
             </div>
 
             <div className="lg:col-span-3">
