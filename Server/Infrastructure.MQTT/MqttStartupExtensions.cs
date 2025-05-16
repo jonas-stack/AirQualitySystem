@@ -1,4 +1,6 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
+using Application.Interfaces.Mappers;
+using Application.Mappers;
 using Application.Models;
 using Application.Services;
 using HiveMQtt.Client;
@@ -10,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.MQTT.Configuration;
+namespace Infrastructure.MQTT;
 
 public static class MqttExtensions
 {
@@ -97,6 +99,8 @@ public static class MqttExtensions
         services.AddSingleton<DeviceConnectionTracker>();
         services.AddScoped<IDataValidator, DataValidator>();
         services.AddScoped<IJsonDeserializer, JsonDeserializer>();
+        services.AddScoped<ISensorDataMapper, SensorDataMapper>();
+        services.AddScoped<IDevicesMapper, DevicesMapper>();
 
         return services;
     }

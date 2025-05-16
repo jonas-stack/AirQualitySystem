@@ -4,7 +4,6 @@ using Application;
 using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
 using Infrastructure.MQTT;
-using Infrastructure.MQTT.Configuration;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.AspNetCore.Builder;

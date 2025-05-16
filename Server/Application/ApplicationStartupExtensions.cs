@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces;
-using Application.Interfaces.EntityServices;
 using Application.Interfaces.Infrastructure.MQTT;
+using Application.Interfaces.Mappers;
 using Application.Mappers;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,8 +13,8 @@ public static class ApplicationStartupExtensions
     {
         services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
         services.AddScoped<IDataValidator, DataValidator>();
-        services.AddScoped<SensorDataMapper>();
-        services.AddScoped<DevicesMapper>();
+        services.AddScoped<ISensorDataMapper, SensorDataMapper>();
+        services.AddScoped<IDevicesMapper, DevicesMapper>();
         return services;
     }
 }
