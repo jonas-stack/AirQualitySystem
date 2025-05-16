@@ -79,7 +79,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp, dto.IsConnected);
                 
             // Use mapper to create entity
-            var entity = _mapper.MapToTestEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
+            var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
             _deviceRepository.SaveDevices(entity);
                 
             _logger.LogInformation("Device status saved successfully for device: {DeviceId}", entity.DeviceId);

@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS "InvalidPayloads";
 DROP TABLE IF EXISTS "Devices";
 
 -- Device information table
-CREATE TABLE IF NOT EXISTS "TestDevices" (
+CREATE TABLE IF NOT EXISTS "Devices" (
     "DeviceId" UUID PRIMARY KEY,
     "DeviceName" VARCHAR(100) NOT NULL,
     "IsConnected" BOOLEAN NOT NULL DEFAULT FALSE,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "TestDevices" (
 );
 
 -- Device connection history
-CREATE TABLE IF NOT EXISTS "TestDeviceConnectionHistory" (
+CREATE TABLE IF NOT EXISTS "DeviceConnectionHistory" (
     "Id" SERIAL PRIMARY KEY,
     "DeviceId" UUID NOT NULL,
     "IsConnected" BOOLEAN NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "TestDeviceConnectionHistory" (
 );
 
 -- Existing tables...
-CREATE TABLE IF NOT EXISTS "TestSensorData" (
+CREATE TABLE IF NOT EXISTS "SensorData" (
     "Id" SERIAL PRIMARY KEY,
     "Temperature" DOUBLE PRECISION NOT NULL,
     "Humidity" DOUBLE PRECISION NOT NULL,

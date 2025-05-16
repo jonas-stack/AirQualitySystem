@@ -20,7 +20,7 @@ public static class PostgresStartupExtensions
             options.EnableSensitiveDataLogging();
         });
         
-        services.AddDbContext<MyDbContextDocker>((service, options) =>
+        services.AddDbContext<MyDbContext>((service, options) =>
         {
             var provider = services.BuildServiceProvider();
             options.UseNpgsql(

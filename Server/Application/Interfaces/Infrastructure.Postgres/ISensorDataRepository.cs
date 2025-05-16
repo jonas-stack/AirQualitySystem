@@ -1,10 +1,10 @@
-﻿using Core.Domain.TestEntities;
+﻿using Core.Domain.Entities;
 
 namespace Application.Interfaces.Infrastructure.Postgres;
 
 public interface ISensorDataRepository
 {
     
-    public void SaveSensorData (TestSensorData sensorData);
+    public void SaveSensorData (SensorData sensorData);
     
 }

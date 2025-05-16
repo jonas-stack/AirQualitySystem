@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
-using Core.Domain.TestEntities;
+using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
 
@@ -8,16 +8,16 @@ namespace Infrastructure.Postgres.Posetgresql.Data;
 
 public class SensorDataRepository : ISensorDataRepository
 {
-    private readonly MyDbContextDocker _dbContext;
+    private readonly MyDbContext _dbContext;
     private readonly ILogger<SensorDataRepository> _logger;
 
-    public SensorDataRepository(MyDbContextDocker dbContext, ILogger<SensorDataRepository> logger)
+    public SensorDataRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
     }
     
-    public void SaveSensorData(TestSensorData sensorData)
+    public void SaveSensorData(SensorData sensorData)
     {
         try
         {

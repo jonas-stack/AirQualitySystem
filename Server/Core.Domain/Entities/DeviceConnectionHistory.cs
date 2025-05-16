@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Core.Domain.TestEntities;
+namespace Core.Domain.Entities;
 
-public partial class TestDeviceConnectionHistory
+public partial class DeviceConnectionHistory
 {
     public int Id { get; set; }
 
@@ -12,6 +12,4 @@ public partial class TestDeviceConnectionHistory
     public bool IsConnected { get; set; }
 
     public DateTime LastSeen { get; set; }
-
-    public virtual TestDevices Device { get; set; } = null!;
 }

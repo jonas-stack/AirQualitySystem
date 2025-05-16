@@ -12,15 +12,30 @@ public partial class MyDbContext : DbContext
     {
     }
 
+    public virtual DbSet<DeviceConnectionHistory> DeviceConnectionHistory { get; set; }
+
+    public virtual DbSet<Devices> Devices { get; set; }
+
     public virtual DbSet<SensorData> SensorData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Det her bliver oprettet af database fra fly.io
-        // vi har ikke brug for det pt. det skaber en del bøvl i form af 
-        // tests, lokal database osv..
-        // under scaffold kørelse skal den kommenteres ud igen.
-      //  modelBuilder.HasPostgresExtension("repmgr", "repmgr");
+        modelBuilder.Entity<DeviceConnectionHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("DeviceConnectionHistory_pkey");
+
+            entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
+        });
+
+        modelBuilder.Entity<Devices>(entity =>
+        {
+            entity.HasKey(e => e.DeviceId).HasName("Devices_pkey");
+
+            entity.Property(e => e.DeviceId).ValueGeneratedNever();
+            entity.Property(e => e.DeviceName).HasMaxLength(100);
+            entity.Property(e => e.IsConnected).HasDefaultValue(false);
+            entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
+        });
 
         modelBuilder.Entity<SensorData>(entity =>
         {

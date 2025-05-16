@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces.Infrastructure.Postgres;
-using Application.Models.Dtos.MQTT;
-using Core.Domain.TestEntities;
+using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.Extensions.Logging;
 
@@ -9,21 +8,21 @@ namespace Infrastructure.Postgres.Posetgresql.Data;
 public class DeviceRepository : IDeviceRepository
 {
     
-    private readonly MyDbContextDocker _dbContext;
+    private readonly MyDbContext _dbContext;
     private readonly ILogger<SensorDataRepository> _logger;
     
-    public DeviceRepository(MyDbContextDocker dbContext, ILogger<SensorDataRepository> logger)
+    public DeviceRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
     }
     
-    public void SaveDevices(TestDevices devices)
+    public void SaveDevices(Devices devices)
     {
         try
         {
             // Check if the device already exists
-            var existingDevice = _dbContext.TestDevices.Find(devices.DeviceId);
+            var existingDevice = _dbContext.Devices.Find(devices.DeviceId);
             
             // For disconnection events, use current time rather than the reported LastSeen
             if (!devices.IsConnected)
@@ -51,7 +50,7 @@ public class DeviceRepository : IDeviceRepository
                 _dbContext.Add(devices);
             }
             
-            var newDeviceHistory = new TestDeviceConnectionHistory()
+            var newDeviceHistory = new DeviceConnectionHistory()
             {
                 DeviceId = devices.DeviceId,
                 IsConnected = devices.IsConnected,
@@ -74,7 +73,7 @@ public class DeviceRepository : IDeviceRepository
     {
         try
         {
-            return _dbContext.TestDevices.Any(d => d.DeviceId == deviceId);
+            return _dbContext.Devices.Any(d => d.DeviceId == deviceId);
         }
         catch (Exception ex)
         {
@@ -87,7 +86,7 @@ public class DeviceRepository : IDeviceRepository
     {
         try
         {
-            var newDevice = new TestDevices
+            var newDevice = new Devices
             {
                 DeviceId = deviceId,
                 DeviceName = deviceName,

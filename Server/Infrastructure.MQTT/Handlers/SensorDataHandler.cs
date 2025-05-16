@@ -85,7 +85,7 @@ public class SensorDataHandler : IMqttMessageHandler
             }
             
             _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp);
-            var entity = _mapper.MapToTestEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
+            var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
             _sensorDataRepository.SaveSensorData(entity);
 
             _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
