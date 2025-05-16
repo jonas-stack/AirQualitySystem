@@ -1,6 +1,4 @@
-﻿
-
-using Application.Interfaces.Infrastructure.MQTT;
+﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Mappers;
 using Application.Models.Dtos.MQTT;
@@ -14,18 +12,19 @@ namespace Infrastructure.MQTT.Handlers;
 
 public class DeviceConnectionHandler : IMqttMessageHandler
 {
+    private readonly DeviceConnectionTracker _connectionTracker;
+    private readonly IJsonDeserializer _deserializer;
+    private readonly IDeviceRepository _deviceRepository;
 
     private readonly ILogger<DeviceConnectionHandler> _logger;
-    private readonly DeviceConnectionTracker _connectionTracker;
-    private readonly IDeviceRepository _deviceRepository;
-    private readonly IDataValidator _validator;
     private readonly IDevicesMapper _mapper;
-    private readonly IJsonDeserializer _deserializer;
-    
+    private readonly IDataValidator _validator;
+
     public DeviceConnectionHandler(
         ILogger<DeviceConnectionHandler> logger,
         DeviceConnectionTracker connectionTracker,
-        IDeviceRepository deviceRepository, IDataValidator validator, IDevicesMapper mapper, IJsonDeserializer deserializer)
+        IDeviceRepository deviceRepository, IDataValidator validator, IDevicesMapper mapper,
+        IJsonDeserializer deserializer)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -38,7 +37,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
     public string TopicFilter => "airquality/status";
     public QualityOfService QoS => QualityOfService.AtMostOnceDelivery;
 
-    public void Handle(object? sender, OnMessageReceivedEventArgs args)
+    public async Task HandleAsync(object? sender, OnMessageReceivedEventArgs args)
     {
         try
         {
@@ -46,16 +45,16 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             if (payload == null) return;
 
             var result = _deserializer.Deserialize<DeviceDto>(payload);
-            
+
             if (!result.Success)
             {
-                _logger.LogWarning("Failed to deserialize message: {Error}. Raw content: {Content}", 
+                _logger.LogWarning("Failed to deserialize message: {Error}. Raw content: {Content}",
                     result.ErrorMessage, result.RawContent);
                 return;
             }
 
             var dto = result.Data!;
-            
+
             // Validate data before processing
             if (!_validator.IsIdValid(dto))
             {
@@ -74,18 +73,17 @@ public class DeviceConnectionHandler : IMqttMessageHandler
                 _logger.LogWarning("Incomplete device data for device {DeviceId}. Skipping save.", dto.DeviceName);
                 return;
             }
-            
+
             // Only update connection status if data is valid
             var timestamp = DataTypeConverter.GetLocalDateTime(dto.LastSeen);
             var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceName);
             _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp, dto.IsConnected);
-                
+
             // Use mapper to create entity
             var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
-            _deviceRepository.SaveDevices(entity);
-                
+            await _deviceRepository.SaveDevicesAsync(entity);
+
             _logger.LogInformation("Device status saved successfully for device: {DeviceId}", entity.DeviceId);
-            
         }
         catch (Exception ex)
         {

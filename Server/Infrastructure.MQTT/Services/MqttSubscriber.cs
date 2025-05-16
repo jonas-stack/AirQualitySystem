@@ -5,9 +5,9 @@ using HiveMQtt.Client.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.MQTT;
+namespace Infrastructure.MQTT.Services;
 
-public class MqttSubscriber : IMqttService, IDisposable
+public class MqttSubscriber : IMqttService, IAsyncDisposable
 {
     private readonly HiveMQClient _client;
     private readonly ILogger<MqttSubscriber> _logger;
@@ -21,7 +21,13 @@ public class MqttSubscriber : IMqttService, IDisposable
 
         _logger.LogInformation("Created new MQTT subscriber");
     }
-
+    public ValueTask DisposeAsync()
+    {
+        _logger.LogInformation("Disposing MQTT subscriber");
+        DisconnectAsync().GetAwaiter().GetResult();
+        return ValueTask.CompletedTask;
+    }
+    
     public async Task SetupMqttSubscriptionAsync(string topic)
     {
         await _client.SubscribeAsync(topic);
@@ -34,54 +40,45 @@ public class MqttSubscriber : IMqttService, IDisposable
         _logger.LogInformation("Message handler registered");
     }
 
-    private void HandleMessageReceived(object? sender, OnMessageReceivedEventArgs args)
+    private async void HandleMessageReceived(object? sender, OnMessageReceivedEventArgs args)
     {
-        string messageContent = args.PublishMessage.Payload != null
+        var messageContent = args.PublishMessage.Payload != null
             ? Encoding.UTF8.GetString(args.PublishMessage.Payload)
             : "(Empty payload)";
 
         _logger.LogInformation("Received a message on topic: {Topic}", args.PublishMessage.Topic);
         _logger.LogInformation("Message content: {Content}", messageContent);
 
-        using (IServiceScope scope = _serviceProvider.CreateScope())
+        using (var scope = _serviceProvider.CreateScope())
         {
-            IEnumerable<IMqttMessageHandler> allHandlers =
+            var allHandlers =
                 scope.ServiceProvider.GetRequiredService<IEnumerable<IMqttMessageHandler>>();
 
-            bool foundMatchingHandler = false;
-            foreach (IMqttMessageHandler handler in allHandlers)
+            var foundMatchingHandler = false;
+            foreach (var handler in allHandlers)
             {
-                string handlerTopic = handler.TopicFilter;
-                string? messageTopic = args.PublishMessage.Topic;
+                var handlerTopic = handler.TopicFilter;
+                var messageTopic = args.PublishMessage.Topic;
 
-                bool isTopicMatch = messageTopic != null &&
-                                    string.Equals(messageTopic, handlerTopic, StringComparison.OrdinalIgnoreCase);
+                var isTopicMatch = messageTopic != null &&
+                                   string.Equals(messageTopic, handlerTopic, StringComparison.OrdinalIgnoreCase);
 
                 if (isTopicMatch)
                 {
                     _logger.LogDebug("Found handler {HandlerName} for topic: {Topic}",
                         handler.GetType().Name, handlerTopic);
-                    handler.Handle(sender, args);
+                    await handler.HandleAsync(sender, args);
                     foundMatchingHandler = true;
                 }
             }
 
-            if (!foundMatchingHandler)
-            {
-                _logger.LogWarning("No handler found for topic: {0}", args.PublishMessage.Topic);
-            }
+            if (!foundMatchingHandler) _logger.LogWarning("No handler found for topic: {0}", args.PublishMessage.Topic);
         }
     }
 
-    public void Dispose() //dispose mqtt session when disconnectiong from broker.
-    {
-        DisconnectAsync().GetAwaiter().GetResult();
-    }
-    
     public async Task DisconnectAsync()
     {
         if (_client != null)
-        {
             try
             {
                 _logger.LogInformation("Disconnecting from MQTT broker");
@@ -95,6 +92,7 @@ public class MqttSubscriber : IMqttService, IDisposable
             {
                 _client.OnMessageReceived -= HandleMessageReceived;
             }
-        }
     }
+
+    
 }

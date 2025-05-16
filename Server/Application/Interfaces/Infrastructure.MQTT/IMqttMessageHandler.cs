@@ -7,5 +7,5 @@ public interface IMqttMessageHandler
 {
     string TopicFilter { get; }
     QualityOfService QoS { get; }
-    void Handle(object? sender, OnMessageReceivedEventArgs args);
+    Task HandleAsync(object? sender, OnMessageReceivedEventArgs args);
 }

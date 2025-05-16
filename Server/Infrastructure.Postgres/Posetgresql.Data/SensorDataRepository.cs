@@ -16,13 +16,13 @@ public class SensorDataRepository : ISensorDataRepository
         _dbContext = dbContext;
         _logger = logger;
     }
-    
-    public void SaveSensorData(SensorData sensorData)
+
+    public async Task SaveSensorDataAsync(SensorData sensorData)
     {
         try
         {
-            _dbContext.Add(sensorData);
-            _dbContext.SaveChanges();
+            await _dbContext.AddAsync(sensorData);
+            await _dbContext.SaveChangesAsync();
             _logger.LogDebug("Sensor data saved successfully for device: {DeviceId}", sensorData.DeviceId);
         }
         catch (Exception ex)

@@ -63,10 +63,9 @@ public static class MqttExtensions
                     Thread.Sleep(TimeSpan.FromSeconds(waitSeconds));
                 }
 
-            // Set up disconnect handler
+            
             client.OnDisconnectReceived += (sender, args) => { logger.LogWarning("MQTT client disconnected"); };
-
-            // Set up graceful shutdown
+            
             appLifetime.ApplicationStopping.Register(async () =>
             {
                 logger.LogInformation("Disconnecting from MQTT broker...");
@@ -85,16 +84,14 @@ public static class MqttExtensions
             return client;
         });
 
-        // Find and register all MQTT message handlers
+        
         var handlerTypes = FindAllMessageHandlers();
         foreach (var handlerType in handlerTypes)
         {
-            // Register each handler with DI
             services.AddScoped(handlerType);
             services.AddScoped(typeof(IMqttMessageHandler), handlerType);
         }
-
-        // Register other MQTT services
+        
         services.AddSingleton<IMqttService, MqttSubscriber>();
         services.AddSingleton<DeviceConnectionTracker>();
         services.AddScoped<IDataValidator, DataValidator>();
@@ -112,23 +109,19 @@ public static class MqttExtensions
         var logger = app.Services.GetRequiredService<ILogger<HiveMQClient>>();
         var mqttService = app.Services.GetRequiredService<IMqttService>();
 
-        // Find all message handlers we need to subscribe to
+        
         var handlerTypes = FindAllMessageHandlers();
-
-        // Subscribe to each handler's topic
+        
         foreach (var handlerType in handlerTypes)
         {
-            // Create a scope for this handler
+           
             using var scope = app.Services.CreateScope();
-
-            // Get the handler instance
+            
             var handler = (IMqttMessageHandler)scope.ServiceProvider.GetRequiredService(handlerType);
-
-            // Log subscription attempt
+            
             logger.LogInformation("Subscribing to topic: {topic} with QoS: {qos}",
                 handler.TopicFilter, handler.QoS);
-
-            // Subscribe to the topic
+            
             await mqttService.SetupMqttSubscriptionAsync(handler.TopicFilter);
         }
 
@@ -138,15 +131,14 @@ public static class MqttExtensions
     // Helper method to find all MQTT message handlers in the application
     private static List<Type> FindAllMessageHandlers()
     {
-        // Get all types from all loaded assemblies
+     
         var handlers = new List<Type>();
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         foreach (var type in assembly.GetTypes())
-            // Check if this type implements our handler interface and isn't abstract
+           
             if (typeof(IMqttMessageHandler).IsAssignableFrom(type) && !type.IsAbstract)
                 handlers.Add(type);
-
-        // Log what we found
+        
         Console.WriteLine($"Discovered {handlers.Count} message handlers:");
         foreach (var handler in handlers) Console.WriteLine($"  - {handler.Name}");
 

@@ -5,8 +5,7 @@ namespace Application.Interfaces.Infrastructure.Postgres;
 public interface IDeviceRepository
 {
     
-    public void SaveDevices(Devices devices);
-    public bool DeviceExists(Guid deviceId);
-    
-    public void RegisterNewDevice(Guid deviceId, string deviceName, DateTime lastSeen);
+    public Task SaveDevicesAsync(Devices devices);
+    public Task<bool> DeviceExistsAsync(Guid deviceId);
+    public Task RegisterNewDeviceAsync(Guid deviceId, string deviceName, DateTime lastSeen);
 }

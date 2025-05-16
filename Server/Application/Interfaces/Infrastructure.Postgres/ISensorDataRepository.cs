@@ -5,6 +5,6 @@ namespace Application.Interfaces.Infrastructure.Postgres;
 public interface ISensorDataRepository
 {
     
-    public void SaveSensorData (SensorData sensorData);
+    Task SaveSensorDataAsync(SensorData sensorData);
     
 }

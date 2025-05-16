@@ -13,12 +13,12 @@ namespace Infrastructure.MQTT.Handlers;
 public class SensorDataHandler : IMqttMessageHandler
 {
     private readonly DeviceConnectionTracker _connectionTracker;
+    private readonly IJsonDeserializer _deserializer;
+    private readonly IDeviceRepository _deviceRepository;
     private readonly ILogger<SensorDataHandler> _logger;
     private readonly ISensorDataMapper _mapper;
     private readonly ISensorDataRepository _sensorDataRepository;
     private readonly IDataValidator _validator;
-    private readonly IJsonDeserializer _deserializer;
-    private readonly IDeviceRepository _deviceRepository;
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
@@ -39,7 +39,7 @@ public class SensorDataHandler : IMqttMessageHandler
     public string TopicFilter => "AirQuality/Data";
     public QualityOfService QoS => QualityOfService.AtMostOnceDelivery;
 
-    public void Handle(object? sender, OnMessageReceivedEventArgs args)
+    public async Task HandleAsync(object? sender, OnMessageReceivedEventArgs args)
     {
         try
         {
@@ -47,16 +47,16 @@ public class SensorDataHandler : IMqttMessageHandler
             if (payload == null) return;
 
             var result = _deserializer.Deserialize<SensorDataDto>(payload);
-            
+
             if (!result.Success)
             {
-                _logger.LogWarning("Failed to deserialize message: {Error}. Raw content: {Content}", 
+                _logger.LogWarning("Failed to deserialize message: {Error}. Raw content: {Content}",
                     result.ErrorMessage, result.RawContent);
                 return;
             }
 
             var dto = result.Data!;
-            
+
             // Validate data before saving
             if (!_validator.IsIdValid(dto))
             {
@@ -64,7 +64,7 @@ public class SensorDataHandler : IMqttMessageHandler
                 return;
             }
 
-            if (!_validator.IsTimeStampValid(dto)) 
+            if (!_validator.IsTimeStampValid(dto))
             {
                 _logger.LogWarning("Invalid timestamp for device {DeviceId}. Skipping save.", dto.DeviceId);
                 return;
@@ -75,19 +75,19 @@ public class SensorDataHandler : IMqttMessageHandler
                 _logger.LogWarning("Incomplete sensor data for device {DeviceId}. Skipping save.", dto.DeviceId);
                 return;
             }
-            
+
             var timestamp = DataTypeConverter.GetLocalDateTime(dto.TimestampUnix);
             var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceId);
-            
-            if (!_deviceRepository.DeviceExists(deviceGuid))
+
+            if (!await _deviceRepository.DeviceExistsAsync(deviceGuid))
             {
                 _logger.LogInformation("New device detected with ID {DeviceId}. Auto-registering.", dto.DeviceId);
-                _deviceRepository.RegisterNewDevice(deviceGuid, dto.DeviceId, timestamp);
+                await _deviceRepository.RegisterNewDeviceAsync(deviceGuid, dto.DeviceId, timestamp);
             }
-            
+
             _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp);
             var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
-            _sensorDataRepository.SaveSensorData(entity);
+            await _sensorDataRepository.SaveSensorDataAsync(entity);
 
             _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
         }

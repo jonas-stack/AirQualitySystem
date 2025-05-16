@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Infrastructure.Postgres;
 using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Postgres.Posetgresql.Data;
@@ -17,28 +18,23 @@ public class DeviceRepository : IDeviceRepository
         _logger = logger;
     }
     
-    public void SaveDevices(Devices devices)
+    public async Task SaveDevicesAsync(Devices devices)
     {
         try
         {
-            // Check if the device already exists
-            var existingDevice = _dbContext.Devices.Find(devices.DeviceId);
-            
-            // For disconnection events, use current time rather than the reported LastSeen
+            var existingDevice = await _dbContext.Devices.FindAsync(devices.DeviceId);
+
             if (!devices.IsConnected)
             {
-                // Create DateTime with Kind.Unspecified to avoid PostgreSQL error
                 devices.LastSeen = new DateTime(DateTime.Now.Ticks, DateTimeKind.Unspecified);
             }
-            else 
+            else
             {
-                // Ensure connected events also have the correct Kind
                 devices.LastSeen = new DateTime(devices.LastSeen.Ticks, DateTimeKind.Unspecified);
             }
-        
+
             if (existingDevice != null)
             {
-                // Update existing device
                 existingDevice.DeviceName = devices.DeviceName;
                 existingDevice.IsConnected = devices.IsConnected;
                 existingDevice.LastSeen = devices.LastSeen;
@@ -46,10 +42,9 @@ public class DeviceRepository : IDeviceRepository
             }
             else
             {
-                // Add new device
                 _dbContext.Add(devices);
             }
-            
+
             var newDeviceHistory = new DeviceConnectionHistory()
             {
                 DeviceId = devices.DeviceId,
@@ -58,8 +53,8 @@ public class DeviceRepository : IDeviceRepository
             };
 
             _dbContext.Add(newDeviceHistory);
-        
-            _dbContext.SaveChanges();
+
+            await _dbContext.SaveChangesAsync();
             _logger.LogDebug("Device saved successfully: {DeviceId}", devices.DeviceId);
         }
         catch (Exception ex)
@@ -69,11 +64,11 @@ public class DeviceRepository : IDeviceRepository
         }
     }
 
-    public bool DeviceExists(Guid deviceId)
+    public async Task<bool> DeviceExistsAsync(Guid deviceId)
     {
         try
         {
-            return _dbContext.Devices.Any(d => d.DeviceId == deviceId);
+            return await _dbContext.Devices.AnyAsync(d => d.DeviceId == deviceId);
         }
         catch (Exception ex)
         {
@@ -82,7 +77,7 @@ public class DeviceRepository : IDeviceRepository
         }
     }
 
-    public void RegisterNewDevice(Guid deviceId, string deviceName, DateTime lastSeen)
+    public async Task RegisterNewDeviceAsync(Guid deviceId, string deviceName, DateTime lastSeen)
     {
         try
         {
@@ -93,8 +88,8 @@ public class DeviceRepository : IDeviceRepository
                 IsConnected = true,
                 LastSeen = new DateTime(lastSeen.Ticks, DateTimeKind.Unspecified)
             };
-            
-            SaveDevices(newDevice);
+
+            await SaveDevicesAsync(newDevice);
             _logger.LogInformation("Device {DeviceId} automatically registered", deviceId);
         }
         catch (Exception ex)
