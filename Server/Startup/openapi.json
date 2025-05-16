@@ -6,6 +6,49 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Ai/chat": {
+      "get": {
+        "tags": [
+          "Ai"
+        ],
+        "operationId": "Ai_Subscribe",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "message",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageFromClient"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Subscribe": {
       "post": {
         "tags": [
@@ -95,6 +138,15 @@
   },
   "components": {
     "schemas": {
+      "MessageFromClient": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
       "ChangeSubscriptionDto": {
         "type": "object",
         "additionalProperties": false,

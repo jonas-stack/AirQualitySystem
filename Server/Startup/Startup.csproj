@@ -8,6 +8,7 @@
     <ProjectReference Include="..\Infrastructure.MQTT\Infrastructure.MQTT.csproj" />
     <ProjectReference Include="..\Infrastructure.Postgres\Infrastructure.Postgres.csproj" />
     <ProjectReference Include="..\Infrastructure.Websocket\Infrastructure.Websocket.csproj" />
+    <ProjectReference Include="..\Infrastructure.Ai\Infrastructure.Ai.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,9 +46,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

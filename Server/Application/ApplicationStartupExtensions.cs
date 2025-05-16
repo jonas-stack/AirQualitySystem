@@ -11,6 +11,7 @@ public static class ApplicationStartupExtensions
     {
         services.AddScoped<IEntityService, EntityService>();
         services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
+        services.AddScoped<IAiCommunication, AiCommunicationService>();
         return services;
     }
 }
