@@ -8,7 +8,7 @@ public class AiApiService(HttpClient httpClient) : IAiService
     {
         var endpoint = new Uri(httpClient.BaseAddress, $"/AetherAI/ask_ai?question={message}");
         Console.WriteLine(endpoint.ToString());
-        var response = await httpClient.GetAsync($"/AetherAI/ask_ai?question={message}"); ;
+        var response = await httpClient.GetAsync($"/AetherAI/ask_ai?question={message}");
         return await response.Content.ReadAsStringAsync();
     }
 
