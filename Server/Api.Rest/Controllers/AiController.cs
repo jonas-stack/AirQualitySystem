@@ -16,7 +16,33 @@ public class AiController(IAiCommunication aiCommunication) : ControllerBase
     [Route("chat")]
     public async Task<ActionResult> Subscribe([FromHeader] string authorization, [FromBody] MessageFromClient message)
     {
-        var response = await aiCommunication.Ai_chat(message.Message);
-        return Ok(response);
+        try
+        {
+            var response = await aiCommunication.Ai_chat(message.Message);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
+    
+    [HttpGet]
+    [Route("historical_data_analysis")]
+    public async Task<ActionResult> HistoricalDataAnalysis(
+        [FromHeader] string authorization,
+        [FromBody] MessageFromClient message)
+    {
+        try
+        {
+            var response = await aiCommunication.AnalyzeHistoricalData(message.Message);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+
 }

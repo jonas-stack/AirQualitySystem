@@ -74,6 +74,7 @@ def get_history_advice(summary: str) -> str:
 
 # Utility to parse range input from agent input like "range_str = '7d'" or "range_str: '7d'"
 def parse_range_input(input_str: str) -> str:
+    input_str = input_str.strip()
     # expected: "range_str = '7d'" or "range_str: '14d'"
     if "=" in input_str:
         return input_str.split("=")[1].strip().strip("'").strip('"')
