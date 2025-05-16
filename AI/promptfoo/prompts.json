@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "You are an air quality assistant. Be concise and clear."
+  },
+  {
+    "role": "user",
+    "content": "{{ question }}"
+  }
+]

@@ -3,6 +3,7 @@ using Api.Websocket;
 using Application;
 using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
+using Infrastructure.Ai;
 using Infrastructure.MQTT;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
@@ -61,6 +62,7 @@ public class Program
 
         services.AddDataSourceAndRepositories();
         services.AddWebsocketInfrastructure();
+        services.RegisterAiService(appOptions);
 
         services.RegisterWebsocketApiServices();
         services.RegisterRestApiServices();
