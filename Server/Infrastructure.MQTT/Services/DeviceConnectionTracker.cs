@@ -1,89 +1,41 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
+﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.MQTT.Services
 {
-    public class DeviceConnectionTracker : IDisposable
+    public class DeviceConnectionTracker
     {
-        private readonly ConcurrentDictionary<string, DeviceStatus> _deviceStatuses = new();
+        private readonly ConcurrentDictionary<string, (DateTime LastSeen, bool IsConnected)> _devices = new();
         private readonly ILogger<DeviceConnectionTracker> _logger;
-        private readonly Timer _connectionCheckTimer;
-        private readonly TimeSpan _deviceTimeout = TimeSpan.FromSeconds(30);
 
         public DeviceConnectionTracker(ILogger<DeviceConnectionTracker> logger)
         {
             _logger = logger;
-            _connectionCheckTimer = new Timer(CheckConnections, null,
-                TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
         }
 
-        private class DeviceStatus
+        public void UpdateDeviceStatus(Guid deviceId, DateTime timestamp, bool isConnected = true)
         {
-            public DateTime LastSeen { get; set; }
-            public bool IsConnected { get; set; }
-        }
+            var deviceKey = deviceId.ToString();
+            var previousState = _devices.TryGetValue(deviceKey, out var status) ? status.IsConnected : false;
 
-        public void UpdateDeviceStatus(string deviceId, DateTime timestamp)
-        {
-            _deviceStatuses.AddOrUpdate(
-                deviceId,
-                _ => CreateNewDeviceStatus(deviceId, timestamp),
-                (_, existing) => UpdateExistingDeviceStatus(deviceId, existing, timestamp)
-            );
-        }
+            // Update with the connection state from the message
+            _devices[deviceKey] = (timestamp, isConnected);
 
-        private DeviceStatus CreateNewDeviceStatus(string deviceId, DateTime timestamp)
-        {
-            _logger.LogInformation("Device {DeviceId} connected", deviceId);
-            return new DeviceStatus { LastSeen = timestamp, IsConnected = true };
-        }
-
-        private DeviceStatus UpdateExistingDeviceStatus(string deviceId, DeviceStatus existing, DateTime timestamp)
-        {
-            if (!existing.IsConnected)
-                _logger.LogInformation("Device {DeviceId} reconnected", deviceId);
-            
-            existing.LastSeen = timestamp;
-            existing.IsConnected = true;
-            return existing;
-        }
-
-        private void CheckConnections(object? state)
-        {
-            try
+            // Log connection changes
+            if (isConnected && !previousState)
             {
-                var currentTime = DateTime.UtcNow;
-                
-                foreach (var entry in _deviceStatuses)
-                {
-                    string deviceId = entry.Key;
-                    DeviceStatus status = entry.Value;
-                    
-                    if (HasConnectionTimedOut(status, currentTime))
-                    {
-                        MarkDeviceAsDisconnected(deviceId, status, currentTime);
-                    }
-                }
+                _logger.LogInformation("Device {DeviceId} connected", deviceId);
             }
-            catch (Exception ex)
+            else if (!isConnected && previousState)
             {
-                _logger.LogError(ex, "Error checking connections");
+                _logger.LogWarning("Device {DeviceId} disconnected at {Timestamp}", 
+                    deviceId, DateTime.Now);
             }
         }
-        
-        private bool HasConnectionTimedOut(DeviceStatus status, DateTime currentTime)
-        {
-            return status.IsConnected && (currentTime - status.LastSeen > _deviceTimeout);
-        }
-        
-        private void MarkDeviceAsDisconnected(string deviceId, DeviceStatus status, DateTime currentTime)
-        {
-            status.IsConnected = false;
-            _logger.LogWarning("Device {DeviceId} connection lost at {Timestamp}", deviceId, currentTime);
-        }
 
-        public void Dispose() => _connectionCheckTimer?.Dispose();
+        public bool IsDeviceConnected(Guid deviceId)
+        {
+            return _devices.TryGetValue(deviceId.ToString(), out var status) && status.IsConnected;
+        }
     }
 }

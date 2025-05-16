@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.MQTT.Services;
+﻿namespace Core.Domain.Constants;
 
 public static class ValidationConstants
 {
