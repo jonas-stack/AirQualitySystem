@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.MQTT;
+namespace Infrastructure.MQTT.Configuration;
 
 public static class MqttExtensions
 {
