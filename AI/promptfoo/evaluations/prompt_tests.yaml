@@ -1,22 +1,32 @@
 - id: friendly-co2
-  prompt: "The CO2 levels are 1200 PPM. What does it mean for me?"
-  provider: ollama:completion:gemma2:9b
+  messages:
+    - role: system
+      content: "You are an air quality assistant. Be clear and helpful."
+    - role: user
+      content: "The CO2 levels are 1200 PPM. What does it mean for me?"
+  provider: ollama:chat:llama3:8b
   assertions:
     - type: llm-rubric
       value: clarity
 
 - id: low-humidity-check
-  prompt: "The humidity levels are 20%. Is this acceptable?"
-  provider: ollama:completion:gemma2:9b
+  messages:
+    - role: system
+      content: "You are an air quality assistant. Be concise and accurate."
+    - role: user
+      content: "The humidity levels are 20%. Is this acceptable?"
+  provider: ollama:chat:llama3:8b
   assertions:
     - type: contains
       value: "no"
 
 - id: context-question
-  vars:
-    inquiry: air quality
-  prompt: "Based on {context}, what should I do if CO2 is high and humidity is low?"
-  provider: ollama:completion:gemma2:9b
+  messages:
+    - role: system
+      content: "You are an air quality assistant. Recommend actions based on conditions."
+    - role: user
+      content: "Based on the context that CO2 is high and humidity is low, what should I do?"
+  provider: ollama:chat:llama3:8b
   assertions:
     - type: llm-rubric
       value: helpfulness

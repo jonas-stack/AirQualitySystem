@@ -10,19 +10,19 @@ const prod = import.meta.env.PROD
 export const randomUid = crypto.randomUUID();
 
 export default function App() {
-  const [serverUrl, setServerUrl] = useState<string | undefined>(undefined)
-    
-  useEffect(() => {
-      const finalUrl = prod ? 'wss://' + baseUrl + '?id=' + randomUid : 'ws://' + baseUrl + '?id=' + randomUid;
-      setServerUrl(finalUrl);
-  }, [prod, baseUrl]);
+    const [serverUrl, setServerUrl] = useState<string | undefined>(undefined)
 
-  return (<>
-      {serverUrl && (
-          <WsClientProvider url={serverUrl} >
-              <ApplicationRoutes />
-          </WsClientProvider>
-      )}
-      {!serverUrl && <DevTools />}
-      </>);
+    useEffect(() => {
+        const finalUrl = prod ? 'wss://' + baseUrl + '?id=' + randomUid : 'ws://' + baseUrl + '?id=' + randomUid;
+        setServerUrl(finalUrl);
+    }, [prod, baseUrl]);
+
+    return (<>
+        {serverUrl && (
+            <WsClientProvider url={serverUrl} >
+                <ApplicationRoutes />
+            </WsClientProvider>
+        )}
+        {!serverUrl && <DevTools />}
+    </>);
 }

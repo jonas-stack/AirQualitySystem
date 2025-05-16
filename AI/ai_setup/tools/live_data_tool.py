@@ -113,6 +113,17 @@ def environment_tendency_tool(measurements: Dict[str, List[Dict]]) -> str:
     else:
         return "\n".join(result["alerts"])
 
+# Summarized environment tool for simplified output
+def summarized_environment_tool(_: str = "") -> str:
+    raw_data = get_live_sensor_data(30)
+    grouped = group_data_by_key(raw_data)
+    result = predict_environment_tendency(grouped)
+
+    if result["status"] == "OK":
+        return "All values are good."
+    else:
+        return "\n".join(f"- {msg}" for msg in result["alerts"])
+
 def run_live_environment_tool(_: str = "") -> str:
     raw_data = get_live_sensor_data(30)
     grouped = group_data_by_key(raw_data)
