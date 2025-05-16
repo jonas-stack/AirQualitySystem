@@ -1,14 +1,16 @@
-﻿using System.Text.Json;
+﻿
+
 using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
-using Application.Mappers;
+using Application.Interfaces.Mappers;
 using Application.Models.Dtos.MQTT;
 using Application.Utility;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
+using Infrastructure.MQTT.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.MQTT.SubscriptionEventHandlers;
+namespace Infrastructure.MQTT.Handlers;
 
 public class DeviceConnectionHandler : IMqttMessageHandler
 {
@@ -17,13 +19,13 @@ public class DeviceConnectionHandler : IMqttMessageHandler
     private readonly DeviceConnectionTracker _connectionTracker;
     private readonly IDeviceRepository _deviceRepository;
     private readonly IDataValidator _validator;
-    private readonly DevicesMapper _mapper;
-    private readonly IMqttMessageDeserializer _deserializer;
+    private readonly IDevicesMapper _mapper;
+    private readonly IJsonDeserializer _deserializer;
     
     public DeviceConnectionHandler(
         ILogger<DeviceConnectionHandler> logger,
         DeviceConnectionTracker connectionTracker,
-        IDeviceRepository deviceRepository, IDataValidator validator, DevicesMapper mapper, IMqttMessageDeserializer deserializer)
+        IDeviceRepository deviceRepository, IDataValidator validator, IDevicesMapper mapper, IJsonDeserializer deserializer)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;

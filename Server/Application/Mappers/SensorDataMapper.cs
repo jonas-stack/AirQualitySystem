@@ -1,10 +1,11 @@
-﻿using Application.Models.Dtos.MQTT;
+﻿using Application.Interfaces.Mappers;
+using Application.Models.Dtos.MQTT;
 using Application.Utility;
 using Core.Domain.Entities;
 
 namespace Application.Mappers;
 
-public class SensorDataMapper
+public class SensorDataMapper : ISensorDataMapper
 {
     public SensorData MapToEntity(SensorDataDto dto)
     {

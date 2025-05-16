@@ -1,30 +1,31 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
-using Application.Mappers;
+using Application.Interfaces.Mappers;
 using Application.Models.Dtos.MQTT;
 using Application.Utility;
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
+using Infrastructure.MQTT.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.MQTT.SubscriptionEventHandlers;
+namespace Infrastructure.MQTT.Handlers;
 
 public class SensorDataHandler : IMqttMessageHandler
 {
     private readonly DeviceConnectionTracker _connectionTracker;
     private readonly ILogger<SensorDataHandler> _logger;
-    private readonly SensorDataMapper _mapper;
+    private readonly ISensorDataMapper _mapper;
     private readonly ISensorDataRepository _sensorDataRepository;
     private readonly IDataValidator _validator;
-    private readonly IMqttMessageDeserializer _deserializer;
+    private readonly IJsonDeserializer _deserializer;
     private readonly IDeviceRepository _deviceRepository;
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
         DeviceConnectionTracker connectionTracker,
         IDataValidator validator,
-        SensorDataMapper mapper,
-        ISensorDataRepository sensorDataRepository, IMqttMessageDeserializer deserializer, IDeviceRepository deviceRepository)
+        ISensorDataMapper mapper,
+        ISensorDataRepository sensorDataRepository, IJsonDeserializer deserializer, IDeviceRepository deviceRepository)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;

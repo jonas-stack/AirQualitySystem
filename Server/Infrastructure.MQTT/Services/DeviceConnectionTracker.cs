@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.MQTT
+namespace Infrastructure.MQTT.Services
 {
     public class DeviceConnectionTracker
     {

@@ -1,17 +1,18 @@
 ﻿// Path: Server/Infrastructure.MQTT/MqttMessageDeserializer.cs
+
 using System.Text;
 using System.Text.Json;
 using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models.Results;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.MQTT;
+namespace Infrastructure.MQTT.Services;
 
-public class MqttMessageDeserializer : IMqttMessageDeserializer
+public class JsonDeserializer : IJsonDeserializer
 {
-    private readonly ILogger<MqttMessageDeserializer> _logger;
+    private readonly ILogger<JsonDeserializer> _logger;
 
-    public MqttMessageDeserializer(ILogger<MqttMessageDeserializer> logger)
+    public JsonDeserializer(ILogger<JsonDeserializer> logger)
     {
         _logger = logger;
     }

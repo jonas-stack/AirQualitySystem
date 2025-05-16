@@ -3,6 +3,7 @@ using Application.Models;
 using Application.Services;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Exceptions;
+using Infrastructure.MQTT.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -95,7 +96,7 @@ public static class MqttExtensions
         services.AddSingleton<IMqttService, MqttSubscriber>();
         services.AddSingleton<DeviceConnectionTracker>();
         services.AddScoped<IDataValidator, DataValidator>();
-        services.AddScoped<IMqttMessageDeserializer, MqttMessageDeserializer>();
+        services.AddScoped<IJsonDeserializer, JsonDeserializer>();
 
         return services;
     }
