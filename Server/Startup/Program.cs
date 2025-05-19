@@ -74,7 +74,7 @@ public class Program
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
         
-        services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
+        services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContext>(options =>
                     options.UseNpgsql(appOptions.DbConnectionString));
         
         services.AddScoped<Seeder>();
