@@ -25,7 +25,7 @@ export function LiveDataCard({
   useEffect(() => {
     const fetchLiveData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/AetherAI/analyze_live_data");
+        const response = await fetch("ws://localhost:8181");
         const data = await response.json();
         console.log("Live data response:", data);
         if (data?.user_friendly_advice && data.user_friendly_advice !== messages[messages.length - 1]) {

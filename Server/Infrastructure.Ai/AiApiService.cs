@@ -19,4 +19,11 @@ public class AiApiService(HttpClient httpClient) : IAiService
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync();
     }
+
+    public async Task<string> AnalyzeLiveData()
+    {
+        var response = await httpClient.GetAsync("/AetherAI/analyze_live_data");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
 }

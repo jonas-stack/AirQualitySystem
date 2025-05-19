@@ -214,6 +214,10 @@ export interface ChangeSubscriptionDto {
 
 
 
+export interface LiveAiFeedbackDto extends BaseDto {
+    aiAdvice?: string;
+}
+
 export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
@@ -234,6 +238,7 @@ export interface Pong extends BaseDto {
 
 /** Available eventType constants */
 export enum StringConstants {
+    LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
@@ -244,6 +249,8 @@ export enum StringConstants {
 /** Websocket Topic Enums */
 export enum WebsocketTopics {
     Dashboard = "Dashboard",
+    Ai = "Ai",
+    GraphTotalMeasurements = "GraphTotalMeasurements",
 }
 
 export interface FileResponse {

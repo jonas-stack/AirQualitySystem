@@ -205,7 +205,7 @@
           }
         }
       },
-      "ServerSendsErrorMessage": {
+      "LiveAiFeedbackDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -214,7 +214,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "message": {
+              "aiAdvice": {
                 "type": "string"
               }
             }
@@ -232,6 +232,22 @@
             "type": "string"
           }
         }
+      },
+      "ServerSendsErrorMessage": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "ExampleClientDto": {
         "allOf": [
@@ -291,6 +307,7 @@
         "type": "string",
         "description": "Available eventType constants",
         "enum": [
+          "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
           "ExampleClientDto",
           "ExampleServerResponse",
@@ -302,7 +319,9 @@
         "type": "string",
         "description": "Websocket Topic Enums",
         "enum": [
-          "Dashboard"
+          "Dashboard",
+          "Ai",
+          "GraphTotalMeasurements"
         ]
       }
     }
