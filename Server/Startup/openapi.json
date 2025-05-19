@@ -249,6 +249,55 @@
           }
         ]
       },
+      "ClientRequestDeviceList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ServerResponseList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceList": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "DeviceDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "DeviceName": {
+            "type": "string"
+          },
+          "LastSeen": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "IsConnected": {
+            "type": "boolean"
+          }
+        }
+      },
       "ExampleClientDto": {
         "allOf": [
           {
@@ -309,6 +358,8 @@
         "enum": [
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
+          "ClientRequestDeviceList",
+          "ServerResponseList",
           "ExampleClientDto",
           "ExampleServerResponse",
           "Ping",
@@ -321,6 +372,9 @@
         "enum": [
           "Dashboard",
           "Ai",
+          "DeviceStatus",
+          "DeviceData",
+          "Device",
           "GraphTotalMeasurements"
         ]
       }

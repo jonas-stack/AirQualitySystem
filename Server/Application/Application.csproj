@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Dtos\Websocket\" />
     <Folder Include="Models\Enums\" />
   </ItemGroup>
 
