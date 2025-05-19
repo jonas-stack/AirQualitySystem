@@ -2,20 +2,21 @@
 
 namespace Infrastructure.Ai;
 
-public class AiApiService : IAiService
+public class AiApiService(HttpClient httpClient) : IAiService
 {
-    private readonly HttpClient _httpClient;
-    
-    public AiApiService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
     public async Task<string> Ai_chat(string message)
     {
-        var fullUrl = new Uri(_httpClient.BaseAddress, $"/AetherAI/ask_ai?question={message}");
-        Console.WriteLine(fullUrl.ToString());
-        var response = await _httpClient.GetAsync($"/AetherAI/ask_ai?question={message}"); ;
+        var endpoint = new Uri(httpClient.BaseAddress, $"/AetherAI/ask_ai?question={message}");
+        Console.WriteLine(endpoint.ToString());
+        var response = await httpClient.GetAsync($"/AetherAI/ask_ai?question={message}");
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<string> AnalyzeHistoricalData(string range)
+    {
+        var endpoint = $"/AetherAI/historical_analysis?range={range}";
+        var response = await httpClient.GetAsync(endpoint);
+        response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync();
     }
 }

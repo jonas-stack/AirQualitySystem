@@ -9,4 +9,9 @@ public class AiCommunicationService(IAiService aiService) : IAiCommunication
     {
         return await aiService.Ai_chat(message);
     }
+
+    public async Task<string> AnalyzeHistoricalData(string range)
+    {
+        return await aiService.AnalyzeHistoricalData(range);
+    }
 }
