@@ -6,4 +6,5 @@ namespace Application.Interfaces;
 public interface IDeviceService
 {
     Task<List<DeviceDto>> GetAllDeviceStatus();
+    Task BroadcastDeviceStatus(DeviceDto dto);
 }

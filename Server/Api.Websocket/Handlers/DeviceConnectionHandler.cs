@@ -9,8 +9,12 @@ using WebSocketBoilerplate;
 
 namespace Api.Websocket.Handlers;
 
+// klient skal sende noget, før vi kan sende data tilbage
+// derfor requester klienten dette:
+// { "eventType": "ClientRequestDeviceList" }
 public class ClientRequestDeviceList : BaseDto { }
 
+// serveren sender dette tilbage til klienten
 public class ServerResponseList : BaseDto
 {
     public List<DeviceDto> DeviceList { get; set; }
