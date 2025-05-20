@@ -17,7 +17,7 @@ public class ClientRequestDeviceStatus : BaseDto { }
 // serveren sender dette tilbage til klienten
 public class ServerResponseDeviceStatus : BaseDto
 {
-    public DeviceDto DeviceStatus { get; set; }
+    public required DeviceDto DeviceStatus { get; set; }
 }
 
 public class DeviceCurrentStatusHandler : BaseEventHandler<ClientRequestDeviceStatus>

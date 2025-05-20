@@ -14,7 +14,8 @@ public sealed class AddWebsocketEventsProcessor : IDocumentProcessor
         var constants = topicsType
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
-            .Select(f => (string)f.GetRawConstantValue())
+            .Select(f => f.GetRawConstantValue() as string)
+            .Where(value => value != null)
             .Distinct()
             .ToList();
 
