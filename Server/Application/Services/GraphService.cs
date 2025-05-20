@@ -23,10 +23,14 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
         {
             Identifier = currentTime,
             Amount = tempInt,
-            EventType = WebsocketEvents.GraphTotalMeasurement,
-            Topic = WebsocketTopics.Dashboard
         };
         
-        await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, graphModel);
+        var response = new WebsocketMessage<GraphModel<int>>
+        {
+            Topic = WebsocketTopics.DeviceStatus,
+            Data = graphModel
+        };
+        
+        await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, response);
     }
 }

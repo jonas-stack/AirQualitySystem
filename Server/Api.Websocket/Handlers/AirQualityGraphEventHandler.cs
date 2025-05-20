@@ -1,4 +1,5 @@
-﻿using Fleck;
+﻿using Application.Enums;
+using Fleck;
 using WebSocketBoilerplate;
 
 namespace Api.Websocket.Handlers;
@@ -6,13 +7,15 @@ namespace Api.Websocket.Handlers;
 // hvad klient sender
 public class RequestAirQualityData : BaseDto
 {
-    public string SomethingTheClientSends { get; set; }
+    public GraphType GraphType { get; set; }
+    public TimePeriod TimePeriod { get; set; }
 }
 
 // hvad server sender..
 public class AirQualityDataGraph : BaseDto
 {
-    public string SomethingTheServerSends { get; set; }
+    public GraphType GraphType { get; set; }
+    public TimePeriod TimePeriod { get; set; }
 }
 
 public class AirQualityGraphEventHandler : BaseEventHandler<RequestAirQualityData>

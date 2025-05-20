@@ -1,6 +1,6 @@
 ﻿namespace Application.Enums;
 
-public enum GraphTimePeriod
+public enum TimePeriod
 {
     Daily,
     Weekly,
