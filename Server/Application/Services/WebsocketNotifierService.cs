@@ -14,7 +14,7 @@ public class WebsocketNotifierService(IConnectionManager connectionManager, IGra
        sensordata.Id = 1;
        sensordata.Temperature = _random.Next(10, 25);
         
-        await graphService.GetTotalMeasurementsAsync(sensordata);
+        await graphService.BroadcastMeasurementsAsync(sensordata);
         await Task.CompletedTask;
     }
 }

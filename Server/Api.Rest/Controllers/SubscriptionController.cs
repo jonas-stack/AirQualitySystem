@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Rest.Controllers;
 
 [ApiController]
+[Route("api/[controller]")]
 public class SubscriptionController(
     IWebsocketSubscriptionService websocketSubscriptionService) : ControllerBase
 {

@@ -20,7 +20,7 @@ export class SubscriptionClient {
     }
 
     subscribe(authorization: string | undefined, dto: ChangeSubscriptionDto): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/Subscribe";
+        let url_ = this.baseUrl + "/api/Subscription/Subscribe";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(dto);
@@ -63,7 +63,7 @@ export class SubscriptionClient {
     }
 
     unsubscribe(authorization: string | undefined, dto: ChangeSubscriptionDto): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/Unsubscribe";
+        let url_ = this.baseUrl + "/api/Subscription/Unsubscribe";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(dto);

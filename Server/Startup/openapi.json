@@ -6,7 +6,7 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/Subscribe": {
+    "/api/Subscription/Subscribe": {
       "post": {
         "tags": [
           "Subscription"
@@ -49,7 +49,7 @@
         }
       }
     },
-    "/Unsubscribe": {
+    "/api/Subscription/Unsubscribe": {
       "post": {
         "tags": [
           "Subscription"

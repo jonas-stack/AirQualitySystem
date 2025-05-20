@@ -13,7 +13,7 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
         await BroadcastTemperatureGraph(sensorData);
     }
 
-    public async Task  BroadcastTemperatureGraph(SensorData sensorData)
+    public async Task BroadcastTemperatureGraph(SensorData sensorData)
     {
         String currentTime = DateTime.Now.ToString("HH:mm");
         int tempInt = (int)Math.Round(sensorData.Temperature);
