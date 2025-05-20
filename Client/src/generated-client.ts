@@ -203,7 +203,6 @@ export class SubscriptionClient {
     }
 }
 
-<<<<<<< HEAD
 export class WebsocketNotifierClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -255,6 +254,7 @@ export class WebsocketNotifierClient {
         }
         return Promise.resolve<FileResponse>(null as any);
     }
+}
 
 export interface MessageFromClient {
     message?: string;
@@ -286,6 +286,7 @@ export interface T {
 }
 
 
+
 export interface LiveAiFeedbackDto extends BaseDto {
     aiAdvice?: string;
 }
@@ -300,12 +301,13 @@ export interface RequestAirQualityDataDto extends BaseDto {
 
 export interface AirQualityDataGraph extends BaseDto {
     somethingTheServerSends?: string;
-
-export interface ClientRequestDeviceList extends BaseDto {
 }
 
-export interface ServerResponseList extends BaseDto {
-    deviceList?: DeviceDto[];
+export interface ClientRequestDeviceStatus extends BaseDto {
+}
+
+export interface ServerResponseDeviceStatus extends BaseDto {
+    deviceStatus?: DeviceDto;
 }
 
 export interface DeviceDto {
@@ -323,6 +325,13 @@ export interface ExampleServerResponse extends BaseDto {
     somethingTheServerSends?: string;
 }
 
+export interface ClientRequestDeviceList extends BaseDto {
+}
+
+export interface ServerResponseList extends BaseDto {
+    deviceList?: DeviceDto[];
+}
+
 export interface Ping extends BaseDto {
 }
 
@@ -335,10 +344,12 @@ export enum StringConstants {
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
     RequestAirQualityDataDto = "RequestAirQualityDataDto",
     AirQualityDataGraph = "AirQualityDataGraph",
-    ClientRequestDeviceList = "ClientRequestDeviceList",
-    ServerResponseList = "ServerResponseList",
+    ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
+    ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
+    ClientRequestDeviceList = "ClientRequestDeviceList",
+    ServerResponseList = "ServerResponseList",
     Ping = "Ping",
     Pong = "Pong",
 }
@@ -346,16 +357,17 @@ export enum StringConstants {
 /** Websocket Topic Enums */
 export enum WebsocketTopics {
     Dashboard = "Dashboard",
-    GraphTotalMeasurements = "GraphTotalMeasurements",
-}
-
-/** Websocket Events enums */
-export enum WebsocketEvents {
     Ai = "Ai",
     DeviceStatus = "DeviceStatus",
     DeviceData = "DeviceData",
     Device = "Device",
     GraphTotalMeasurements = "GraphTotalMeasurements",
+}
+
+/** Websocket Events enums */
+export enum WebsocketEvents {
+    GraphTotalMeasurement = "GraphTotalMeasurement",
+    AllDeviceStatus = "AllDeviceStatus",
 }
 
 export interface FileResponse {

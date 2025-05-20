@@ -4,7 +4,7 @@ using WebSocketBoilerplate;
 namespace Api.Websocket.Handlers;
 
 // hvad klient sender
-public class RequestAirQualityDataDto : BaseDto
+public class RequestAirQualityData : BaseDto
 {
     public string SomethingTheClientSends { get; set; }
 }
@@ -15,9 +15,9 @@ public class AirQualityDataGraph : BaseDto
     public string SomethingTheServerSends { get; set; }
 }
 
-public class AirQualityGraphEventHandler : BaseEventHandler<RequestAirQualityDataDto>
+public class AirQualityGraphEventHandler : BaseEventHandler<RequestAirQualityData>
 {
-    public override Task Handle(RequestAirQualityDataDto dto, IWebSocketConnection socket)
+    public override Task Handle(RequestAirQualityData dto, IWebSocketConnection socket)
     {
         throw new Exception("Not implemented");
     }
