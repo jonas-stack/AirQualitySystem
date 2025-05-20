@@ -5,19 +5,27 @@
 #include "devices/lcd_display.h"
 #include "devices/pm25_sensor.h"
 #include "MQTT/MqttManager.h"
-#include "MQTT/WiFiManager.h"
+#include "WiFi/CustomWiFiManager.h"
 #include "MQTT/TimeManager.h"
 #include "MQTT/config.h"
+
+// Define WiFi reset button pin
+#define WIFI_RESET_BUTTON_PIN 27
 
 // Global topic definitions
 const char* MQTT_DATA_TOPIC = "AirQuality/Data";
 const char* MQTT_STATUS_TOPIC = "airquality/status";
 
 // Create class instances
-WiFiManager wifiManager(WIFI_SSID, WIFI_PASSWORD);
+CustomWiFiManager customWiFiManager(
+    WIFI_SSID, WIFI_PASSWORD,
+    WIFI_AP_NAME, WIFI_AP_PASSWORD,
+    DRD_TIMEOUT, DRD_ADDRESS,
+    WIFI_RESET_BUTTON_PIN
+);
 TimeManager timeManager;
 MqttManager mqttClient(
-    &wifiManager,
+    &customWiFiManager,
     &timeManager,
     MQTT_SERVER,
     MQTT_PORT,
@@ -50,7 +58,7 @@ void setup() {
   Wire.begin();
   bool success = true;
   
-  if (!wifiManager.connect()) success = false;
+  if (!customWiFiManager.connect()) success = false;
   timeManager.syncNTP();
   if (!setupBME280Sensor()) success = false;
   if (!setupLCDDisplay()) success = false;
@@ -76,6 +84,7 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
   mqttClient.loop();
+  customWiFiManager.loop();
 
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
