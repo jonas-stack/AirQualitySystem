@@ -11,11 +11,15 @@ using WebSocketBoilerplate;
 namespace Api.Websocket.Handlers;
 
 // hvad klient sender
+/*
+ * {
+      "eventType": "RequestAirQualityData",
+      "timePeriod": "Weekly",
+      "data": ["temperature", "humidity", "pm25"]
+ * }
+ */
 public class RequestAirQualityData : BaseDto
 {
-    //[JsonConverter(typeof(JsonStringEnumConverter))]
-  //  public GraphType GraphType { get; set; }
-    
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public TimePeriod TimePeriod { get; set; }
     
@@ -23,9 +27,34 @@ public class RequestAirQualityData : BaseDto
 }
 
 // hvad server sender..
+/*
+ * {
+    "Topic": "Dashboard",
+    "Data": {
+        "RequestedData": [
+            "temperature",
+            "humidity",
+            "pm25"
+        ],
+        "TimePeriod": Weekly,
+        "Data": [
+            {
+                "time": "Week 18",
+                "temperature": 23.2,
+                "humidity": 35.39,
+                "pm25": 6.8
+            },
+        ],
+        "eventType": "AirQualityDataGraph",
+        "requestId": null
+    }
+}
+ */
 public class AirQualityDataGraph : BaseDto
 {
-    public List<string> RequestedData { get; set; }
+    public required List<string> RequestedData { get; set; }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public TimePeriod TimePeriod { get; set; }
     public required List<Dictionary<string, object>> Data { get; set; }
 }

@@ -361,7 +361,7 @@
                 }
               },
               "timePeriod": {
-                "$ref": "#/components/schemas/TimePeriod2"
+                "$ref": "#/components/schemas/TimePeriod"
               },
               "data": {
                 "type": "array",
@@ -372,22 +372,6 @@
               }
             }
           }
-        ]
-      },
-      "TimePeriod2": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Hourly",
-          "Daily",
-          "Weekly",
-          "Monthly"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       "ClientRequestDeviceStatus": {

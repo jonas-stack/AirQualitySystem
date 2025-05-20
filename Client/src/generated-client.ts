@@ -299,15 +299,8 @@ export enum TimePeriod {
 
 export interface AirQualityDataGraph extends BaseDto {
     requestedData?: string[];
-    timePeriod?: TimePeriod2;
+    timePeriod?: TimePeriod;
     data?: { [key: string]: any; }[];
-}
-
-export enum TimePeriod2 {
-    Hourly = 0,
-    Daily = 1,
-    Weekly = 2,
-    Monthly = 3,
 }
 
 export interface ClientRequestDeviceStatus extends BaseDto {

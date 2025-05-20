@@ -13,7 +13,7 @@ public interface IGraphService
    // Task<List<MultiGraphEntity>> GetGraphDataAsync(GraphType graphType, TimePeriod timePeriod, DateTime? referenceDate = null);
 
    //data keys er f.eks.
-   // { "temperature", "humidty" }
+   // ["temperature", "humidity", "pm25"]
    Task<List<FlexibleGraphData>> GetFlexibleGraphDataAsync(List<string> dataKeys, TimePeriod timePeriod,
        DateTime? referenceDate = null);
 
