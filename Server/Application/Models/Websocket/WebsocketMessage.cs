@@ -1,4 +1,4 @@
-﻿namespace Application.Models.Websocket;
+namespace Application.Models.Websocket;
 
 public class WebsocketMessage<T>
 {

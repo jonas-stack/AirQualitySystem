@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ConnectionStatusCard } from "@/components/cards/connection-status-card";
 import { CardArray } from "@/types/card";
 import { AirQualityInsightsCard } from "@/components/cards/air-quality-insights-card";
-import { AIChatCard } from "@/components/cards/ai-chat-card";
+import { LiveDataCard } from "@/components/cards/live_data_card.tsx";
 import { SimpleAirQualityChartsCard } from "@/components/cards/simple-air-quality-charts-card";
 import AirQualityTemperatureCard from "@/components/cards/air-quality-temperature-card";
 
@@ -64,7 +64,8 @@ import AirQualityTemperatureCard from "@/components/cards/air-quality-temperatur
 export default function DashboardPage() {
     const handleSendMessage = async (message: string): Promise<string> => {
         await new Promise((resolve) => setTimeout(resolve, 1500))
-    
+
+
         if (message.toLowerCase().includes("air quality")) {
           return "Based on today's readings, your indoor air quality is good overall, with PM2.5 levels at 8 μg/m³. However, I've noticed slightly elevated VOC levels in the kitchen area."
         } else if (message.toLowerCase().includes("purifier")) {
@@ -125,14 +126,14 @@ export default function DashboardPage() {
 
             <div className="lg:col-span-4">
                 <AirQualityInsightsCard
-                cards={airQualityData}
-                onRefresh={() => console.log("Refreshing air quality data...")}
-                lastUpdated={new Date()}
+                  cards={airQualityData}
+                  onRefresh={() => console.log("Refreshing air quality data...")}
+                  lastUpdated={new Date()}
                 />
             </div>
 
             <div className="lg:col-span-4">
-                <AIChatCard className="h-[500px] lg:h-[496px]" title="Air Quality Assistant" onSendMessage={handleSendMessage} />
+                <LiveDataCard className="h-[500px] lg:h-[496px]" title="Air Quality Assistant" onSendMessage={handleSendMessage} />
             </div>
 
             <div className="lg:col-span-4">

@@ -6,8 +6,9 @@ import DataPage from "@/pages/auth/DataPage";
 import { ROUTE } from "@/routes-constants";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "@/components/ui/sonner";
+import AIPage from "@/pages/auth/AIPage.tsx";
 
-export default function ApplicationRoutes() {    
+export default function ApplicationRoutes() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Toaster />
@@ -17,7 +18,8 @@ export default function ApplicationRoutes() {
         <Route element={<AuthenticatedLayout />}>
           <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
           <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
-        </Route>
+        <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
+    </Route>
 
       </Routes>
     </ThemeProvider>

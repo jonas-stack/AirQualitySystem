@@ -2,15 +2,15 @@
 
 # Load environment variables from .env file
 set -a
-source .env
+source ../Startup/.env
 set +a
 
 # Scaffold for the Docker database
 echo "Scaffolding for the Docker database..."
 dotnet ef dbcontext scaffold "${DOCKER_CONN_STR}" Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir ../Core.Domain/TestEntities \
+  --output-dir ../Core.Domain/Entities \
   --context-dir . \
-  --context MyDbContextTestDocker \
+  --context MyDbContext \
   --no-onconfiguring \
   --no-pluralize \
   --namespace Core.Domain.Entities \
