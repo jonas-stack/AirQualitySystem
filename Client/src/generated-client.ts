@@ -275,16 +275,6 @@ export interface ApplicationBaseDto {
     topic?: string;
 }
 
-export interface GraphModel_1 extends ApplicationBaseDto {
-    identifier?: string;
-    amount?: T;
-    eventType?: string;
-    topic?: string;
-}
-
-export interface T {
-}
-
 
 
 export interface LiveAiFeedbackDto extends BaseDto {
@@ -295,12 +285,29 @@ export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
 
-export interface RequestAirQualityDataDto extends BaseDto {
-    somethingTheClientSends?: string;
+export interface RequestAirQualityData extends BaseDto {
+    timePeriod?: TimePeriod;
+    data?: string[];
+}
+
+export enum TimePeriod {
+    Hourly = "Hourly",
+    Daily = "Daily",
+    Weekly = "Weekly",
+    Monthly = "Monthly",
 }
 
 export interface AirQualityDataGraph extends BaseDto {
-    somethingTheServerSends?: string;
+    requestedData?: string[];
+    timePeriod?: TimePeriod2;
+    data?: { [key: string]: any; }[];
+}
+
+export enum TimePeriod2 {
+    Hourly = 0,
+    Daily = 1,
+    Weekly = 2,
+    Monthly = 3,
 }
 
 export interface ClientRequestDeviceStatus extends BaseDto {
@@ -342,7 +349,7 @@ export interface Pong extends BaseDto {
 export enum StringConstants {
     LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
-    RequestAirQualityDataDto = "RequestAirQualityDataDto",
+    RequestAirQualityData = "RequestAirQualityData",
     AirQualityDataGraph = "AirQualityDataGraph",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",

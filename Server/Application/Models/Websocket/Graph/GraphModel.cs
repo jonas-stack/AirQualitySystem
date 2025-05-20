@@ -1,7 +1,13 @@
-﻿namespace Application.Models.Dtos.Graph;
+﻿namespace Application.Models.Websocket.Graph;
 
-public class GraphModel<T>
+public class GraphModel
 {
-    public required string Identifier { get; set; }
-    public required T Amount { get; set; }
+    public string Label { get; set; }
+    public List<DataPoint> Data { get; set; }
+}
+
+public class DataPoint
+{
+    public string X { get; set; }
+    public double Y { get; set; }
 }

@@ -1,9 +1,9 @@
 ﻿using Application.Enums;
-using Application.Models.Dtos.Graph;
+using Core.Domain.Entities;
 
 namespace Application.Interfaces.Infrastructure.Postgres;
 
-public interface IGraphRepository<T>
+public interface IGraphRepository
 {
-    Task<List<GraphModel<T>>> GetGraphDataAsync(GraphType graphType, TimePeriod timePeriod, DateTime? referenceDate = null);
+    Task<List<MultiGraphEntity>> GetGraphDataAsync(TimePeriod timePeriod, DateTime? referenceDate = null);
 }
