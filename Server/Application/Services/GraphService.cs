@@ -2,6 +2,7 @@
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
 using Application.Models.Dtos.Graph;
+using Application.Models.Websocket;
 using Core.Domain.Entities;
 
 namespace Application.Services;
@@ -22,8 +23,8 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
         {
             Identifier = currentTime,
             Amount = tempInt,
-            eventType = WebsocketEvents.GraphTotalMeasurement,
-            topic = WebsocketTopics.Dashboard
+            EventType = WebsocketEvents.GraphTotalMeasurement,
+            Topic = WebsocketTopics.Dashboard
         };
         
         await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, graphModel);
