@@ -263,35 +263,6 @@
           }
         }
       },
-      "GraphModel_1": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ApplicationBaseDto"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "identifier": {
-                "type": "string"
-              },
-              "amount": {
-                "$ref": "#/components/schemas/T"
-              },
-              "eventType": {
-                "type": "string"
-              },
-              "topic": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "T": {
-        "type": "object",
-        "additionalProperties": false
-      },
       "LiveAiFeedbackDto": {
         "allOf": [
           {
@@ -336,7 +307,7 @@
           }
         ]
       },
-      "RequestAirQualityDataDto": {
+      "RequestAirQualityData": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -345,11 +316,46 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "somethingTheClientSends": {
-                "type": "string"
+              "graphType": {
+                "$ref": "#/components/schemas/GraphType"
+              },
+              "timePeriod": {
+                "$ref": "#/components/schemas/TimePeriod"
               }
             }
           }
+        ]
+      },
+      "GraphType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Trends",
+          "Weekly",
+          "Distribution",
+          "Climate"
+        ],
+        "enum": [
+          "Trends",
+          "Weekly",
+          "Distribution",
+          "Climate"
+        ]
+      },
+      "TimePeriod": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Hourly",
+          "Daily",
+          "Weekly",
+          "Monthly"
+        ],
+        "enum": [
+          "Hourly",
+          "Daily",
+          "Weekly",
+          "Monthly"
         ]
       },
       "AirQualityDataGraph": {
@@ -361,11 +367,53 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "somethingTheServerSends": {
-                "type": "string"
+              "graphType": {
+                "$ref": "#/components/schemas/GraphType2"
+              },
+              "timePeriod": {
+                "$ref": "#/components/schemas/TimePeriod2"
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
               }
             }
           }
+        ]
+      },
+      "GraphType2": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Trends",
+          "Weekly",
+          "Distribution",
+          "Climate"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "TimePeriod2": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Hourly",
+          "Daily",
+          "Weekly",
+          "Monthly"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
         ]
       },
       "ClientRequestDeviceStatus": {
@@ -504,7 +552,7 @@
         "enum": [
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
-          "RequestAirQualityDataDto",
+          "RequestAirQualityData",
           "AirQualityDataGraph",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
