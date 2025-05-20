@@ -20,22 +20,20 @@ public class GraphService(IConnectionManager connectionManager, IGraphRepository
     public async Task BroadcastTemperatureGraph(SensorData sensorData)
     {
         String currentTime = DateTime.Now.ToString("HH:mm");
-        int tempInt = (int)Math.Round(sensorData.Temperature);
-
-        /*
-        GraphModel<int> graphModel = new()
+        
+        GraphModel graphModel = new()
         {
             Label = currentTime,
-            Data = tempInt,
+            Amount = Math.Round(sensorData.Temperature, 2)
         };
         
-        var response = new WebsocketMessage<GraphModel<int>>
+        var response = new WebsocketMessage<GraphModel>
         {
             Topic = WebsocketTopics.DeviceStatus,
             Data = graphModel
         };
         
-        await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, response);*/
+        await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, response);
     }
     
     public async Task<List<FlexibleGraphData>> GetFlexibleGraphDataAsync(List<string> dataKeys, TimePeriod timePeriod, DateTime? referenceDate = null)

@@ -6,7 +6,6 @@ using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Postgres.Posetgresql.Data;
 
@@ -191,9 +190,13 @@ public class GraphRepository : IGraphRepository {
         {
             foreach (var kvp in expando)
             {
-                if (kvp.Value != null && double.TryParse(kvp.Value.ToString(), out double dValue))
+                if (kvp.Value is string s && double.TryParse(s, out double dValue))
                 {
                     dict[kvp.Key.ToLower()] = dValue;
+                }
+                else if (kvp.Value is double doub)
+                {
+                    dict[kvp.Key.ToLower()] = doub;
                 }
             }
         }
@@ -204,11 +207,14 @@ public class GraphRepository : IGraphRepository {
             foreach (var prop in props)
             {
                 var value = prop.GetValue(d);
-                double dValue = 0.0;
 
-                if (value != null && double.TryParse(value.ToString(), out dValue))
+                if (value is string s && double.TryParse(s, out double dValue))
                 {
                     dict[prop.Name.ToLower()] = dValue;
+                }
+                else if (value is double doub)
+                {
+                    dict[prop.Name.ToLower()] = doub;
                 }
             }
         }

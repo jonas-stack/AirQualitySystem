@@ -2,6 +2,6 @@
 
 public class FlexibleGraphData
 {
-    public string Time { get; set; }
-    public Dictionary<string, double> DataPoints { get; set; }
+    public required string Time { get; set; }
+    public required Dictionary<string, double> DataPoints { get; set; }
 }

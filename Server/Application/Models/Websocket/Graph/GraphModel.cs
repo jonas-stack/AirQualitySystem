@@ -2,12 +2,6 @@
 
 public class GraphModel
 {
-    public string Label { get; set; }
-    public List<DataPoint> Data { get; set; }
-}
-
-public class DataPoint
-{
-    public string X { get; set; }
-    public double Y { get; set; }
+    public required string Label { get; set; }
+    public required double Amount { get; set; }
 }
