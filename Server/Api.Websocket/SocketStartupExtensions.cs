@@ -55,6 +55,9 @@ public static class Extensions
                 catch (Exception e)
                 {
                     logger.LogError(e, "Error in handling message: {message}", message);
+                    
+                    // Validate that the message is valid JSON; otherwise, the entire program will crash.
+                    
                     var baseDto = JsonSerializer.Deserialize<BaseDto>(message, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true

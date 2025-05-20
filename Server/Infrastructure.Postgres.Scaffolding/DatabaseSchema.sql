@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "DeviceConnectionHistory" (
     "DeviceId" UUID NOT NULL,
     "IsConnected" BOOLEAN NOT NULL,
     "LastSeen" TIMESTAMP NOT NULL,
-    CONSTRAINT "FK_DeviceConnection_Devices" FOREIGN KEY ("DeviceId") REFERENCES "TestDevices" ("DeviceId")
+    CONSTRAINT "FK_DeviceConnection_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("DeviceId")
 );
 
 -- Existing tables...
@@ -30,6 +30,6 @@ CREATE TABLE IF NOT EXISTS "SensorData" (
     "PM25" DOUBLE PRECISION NOT NULL,
     "DeviceId" UUID NOT NULL,
     "Timestamp" TIMESTAMP NOT NULL,
-    CONSTRAINT "FK_TestSensorData_Devices" FOREIGN KEY ("DeviceId") REFERENCES "TestDevices" ("DeviceId"),
+    CONSTRAINT "FK_TestSensorData_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("DeviceId"),
     CONSTRAINT "uq_deviceid_timestamp" UNIQUE ("DeviceId", "Timestamp")
 );

@@ -222,6 +222,20 @@ export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
 
+export interface ClientRequestDeviceList extends BaseDto {
+}
+
+export interface ServerResponseList extends BaseDto {
+    deviceList?: DeviceDto[];
+}
+
+export interface DeviceDto {
+    device_id?: string;
+    DeviceName?: string;
+    LastSeen?: number;
+    IsConnected?: boolean;
+}
+
 export interface ExampleClientDto extends BaseDto {
     somethingTheClientSends?: string;
 }
@@ -240,6 +254,8 @@ export interface Pong extends BaseDto {
 export enum StringConstants {
     LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    ClientRequestDeviceList = "ClientRequestDeviceList",
+    ServerResponseList = "ServerResponseList",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     Ping = "Ping",
@@ -250,6 +266,9 @@ export enum StringConstants {
 export enum WebsocketTopics {
     Dashboard = "Dashboard",
     Ai = "Ai",
+    DeviceStatus = "DeviceStatus",
+    DeviceData = "DeviceData",
+    Device = "Device",
     GraphTotalMeasurements = "GraphTotalMeasurements",
 }
 

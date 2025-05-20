@@ -1,4 +1,6 @@
 ﻿using Application.Interfaces.Infrastructure.Postgres;
+using Application.Models.Dtos;
+using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +97,46 @@ public class DeviceRepository : IDeviceRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error registering new device {DeviceId}", deviceId);
+            throw;
+        }
+    }
+    
+    public async Task<List<DeviceDto>> GetAllDevices()
+    {
+        try
+        {
+            return await _dbContext.Devices
+                .Select(d => new DeviceDto
+                {
+                    DeviceGuid = d.DeviceId.ToString(),
+                    DeviceName = d.DeviceName,
+                    IsConnected = d.IsConnected,
+                    LastSeen = d.LastSeen.Ticks
+                })
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all device status");
+            throw;
+        }
+    }
+
+    public async Task<DeviceDto> GetDeviceStatus()
+    {
+        try
+        {
+            return await _dbContext.Devices
+                .Select(d => new DeviceDto
+                {
+                    DeviceGuid = d.DeviceId.ToString(),
+                    IsConnected = d.IsConnected,
+                })
+                .FirstOrDefaultAsync() ?? throw new InvalidOperationException("Device not found");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving status for device {DeviceId}", ex.Message);
             throw;
         }
     }

@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Infrastructure.MQTT;
+﻿using Application.Interfaces;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Mappers;
 using Application.Models.Dtos.MQTT;
@@ -19,12 +20,14 @@ public class DeviceConnectionHandler : IMqttMessageHandler
     private readonly ILogger<DeviceConnectionHandler> _logger;
     private readonly IDevicesMapper _mapper;
     private readonly IDataValidator _validator;
+    private readonly IDeviceService _deviceService;
 
     public DeviceConnectionHandler(
         ILogger<DeviceConnectionHandler> logger,
         DeviceConnectionTracker connectionTracker,
         IDeviceRepository deviceRepository, IDataValidator validator, IDevicesMapper mapper,
-        IJsonDeserializer deserializer)
+        IJsonDeserializer deserializer,
+        IDeviceService deviceService)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -32,6 +35,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
         _validator = validator;
         _mapper = mapper;
         _deserializer = deserializer;
+        _deviceService = deviceService;
     }
 
     public string TopicFilter => "airquality/status";
@@ -73,15 +77,18 @@ public class DeviceConnectionHandler : IMqttMessageHandler
                 _logger.LogWarning("Incomplete device data for device {DeviceId}. Skipping save.", dto.DeviceName);
                 return;
             }
-
-            // Only update connection status if data is valid
-            var timestamp = DataTypeConverter.GetLocalDateTime(dto.LastSeen);
-            var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceName);
-            _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp, dto.IsConnected);
-
+            
             // Use mapper to create entity
             var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
             await _deviceRepository.SaveDevicesAsync(entity);
+            
+             _connectionTracker.UpdateDeviceStatus(entity.DeviceId, entity.LastSeen, dto.IsConnected);
+            
+            // broadcast for at sørge for at klienten får opdatering om nuværende status
+            // ID'et kommer fra entity når den er gemt i databasen, før det ved vi ikke hvad ID er
+            // for at sørge for at entity igen får korrekt ID, sætter vi fra entity til dto.
+            dto.DeviceGuid = entity.DeviceId.ToString();
+            await _deviceService.BroadcastDeviceStatus(dto);
 
             _logger.LogInformation("Device status saved successfully for device: {DeviceId}", entity.DeviceId);
         }
