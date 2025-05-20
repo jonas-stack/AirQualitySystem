@@ -7,4 +7,5 @@ public interface IDeviceService
 {
     Task<List<DeviceDto>> GetAllDeviceStatus();
     Task BroadcastDeviceStatus(DeviceDto dto);
+    Task<DeviceDto> GetDeviceStatus();
 }

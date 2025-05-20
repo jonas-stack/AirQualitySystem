@@ -34,4 +34,11 @@ public class DeviceService : IDeviceService {
         
         await _connectionManager.BroadcastToTopic(WebsocketTopics.DeviceStatus, response);
     }
+
+    public async Task<DeviceDto> GetDeviceStatus()
+    {
+        var result = await _deviceRepository.GetDeviceStatus();
+        
+        return result;
+    }
 }

@@ -121,4 +121,23 @@ public class DeviceRepository : IDeviceRepository
             throw;
         }
     }
+
+    public async Task<DeviceDto> GetDeviceStatus()
+    {
+        try
+        {
+            return await _dbContext.Devices
+                .Select(d => new DeviceDto
+                {
+                    DeviceGuid = d.DeviceId.ToString(),
+                    IsConnected = d.IsConnected,
+                })
+                .FirstOrDefaultAsync() ?? throw new InvalidOperationException("Device not found");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving status for device {DeviceId}", ex.Message);
+            throw;
+        }
+    }
 }

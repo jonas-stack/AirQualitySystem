@@ -26,11 +26,11 @@ public class ExampleServerResponse : BaseDto
     public string SomethingTheServerSends { get; set; }
 }*/
 
-public class DeviceConnectionHandler : BaseEventHandler<ClientRequestDeviceList>
+public class GetAllDevicesHandler : BaseEventHandler<ClientRequestDeviceList>
 {
     private readonly IDeviceService _deviceService;
     
-    public DeviceConnectionHandler(IDeviceService deviceService)
+    public GetAllDevicesHandler(IDeviceService deviceService)
     {
         _deviceService = deviceService;
     }
