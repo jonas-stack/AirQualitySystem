@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Enums;
+using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
 using Application.Models.Dtos.Graph;
@@ -7,7 +8,7 @@ using Core.Domain.Entities;
 
 namespace Application.Services;
 
-public class GraphService(IConnectionManager connectionManager) : IGraphService
+public class GraphService<T>(IConnectionManager connectionManager) : IGraphService<T>
 {
     public async Task BroadcastMeasurementsAsync(SensorData sensorData)
     {
@@ -32,5 +33,10 @@ public class GraphService(IConnectionManager connectionManager) : IGraphService
         };
         
         await connectionManager.BroadcastToTopic(WebsocketTopics.Dashboard, response);
+    }
+    
+    public Task<List<GraphModel<T>>> GetGraph(GraphType dtoGraphType, TimePeriod dtoTimePeriod)
+    {
+        throw new NotImplementedException();
     }
 }
