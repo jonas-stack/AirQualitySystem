@@ -181,7 +181,6 @@ public class GraphRepository : IGraphRepository {
         }
     }
 
-
     private Dictionary<string, double> BuildValuesDictionary(dynamic d)
     {
         var dict = new Dictionary<string, double>();
@@ -202,7 +201,6 @@ public class GraphRepository : IGraphRepository {
         }
         else
         {
-            // fallback to reflection (see above)
             var props = d.GetType().GetProperties();
             foreach (var prop in props)
             {
