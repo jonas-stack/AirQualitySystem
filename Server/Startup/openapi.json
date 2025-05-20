@@ -7,7 +7,7 @@
   },
   "paths": {
     "/api/Ai/chat": {
-      "get": {
+      "post": {
         "tags": [
           "Ai"
         ],
@@ -50,7 +50,7 @@
       }
     },
     "/api/Ai/historical_data_analysis": {
-      "get": {
+      "post": {
         "tags": [
           "Ai"
         ],
@@ -249,7 +249,7 @@
           }
         ]
       },
-      "ClientRequestDeviceList": {
+      "ClientRequestDeviceStatus": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -260,7 +260,7 @@
           }
         ]
       },
-      "ServerResponseList": {
+      "ServerResponseDeviceStatus": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -269,11 +269,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "deviceList": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DeviceDto"
-                }
+              "deviceStatus": {
+                "$ref": "#/components/schemas/DeviceDto"
               }
             }
           }
@@ -330,6 +327,36 @@
           }
         ]
       },
+      "ClientRequestDeviceList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ServerResponseList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceList": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          }
+        ]
+      },
       "Ping": {
         "allOf": [
           {
@@ -358,10 +385,12 @@
         "enum": [
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
-          "ClientRequestDeviceList",
-          "ServerResponseList",
+          "ClientRequestDeviceStatus",
+          "ServerResponseDeviceStatus",
           "ExampleClientDto",
           "ExampleServerResponse",
+          "ClientRequestDeviceList",
+          "ServerResponseList",
           "Ping",
           "Pong"
         ]
