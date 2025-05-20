@@ -13,33 +13,56 @@ import { useState, useEffect } from "react";
 
 export default function AIModulePage() {
     const [input, setInput] = useState("");
-    const [output, setOutput] = useState("Waiting for input...");
+    const [output, setOutput] = useState("Waiting for you...");
     const [lastUpdated, setLastUpdated] = useState<string | null>(null);
     const [timeRange, setTimeRange] = useState("7d");
-    const [historyResponse, setHistoryResponse] = useState("Fetching historical AI insights...");
+    const [historyResponse, setHistoryResponse] = useState("Waiting for your request...");
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
     const handleAnalyze = async () => {
-        setOutput("Analyzing your data...");
+        setIsAnalyzing(true);
+        setOutput("Answering your request...");
 
         try {
-            const res = await fetch(`http://127.0.0.1:8000/AetherAI/ask_ai?question=${encodeURIComponent(input)}`);
-            if (!res.ok) throw new Error("Failed to fetch response from AI");
+            const res = await fetch("http://localhost:8080/api/ai/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer your_token_if_needed"
+                },
+                body: JSON.stringify({ message: input })
+            });
 
+            if (!res.ok) throw new Error("Failed to fetch response from AI");
             const data = await res.json();
             const message = (data.message || JSON.stringify(data, null, 2)).replace(/\\n/g, "\n");
             setOutput(message);
         } catch (error) {
             console.error("AI query error:", error);
             setOutput("⚠️ Failed to get a response from the AI.");
+        } finally {
+            setIsAnalyzing(false);
         }
     };
 
+
     // Fetch historical AI response for IoT data based on selectable time range when user clicks the button
     const handleHistoryAnalyze = async () => {
-        setHistoryResponse("Loading historical insights...");
+        setIsLoadingHistory(true);
+        setHistoryResponse("Looking at your data...");
+
         try {
-            const res = await fetch(`http://127.0.0.1:8000/AetherAI/historical_analysis?range=${timeRange}`);
-            if (!res.ok) throw new Error("Network response was not ok");
+            const res = await fetch("http://localhost:8080/api/ai/historical_data_analysis", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer your_token_if_needed"
+                },
+                body: JSON.stringify({ message: timeRange }) // assumes timeRange is the expected message format
+            });
+
+            if (!res.ok) throw new Error("Failed to fetch historical AI data");
             const data = await res.json();
             const message = (data.user_friendly_advice || JSON.stringify(data, null, 2)).replace(/\\n/g, "\n");
             setHistoryResponse(message);
@@ -47,8 +70,11 @@ export default function AIModulePage() {
         } catch (error) {
             console.error("Error fetching historical AI data:", error);
             setHistoryResponse("⚠️ Failed to fetch historical AI data.");
+        } finally {
+            setIsLoadingHistory(false);
         }
     };
+
 
     return (
         <div className="px-4 lg:px-6">
@@ -56,13 +82,18 @@ export default function AIModulePage() {
                 <div className="lg:col-span-12 space-y-4">
                     {/* Historical Insights */}
                     <div>
-                        <Card className="h-full shadow-md border-2 border-blue-200">
+                        <Card className="h-full shadow-md border-2 border-blue-200 bg-blue-50/10">
                             <CardHeader>
-                                <CardTitle>Historical Insights</CardTitle>
+                                <CardTitle>🔍 Historical Air Review</CardTitle>
                                 <CardDescription>
-                                    Select a time range to analyze past device data.
-                                    {lastUpdated && <span className="ml-2 text-xs text-muted-foreground">(Last updated: {lastUpdated})</span>}
+                                    Choose a time range to explore trends from past sensor readings.
+                                    {lastUpdated && (
+                                        <span className="ml-2 text-xs text-muted-foreground">
+                                            (Last updated: {lastUpdated})
+                                        </span>
+                                    )}
                                 </CardDescription>
+
                             </CardHeader>
                             <CardContent className="px-6 pb-6">
                                 <div className="mb-4">
@@ -90,7 +121,12 @@ export default function AIModulePage() {
                                         <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
                                         <path d="m21.854 2.147-10.94 10.939" />
                                       </svg>
-                                      <span className="sr-only">Analyze History</span>
+                                        {isLoadingHistory ? (
+                                            <span className="text-xs">Analyzing...</span>
+                                        ) : (
+                                            <span className="sr-only">Analyze History</span>
+                                        )}
+
                                     </button>
                                 </div>
                                 <CompactMarkdownRenderer content={historyResponse} />
@@ -100,12 +136,13 @@ export default function AIModulePage() {
 
                     {/* Manual Analysis */}
                     <div>
-                        <Card className="h-full shadow-md border-2 border-yellow-200">
+                        <Card className="h-full shadow-md border-2 border-yellow-200 bg-yellow-50/10">
                             <CardHeader>
-                                <CardTitle>AI analysis</CardTitle>
+                                <CardTitle>🤖 AI Assistant</CardTitle>
                                 <CardDescription>
-                                    Enter a question or data for AI analysis.
+                                    Ask about your indoor environment or enter live data for smart advice.
                                 </CardDescription>
+
                             </CardHeader>
                             <CardContent className="px-6 pb-4">
                               <div className="flex items-end gap-2">
@@ -125,7 +162,11 @@ export default function AIModulePage() {
                                     <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
                                     <path d="m21.854 2.147-10.94 10.939" />
                                   </svg>
-                                  <span className="sr-only">Send message</span>
+                                    {isAnalyzing ? (
+                                        <span className="text-xs">Analyzing...</span>
+                                    ) : (
+                                        <span className="sr-only">Send message</span>
+                                    )}
                                 </button>
                               </div>
                             </CardContent>
@@ -133,9 +174,12 @@ export default function AIModulePage() {
                     </div>
                 </div>
                 <div className="lg:col-span-12">
-                    <Card className="h-full shadow-md border-2 border-green-200 mt-4">
+                    <Card className="h-full shadow-md border-2 border-green-200 bg-green-50/10">
                         <CardHeader>
-                            <CardTitle>AI Output</CardTitle>
+                            <CardTitle>🧠 AI Response</CardTitle>
+                            <CardDescription>
+                                Here's what the assistant thinks based on your data or question.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <CompactMarkdownRenderer content={output} />

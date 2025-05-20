@@ -27,7 +27,7 @@ export class AiClient {
 
         let options_: RequestInit = {
             body: content_,
-            method: "GET",
+            method: "POST",
             headers: {
                 "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export class AiClient {
 
         let options_: RequestInit = {
             body: content_,
-            method: "GET",
+            method: "POST",
             headers: {
                 "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
@@ -222,11 +222,11 @@ export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
 
-export interface ClientRequestDeviceList extends BaseDto {
+export interface ClientRequestDeviceStatus extends BaseDto {
 }
 
-export interface ServerResponseList extends BaseDto {
-    deviceList?: DeviceDto[];
+export interface ServerResponseDeviceStatus extends BaseDto {
+    deviceStatus?: DeviceDto;
 }
 
 export interface DeviceDto {
@@ -244,6 +244,13 @@ export interface ExampleServerResponse extends BaseDto {
     somethingTheServerSends?: string;
 }
 
+export interface ClientRequestDeviceList extends BaseDto {
+}
+
+export interface ServerResponseList extends BaseDto {
+    deviceList?: DeviceDto[];
+}
+
 export interface Ping extends BaseDto {
 }
 
@@ -254,10 +261,12 @@ export interface Pong extends BaseDto {
 export enum StringConstants {
     LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
-    ClientRequestDeviceList = "ClientRequestDeviceList",
-    ServerResponseList = "ServerResponseList",
+    ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
+    ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
+    ClientRequestDeviceList = "ClientRequestDeviceList",
+    ServerResponseList = "ServerResponseList",
     Ping = "Ping",
     Pong = "Pong",
 }
