@@ -10,7 +10,7 @@
 #include "MQTT/config.h"
 
 // Define WiFi reset button pin
-#define WIFI_RESET_BUTTON_PIN 27
+#define WIFI_RESET_BUTTON_PIN 25
 
 // Global topic definitions
 const char* MQTT_DATA_TOPIC = "AirQuality/Data";
@@ -20,9 +20,9 @@ const char* MQTT_STATUS_TOPIC = "airquality/status";
 CustomWiFiManager customWiFiManager(
     WIFI_SSID, WIFI_PASSWORD,
     WIFI_AP_NAME, WIFI_AP_PASSWORD,
-    DRD_TIMEOUT, DRD_ADDRESS,
     WIFI_RESET_BUTTON_PIN
 );
+
 TimeManager timeManager;
 MqttManager mqttClient(
     &customWiFiManager,
@@ -47,6 +47,7 @@ const unsigned long mqttInterval = 300000;  // 5 minutes between MQTT publishes
 void setup() {
   Serial.begin(115200);
   delay(2000);
+  pinMode(WIFI_RESET_BUTTON_PIN, INPUT_PULLUP);
   
   pinMode(2, OUTPUT);
   digitalWrite(2, HIGH);
@@ -83,8 +84,17 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis = millis();
+
+  if (digitalRead(WIFI_RESET_BUTTON_PIN) == LOW) {
+    Serial.println("Button pressed! Resetting WiFi and starting config portal...");
+    customWiFiManager.resetSettings();      // This erases WiFi credentials and restarts
+    // Optionally, you can also call customWiFiManager.startConfigPortal();
+    delay(1000); // Give time for message to print
+}
+
   mqttClient.loop();
   customWiFiManager.loop();
+  
 
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;

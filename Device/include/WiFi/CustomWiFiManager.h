@@ -9,7 +9,6 @@ class CustomWiFiManager {
 private:
     WiFiConnection* _connection;
     ConfigPortalManager* _portalManager;
-    ResetDetector* _resetDetector;
     bool _configMode;
     
     // Config button handling
@@ -23,7 +22,6 @@ private:
 public:
     CustomWiFiManager(const char* ssid, const char* password, 
                     const char* apName, const char* apPassword,
-                    int drdTimeout, int drdAddress,
                     int configButtonPin = -1);
     ~CustomWiFiManager();
     

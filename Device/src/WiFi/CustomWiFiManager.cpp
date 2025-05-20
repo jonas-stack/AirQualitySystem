@@ -4,7 +4,6 @@
 
 CustomWiFiManager::CustomWiFiManager(const char* ssid, const char* password, 
                                    const char* apName, const char* apPassword,
-                                   int drdTimeout, int drdAddress,
                                    int configButtonPin) :
     _configMode(false),
     _configButtonPin(configButtonPin),
@@ -14,7 +13,6 @@ CustomWiFiManager::CustomWiFiManager(const char* ssid, const char* password,
     // Initialize components
     _connection = new WiFiConnection(ssid, password);
     _portalManager = new ConfigPortalManager(apName, apPassword);
-    _resetDetector = new ResetDetector(drdTimeout, drdAddress);
     
     // Initialize config button if specified
     if (_configButtonPin >= 0) {
@@ -27,23 +25,10 @@ CustomWiFiManager::CustomWiFiManager(const char* ssid, const char* password,
 CustomWiFiManager::~CustomWiFiManager() {
     if (_connection) delete _connection;
     if (_portalManager) delete _portalManager;
-    if (_resetDetector) delete _resetDetector;
 }
 
 bool CustomWiFiManager::connect() {
     displayMessage("WiFi", "Connecting...");
-    
-    // Check for double reset
-    if (_resetDetector->detectDoubleReset()) {
-        Serial.println("Double reset detected - starting config portal");
-        
-        // Visual indication
-        blinkLED(10, 100);
-        
-        // Start config portal
-        startConfigPortal();
-        return true;
-    }
     
     // Try autoConnect first
     if (_portalManager->autoConnect()) {
@@ -78,9 +63,12 @@ void CustomWiFiManager::startConfigPortal() {
     displayMessage("WiFi Setup Mode", "Connect to AP:");
     delay(1000);
     displayMessage(WIFI_AP_NAME, WIFI_AP_PASSWORD);
-    
+    delay(2000);
+    displayMessage("Enter in URL", "http://192.168.4.1");
+    delay(3000);
+
     _configMode = true;
-    
+
     if (!_portalManager->startPortal()) {
         Serial.println("Config portal failed");
         displayMessage("WiFi Setup", "Failed/Timeout");
@@ -90,31 +78,33 @@ void CustomWiFiManager::startConfigPortal() {
         Serial.println("WiFi connected via portal");
         displayMessage("WiFi Connected", "Via Portal");
         delay(1000);
-        
+
         displayMessage("IP:", _connection->getIp().c_str());
         delay(1000);
     }
 }
 
+// filepath: c:\Codeing\CodingSchool\Arduino\AirQualitySystem\Device\src\WiFi\CustomWiFiManager.cpp
 void CustomWiFiManager::checkConfigButton() {
     if (_configButtonPin < 0) return;
-    
-    bool reading = digitalRead(_configButtonPin);
-    
-    // Button press detection with debouncing
-    if (reading != _lastButtonState) {
-        _lastDebounceTime = millis();
+    pinMode(_configButtonPin, INPUT_PULLUP); // Ensure pin is set up
+
+    bool buttonState = digitalRead(_configButtonPin) == LOW; // Active LOW
+    static bool lastButtonState = HIGH;
+    static unsigned long lastDebounceTime = 0;
+    const unsigned long debounceDelay = 50;
+
+    if (buttonState != lastButtonState) {
+        lastDebounceTime = millis();
     }
-    
-    // Check if button state is stable
-    if ((millis() - _lastDebounceTime) > 50) {
-        // Detect button press (transition from HIGH to LOW)
-        if (reading == LOW && _lastButtonState == HIGH) {
-            handleButtonPress();
+
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+        if (buttonState == LOW && lastButtonState == HIGH) {
+            // Button pressed
+            resetSettings();
         }
     }
-    
-    _lastButtonState = reading;
+    lastButtonState = buttonState;
 }
 
 void CustomWiFiManager::handleButtonPress() {
@@ -158,6 +148,5 @@ void CustomWiFiManager::blinkLED(int times, int delayMs) {
 }
 
 void CustomWiFiManager::loop() {
-    _resetDetector->loop();
     checkConfigButton();
 }

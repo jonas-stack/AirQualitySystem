@@ -16,10 +16,6 @@
 
 // WiFi configuration AP name
 #define WIFI_AP_NAME " "
-#define WIFI_AP_PASSWORD " " 
-
-// Double Reset Detector settings
-#define DRD_TIMEOUT 10 
-#define DRD_ADDRESS 0   
+#define WIFI_AP_PASSWORD " "  
 
 #endif // CONFIG_H
