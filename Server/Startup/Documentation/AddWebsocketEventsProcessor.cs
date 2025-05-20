@@ -9,7 +9,7 @@ public sealed class AddWebsocketEventsProcessor : IDocumentProcessor
 {
     public void Process(DocumentProcessorContext context)
     {
-        var topicsType = typeof(Application.Models.WebsocketEvents);
+        var topicsType = typeof(Application.Models.Websocket.WebsocketEvents);
 
         var constants = topicsType
             .GetFields(BindingFlags.Public | BindingFlags.Static)
