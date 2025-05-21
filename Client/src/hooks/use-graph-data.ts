@@ -40,6 +40,7 @@ export function useGraphData() {
   return {
     requestGraphData,
     chartData,
+    setChartData,
     isLoading,
     lastFetch
   };

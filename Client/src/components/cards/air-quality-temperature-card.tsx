@@ -1,19 +1,16 @@
-"use client"
-
 import { Area, AreaChart } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { type ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useWsClient } from "ws-request-hook"
-import { type RequestAirQualityData, TimePeriod, WebsocketEvents, type WebsocketMessage_1 } from "@/generated-client"
+import { TimePeriod, WebsocketEvents, type WebsocketMessage_1 } from "@/generated-client"
 import { Thermometer } from "lucide-react"
-import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { useGraphData } from "@/hooks"
 
 export default function AirQualityTemperatureCard() {
-  const { onMessage, readyState } = useWsClient()
-  const { requestGraphData, isLoading, chartData } = useGraphData();
+  const { onMessage, readyState, sendRequest } = useWsClient()
+  const { requestGraphData, isLoading, chartData, setChartData } = useGraphData();
 
   const chartConfig = {
     temperature: {
