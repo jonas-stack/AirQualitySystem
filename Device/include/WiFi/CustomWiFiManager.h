@@ -3,7 +3,6 @@
 
 #include "WiFiConnection.h"
 #include "ConfigPortalManager.h"
-#include "ResetDetector.h"
 
 class CustomWiFiManager {
 private:
