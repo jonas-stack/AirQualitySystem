@@ -10,6 +10,7 @@ public class NotifyMessageDto
 }
 
 [ApiController]
+[Route("api/[controller]")]
 public class WebsocketNotifierController(IWebsocketNotifierService websocketNotifierService) : ControllerBase
 {
     public const string NotifyRoute = nameof(NotifyRoute);

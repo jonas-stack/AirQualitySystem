@@ -29,7 +29,8 @@ public class GraphService(IConnectionManager connectionManager, IGraphRepository
         
         var response = new WebsocketMessage<GraphModel>
         {
-            Topic = WebsocketTopics.DeviceStatus,
+            Topic = WebsocketTopics.Dashboard,
+            eventType = WebsocketEvents.GraphTemperatureUpdate,
             Data = graphModel
         };
         

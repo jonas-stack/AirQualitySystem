@@ -178,7 +178,7 @@
         }
       }
     },
-    "/NotifyRoute": {
+    "/api/WebsocketNotifier/NotifyRoute": {
       "post": {
         "tags": [
           "WebsocketNotifier"
@@ -542,6 +542,7 @@
           "GraphTotalMeasurement",
           "AllDeviceStatus",
           "DeviceUpdateStatus",
+          "GraphGetMeasurement",
           "GraphTemperatureUpdate",
           "RequestAirQualityData"
         ]

@@ -6,6 +6,8 @@ import { AirQualityInsightsCard } from "@/components/cards/air-quality-insights-
 import { LiveDataCard } from "@/components/cards/live_data_card.tsx";
 import { SimpleAirQualityChartsCard } from "@/components/cards/simple-air-quality-charts-card";
 import AirQualityTemperatureCard from "@/components/cards/air-quality-temperature-card";
+import { Link } from "react-router-dom";
+import { ROUTE } from "@/routes-constants";
 
   const airQualityData: CardArray = [
     {
@@ -102,9 +104,11 @@ export default function DashboardPage() {
                   </div>
                 </CardContent>
                 <CardFooter>
+                  <Link to={ROUTE.DASHBOARD.AI}>
                   <Button className="cursor-pointer mt-5">
                     Take me there!
                   </Button>
+                  </Link>
                 </CardFooter>
                 </div>
                 <figure className="hidden lg:col-span-1 lg:block">

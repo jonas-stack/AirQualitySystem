@@ -20,12 +20,12 @@ export function useGraphData() {
         }
 
         try {
-        const signInResult: WebsocketMessage_1 = await sendRequest<RequestAirQualityData, WebsocketMessage_1>(
+        const graphResult: WebsocketMessage_1 = await sendRequest<RequestAirQualityData, WebsocketMessage_1>(
             requestData,
-            WebsocketEvents.GraphTemperatureUpdate,
+            WebsocketEvents.GraphGetMeasurement,
         )
 
-        setChartData(((signInResult as any)?.Data?.Data) ?? []);
+        setChartData(((graphResult as any)?.Data?.Data) ?? []);
         setLastFetch(new Date())
         } catch (error) {
         toast.error("Chart data failed", {

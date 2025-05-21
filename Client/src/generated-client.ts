@@ -214,7 +214,7 @@ export class WebsocketNotifierClient {
     }
 
     notify(dto: NotifyMessageDto): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/NotifyRoute";
+        let url_ = this.baseUrl + "/api/WebsocketNotifier/NotifyRoute";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(dto);
@@ -374,6 +374,7 @@ export enum WebsocketEvents {
     GraphTotalMeasurement = "GraphTotalMeasurement",
     AllDeviceStatus = "AllDeviceStatus",
     DeviceUpdateStatus = "DeviceUpdateStatus",
+    GraphGetMeasurement = "GraphGetMeasurement",
     GraphTemperatureUpdate = "GraphTemperatureUpdate",
     RequestAirQualityData = "RequestAirQualityData",
 }

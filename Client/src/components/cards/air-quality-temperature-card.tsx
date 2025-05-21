@@ -1,58 +1,90 @@
-import { Area, AreaChart } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { useEffect, useState } from "react";
-import { useWsClient } from "ws-request-hook";
-import { GraphModel_1, WebsocketEvents } from "@/generated-client";
-import { Thermometer } from "lucide-react";
+"use client"
+
+import { Area, AreaChart } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { type ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart"
+import { useEffect, useState } from "react"
+import { useWsClient } from "ws-request-hook"
+import { type RequestAirQualityData, TimePeriod, WebsocketEvents, type WebsocketMessage_1 } from "@/generated-client"
+import { Thermometer } from "lucide-react"
+import { toast } from "sonner"
+import { Spinner } from "@/components/ui/spinner"
 
 export default function AirQualityTemperatureCard() {
-    const {onMessage, readyState} = useWsClient()
+  const { onMessage, readyState, sendRequest } = useWsClient()
 
-    const [chartData, setChartData] = useState([
-        { time: "00:00", amount: 22 },
-        { time: "04:00", amount: 21 },
-        { time: "08:00", amount: 23 },
-        { time: "12:00", amount: 25 },
-        { time: "16:00", amount: 24 },
-        { time: "20:00", amount: 22 },
-        { time: "24:00", amount: 21 },
-    ]);
+  const [chartData, setChartData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [lastFetch, setLastFetch] = useState<Date>()
 
-    const chartConfig = {
-        amount: {
-        label: "Amount",
-        color: "var(--chart-2)",
-        },
-    } satisfies ChartConfig
+  const requestGraphData = async (requestTypes: any[], timePeriod: TimePeriod) => {
+    setIsLoading(true)
+    setLastFetch(undefined)
 
-    useEffect(() => {
-        if (readyState !== 1)
-            return;
+    const requestData: RequestAirQualityData = {
+      eventType: WebsocketEvents.RequestAirQualityData,
+      timePeriod: timePeriod,
+      data: requestTypes,
+    }
 
-        const reactToMessageSetup = onMessage<GraphModel_1>(
-            WebsocketEvents.GraphTotalMeasurement,
-            (dto) => {
-                setChartData(prevData => {
-                    const newEntry = {
-                        time: dto.identifier,
-                        amount: dto.amount ?? 0,
-                    };
+    try {
+      const graphResult: WebsocketMessage_1 = await sendRequest<RequestAirQualityData, WebsocketMessage_1>(
+        requestData,
+        WebsocketEvents.GraphGetMeasurement,
+      )
 
-                    const updatedData = [...prevData, newEntry];
+      setChartData((graphResult as any)?.Data?.Data ?? [])
+      console.log(graphResult)
+    } catch (error) {
+      toast.error("Chart data failed", {
+        description: "An error occured while trying to fetching chart data.",
+      })
+      setLastFetch(undefined)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-                    // max vis 6 af gangen og ikke flere
-                    return updatedData.length > 6 ? updatedData.slice(-6) : updatedData;
-                });
-            }
-        );
+  const chartConfig = {
+    temperature: {
+      label: "Amount",
+      color: "var(--chart-2)",
+    },
+  } satisfies ChartConfig
 
-        return () => reactToMessageSetup();
-    }, [readyState]);
+  useEffect(() => {
+    if (readyState !== 1) return
 
-    const newest = chartData.at(-1);
+    requestGraphData(["temperature"], TimePeriod.Daily)
 
-    return (
+    const reactToMessageSetup = onMessage<WebsocketMessage_1>(WebsocketEvents.GraphTemperatureUpdate, (dto) => {
+      setChartData((prevData) => {
+        const newEntry = {
+          time: dto.data?.label,
+          temperature: dto.data?.amount ?? 0,
+        }
+
+        const updatedData = [...prevData, newEntry]
+
+        return updatedData.length > 6 ? updatedData.slice(-6) : updatedData
+      })
+    })
+
+    return () => reactToMessageSetup()
+  }, [readyState])
+
+  const newest = chartData.at(-1)
+
+  const ChartLoading = () => (
+    <div className="absolute inset-0 flex items-center justify-center bg-card/50 rounded-md z-10">
+      <div className="flex flex-col items-center gap-2">
+        <Spinner size="md" className="text-primary" />
+        <p className="text-xs text-muted-foreground">Loading data...</p>
+      </div>
+    </div>
+  )
+
+  return (
     <Card className="overflow-hidden h-60 border shadow-lg">
       <div className="h-full flex flex-col">
         <CardHeader>
@@ -65,57 +97,59 @@ export default function AirQualityTemperatureCard() {
               <p className="text-sm text-muted-foreground">Measured in celsius</p>
             </div>
             <div className="flex items-center bg-primary/10 px-3 py-1 rounded-full">
-              <span className="text-2xl font-bold text-primary">{newest?.amount ?? "--"}°</span>
+              <span className="text-2xl font-bold text-primary">
+                {isLoading ? "--" : (newest?.temperature ?? "--")}°
+              </span>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-0 h-full mt-10 flex-1 flex flex-col justify-end">
           <div className="relative h-full w-full">
-              <ChartContainer config={chartConfig} className="w-full h-32">
-                <AreaChart
-                  accessibilityLayer
-                  data={chartData}
-                  margin={{
-                    left: 0,
-                    right: 0,
-                    top: 5,
-                    bottom: 5,
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="fillAmount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-amount)" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="var(--color-amount)" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <Area
-                    dataKey="amount"
-                    type="natural"
-                    fill="url(#fillAmount)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-amount)"
-                    strokeWidth={2}
-                    stackId="a"
-                  />
+            {isLoading && <ChartLoading />}
+            <ChartContainer config={chartConfig} className="w-full h-32">
+              <AreaChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 0,
+                  right: 0,
+                  top: 5,
+                  bottom: 5,
+                }}
+              >
+                <defs>
+                  <linearGradient id="fillAmount" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--color-chart-3)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--color-chart-3)" stopOpacity={0.1} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  dataKey="temperature"
+                  type="natural"
+                  fill="url(#fillAmount)"
+                  fillOpacity={0.4}
+                  stroke="var(--color-chart-3)"
+                  strokeWidth={2}
+                  stackId="a"
+                />
                 <ChartTooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="bg-background border rounded-md shadow-sm p-2 text-xs">
-                            <p className="font-medium">{payload[0].payload.time}</p>
-                            <p className="text-primary">{payload[0].value}°C</p>
-                          </div>
-                        )
-                      }
-                      return null
-                    }}
-                  />
-
-                </AreaChart>
-              </ChartContainer>
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-background border rounded-md shadow-sm p-2 text-xs">
+                          <p className="font-medium">{payload[0].payload.time}</p>
+                          <p className="text-primary">{payload[0].value}°C</p>
+                        </div>
+                      )
+                    }
+                    return null
+                  }}
+                />
+              </AreaChart>
+            </ChartContainer>
           </div>
         </CardContent>
       </div>
     </Card>
-    )
+  )
 }

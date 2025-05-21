@@ -84,7 +84,7 @@ public class AirQualityGraphEventHandler(IGraphService graphService) : BaseEvent
         {
             Topic = WebsocketTopics.Dashboard,
             requestId = dto.requestId,
-            eventType = WebsocketEvents.GraphTemperatureUpdate,
+            eventType = WebsocketEvents.GraphGetMeasurement,
             Data = new AirQualityDataGraph
             {
                 RequestedData = dto.Data,
