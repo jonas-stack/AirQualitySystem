@@ -92,7 +92,7 @@
         }
       }
     },
-    "/Subscribe": {
+    "/api/Subscription/Subscribe": {
       "post": {
         "tags": [
           "Subscription"
@@ -135,7 +135,7 @@
         }
       }
     },
-    "/Unsubscribe": {
+    "/api/Subscription/Unsubscribe": {
       "post": {
         "tags": [
           "Subscription"
@@ -162,6 +162,39 @@
           },
           "required": true,
           "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/WebsocketNotifier/NotifyRoute": {
+      "post": {
+        "tags": [
+          "WebsocketNotifier"
+        ],
+        "operationId": "WebsocketNotifier_Notify",
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotifyMessageDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
         },
         "responses": {
           "200": {
@@ -205,6 +238,72 @@
           }
         }
       },
+      "NotifyMessageDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "topic": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsocketMessage_1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "topic": {
+                "type": "string"
+              },
+              "data": {
+                "$ref": "#/components/schemas/T"
+              },
+              "requestId": {
+                "type": "string"
+              },
+              "eventType": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "T": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BaseDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "eventType": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        }
+      },
+      "ApplicationBaseDto": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "eventType": {
+            "type": "string"
+          },
+          "topic": {
+            "type": "string"
+          }
+        }
+      },
       "LiveAiFeedbackDto": {
         "allOf": [
           {
@@ -220,18 +319,6 @@
             }
           }
         ]
-      },
-      "BaseDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "eventType": {
-            "type": "string"
-          },
-          "requestId": {
-            "type": "string"
-          }
-        }
       },
       "ServerSendsErrorMessage": {
         "allOf": [
@@ -249,7 +336,45 @@
           }
         ]
       },
-      "ClientRequestDeviceList": {
+      "RequestAirQualityData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timePeriod": {
+                "$ref": "#/components/schemas/TimePeriod"
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TimePeriod": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Hourly",
+          "Daily",
+          "Weekly",
+          "Monthly"
+        ],
+        "enum": [
+          "Hourly",
+          "Daily",
+          "Weekly",
+          "Monthly"
+        ]
+      },
+      "ClientRequestDeviceStatus": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -260,7 +385,7 @@
           }
         ]
       },
-      "ServerResponseList": {
+      "ServerResponseDeviceStatus": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -269,11 +394,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "deviceList": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DeviceDto"
-                }
+              "deviceStatus": {
+                "$ref": "#/components/schemas/DeviceDto"
               }
             }
           }
@@ -330,6 +452,36 @@
           }
         ]
       },
+      "ClientRequestDeviceList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ServerResponseList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceList": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          }
+        ]
+      },
       "Ping": {
         "allOf": [
           {
@@ -356,12 +508,16 @@
         "type": "string",
         "description": "Available eventType constants",
         "enum": [
+          "WebsocketMessage`1",
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
-          "ClientRequestDeviceList",
-          "ServerResponseList",
+          "RequestAirQualityData",
+          "ClientRequestDeviceStatus",
+          "ServerResponseDeviceStatus",
           "ExampleClientDto",
           "ExampleServerResponse",
+          "ClientRequestDeviceList",
+          "ServerResponseList",
           "Ping",
           "Pong"
         ]
@@ -375,7 +531,20 @@
           "DeviceStatus",
           "DeviceData",
           "Device",
+          "Graph",
           "GraphTotalMeasurements"
+        ]
+      },
+      "WebsocketEvents": {
+        "type": "string",
+        "description": "Websocket Events enums",
+        "enum": [
+          "GraphTotalMeasurement",
+          "AllDeviceStatus",
+          "DeviceUpdateStatus",
+          "GraphGetMeasurement",
+          "GraphTemperatureUpdate",
+          "RequestAirQualityData"
         ]
       }
     }

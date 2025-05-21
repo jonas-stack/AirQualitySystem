@@ -9,8 +9,7 @@ public static class RestStartupExtensions
         services.AddEndpointsApiExplorer();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-
-
+        
         var controllersAssembly = typeof(RestStartupExtensions).Assembly;
 
         services.AddControllers().AddApplicationPart(controllersAssembly);
