@@ -86,17 +86,16 @@ export function AirQualityChartsCard({className = "", onRefresh, lastUpdated = n
   }
 
   const handleTabChange = (tab: string) => {
+      setTimePeriod(TimePeriod.Daily)
+
     switch (tab) {
       case "climate":
-        setTimePeriod(TimePeriod.Daily)
         setCurrentTab(["temperature", "humidity"])
         break
       case "airquality":
-        setTimePeriod(TimePeriod.Weekly)
         setCurrentTab(["airquality"])
         break
       case "pm25":
-        setTimePeriod(TimePeriod.Weekly)
         setCurrentTab(["pm25"])
         break
       default:
@@ -191,7 +190,7 @@ export function AirQualityChartsCard({className = "", onRefresh, lastUpdated = n
               </Tabs>
             </div>
             <div className="py-4 flex-1">
-              <ChartContainer config={climateChartConfig} className="h-72 md:h-80 lg:h-96 w-full">
+              <ChartContainer config={airQualityConfig} className="h-72 md:h-80 lg:h-96 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData} margin={{ top: 5, right: 50, left: 0, bottom: 5 }}>
                     <defs>

@@ -173,7 +173,10 @@ public class GraphRepository : IGraphRepository {
                 return monthlyGrouped
                     .Select(d => new MultiGraphEntity
                     {
-                        Timestamp = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(d.Month),
+                        Timestamp = CultureInfo.CurrentCulture.DateTimeFormat
+                            .GetMonthName(d.Month)
+                            .Substring(0, 1).ToUpper() + CultureInfo.CurrentCulture.DateTimeFormat
+                            .GetMonthName(d.Month).Substring(1), // lidt bøvl men første uppercase månede
                         Values = BuildValuesDictionary(d)
                     })
                     .ToList();

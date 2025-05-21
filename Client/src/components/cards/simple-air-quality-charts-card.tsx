@@ -38,14 +38,14 @@ const lineChartConfig: Record<string, ChartConfigItem> = {
 
 const barChartConfig: Record<string, ChartConfigItem> = {
   airquality: {
-    label: "Air quality:",
+    label: "Air quality",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
-const distrubutionConfig: Record<string, ChartConfigItem> = {
+const pm25Config: Record<string, ChartConfigItem> = {
   pm25: {
-    label: "PM25:",
+    label: "PM25",
     color: "var(--chart-4)",
   },
 } satisfies ChartConfig
@@ -195,7 +195,7 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
               {isLoading ? (
                 <ChartLoading />
               ) : (
-                <ChartContainer className="h-60 w-full" config={lineChartConfig}>
+                <ChartContainer className="h-60 w-full" config={pm25Config}>
                   <LineChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                     <CartesianGrid vertical={false}/>
                     <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10}/>
@@ -205,9 +205,9 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
                         key={key}
                         type="natural"
                         dataKey={key}
-                        stroke={distrubutionConfig[key]?.color ?? "var(--chart-1)"}
+                        stroke={pm25Config[key]?.color ?? "var(--chart-1)"}
                         strokeWidth={2}
-                        dot={{ fill: distrubutionConfig[key]?.color ?? "var(--chart-1)" }}
+                        dot={{ fill: pm25Config[key]?.color ?? "var(--chart-1)" }}
                         activeDot={{ r: 6 }}
                       >
                         <LabelList position="top" offset={12} className="fill-foreground" fontSize={12} />
