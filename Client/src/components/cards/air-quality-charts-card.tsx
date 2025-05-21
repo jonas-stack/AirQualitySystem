@@ -107,9 +107,7 @@ export function AirQualityChartsCard({
   }
 
   const handleRefresh = () => {
-    if (onRefresh) {
-      requestGraphData(currentTab, timePeriod)
-    }
+    requestGraphData(currentTab, timePeriod)
   }
 
   const formatLastUpdated = (date: Date) => {
@@ -140,7 +138,7 @@ export function AirQualityChartsCard({
           </CardTitle>
           <CardDescription>Last updated: {formatLastUpdated(lastUpdated)}</CardDescription>
         </div>
-        <Button variant="ghost" size="icon" onClick={handleRefresh}>
+        <Button className="cursor-pointer" variant="ghost" size="icon" onClick={handleRefresh}>
           <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           <span className="sr-only">Refresh data</span>
         </Button>

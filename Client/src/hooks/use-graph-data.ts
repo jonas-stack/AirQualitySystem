@@ -9,6 +9,8 @@ export function useGraphData() {
     const {sendRequest} = useWsClient()
 
     const requestGraphData = async (requestTypes: any[], timePeriod: TimePeriod) => {
+        setIsLoading(true)
+
         const requestData: RequestAirQualityData = {
             eventType: WebsocketEvents.RequestAirQualityData,
             timePeriod: timePeriod,
