@@ -98,14 +98,16 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
 
   const handleTabChange = (tab: string) => {
     switch (tab) {
-      case "trends":
+      case "general":
+        setTimePeriod(TimePeriod.Daily)
         setCurrentTab(["temperature", "humidity"])
         break
       case "airquality":
         setTimePeriod(TimePeriod.Weekly)
         setCurrentTab(["airquality"])
         break
-      case "distribution":
+      case "pm25":
+        setTimePeriod(TimePeriod.Weekly)
         setCurrentTab(["pm25"])
         break
       default:
@@ -143,16 +145,16 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
         </Button>
       </CardHeader>
       <CardContent className="p-0">
-        <Tabs defaultValue="trends" onValueChange={handleTabChange} className="w-full">
+        <Tabs defaultValue="general" onValueChange={handleTabChange} className="w-full">
           <div className="px-4">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="trends">Trends</TabsTrigger>
+              <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="airquality">Air Quality</TabsTrigger>
-              <TabsTrigger value="distribution">Distribution</TabsTrigger>
+              <TabsTrigger value="pm25">PM25</TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="trends" className="mt-0 pt-2">
+          <TabsContent value="general" className="mt-0 pt-2">
             <div className="px-4 pb-2">
               <Tabs defaultValue={TimePeriod.Daily} onValueChange={handleTimeShift}>
                 <TabsList className="grid w-full grid-cols-2">
@@ -165,7 +167,7 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
               {isLoading ? (
                 <ChartLoading />
               ) : (
-                <ChartContainer config={lineChartConfig}>
+                <ChartContainer className="h-60 w-full" config={lineChartConfig}>
                   <AreaChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
                     <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10} />
@@ -194,7 +196,7 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
               {isLoading ? (
                 <ChartLoading />
               ) : (
-                <ChartContainer config={barChartConfig}>
+                <ChartContainer className="h-60 w-full" config={barChartConfig}>
                   <BarChart accessibilityLayer data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
                     <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10} />
@@ -214,12 +216,12 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
             </div>
           </TabsContent>
 
-          <TabsContent value="distribution" className="mt-0 pt-2">
+          <TabsContent value="pm25" className="mt-0 pt-2">
             <div className="px-4 pt-4">
               {isLoading ? (
                 <ChartLoading />
               ) : (
-                <ChartContainer config={lineChartConfig}>
+                <ChartContainer className="h-60 w-full" config={lineChartConfig}>
                   <LineChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
                     <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10} />
