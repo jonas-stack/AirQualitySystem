@@ -270,12 +270,22 @@ export interface NotifyMessageDto {
     message?: string;
 }
 
+
+
+export interface WebsocketMessage_1 extends BaseDto {
+    topic?: string;
+    data?: T;
+    requestId?: string;
+    eventType?: string;
+}
+
+export interface T {
+}
+
 export interface ApplicationBaseDto {
     eventType?: string;
     topic?: string;
 }
-
-
 
 export interface LiveAiFeedbackDto extends BaseDto {
     aiAdvice?: string;
@@ -295,12 +305,6 @@ export enum TimePeriod {
     Daily = "Daily",
     Weekly = "Weekly",
     Monthly = "Monthly",
-}
-
-export interface AirQualityDataGraph extends BaseDto {
-    requestedData?: string[];
-    timePeriod?: TimePeriod;
-    data?: { [key: string]: any; }[];
 }
 
 export interface ClientRequestDeviceStatus extends BaseDto {
@@ -340,10 +344,10 @@ export interface Pong extends BaseDto {
 
 /** Available eventType constants */
 export enum StringConstants {
+    WebsocketMessage_1 = "WebsocketMessage`1",
     LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
     RequestAirQualityData = "RequestAirQualityData",
-    AirQualityDataGraph = "AirQualityDataGraph",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
     ExampleClientDto = "ExampleClientDto",
@@ -361,6 +365,7 @@ export enum WebsocketTopics {
     DeviceStatus = "DeviceStatus",
     DeviceData = "DeviceData",
     Device = "Device",
+    Graph = "Graph",
     GraphTotalMeasurements = "GraphTotalMeasurements",
 }
 
@@ -368,6 +373,9 @@ export enum WebsocketTopics {
 export enum WebsocketEvents {
     GraphTotalMeasurement = "GraphTotalMeasurement",
     AllDeviceStatus = "AllDeviceStatus",
+    DeviceUpdateStatus = "DeviceUpdateStatus",
+    GraphTemperatureUpdate = "GraphTemperatureUpdate",
+    RequestAirQualityData = "RequestAirQualityData",
 }
 
 export interface FileResponse {

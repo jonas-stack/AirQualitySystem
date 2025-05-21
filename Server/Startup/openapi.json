@@ -250,6 +250,47 @@
           }
         }
       },
+      "WebsocketMessage_1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "topic": {
+                "type": "string"
+              },
+              "data": {
+                "$ref": "#/components/schemas/T"
+              },
+              "requestId": {
+                "type": "string"
+              },
+              "eventType": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "T": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BaseDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "eventType": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        }
+      },
       "ApplicationBaseDto": {
         "type": "object",
         "x-abstract": true,
@@ -278,18 +319,6 @@
             }
           }
         ]
-      },
-      "BaseDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "eventType": {
-            "type": "string"
-          },
-          "requestId": {
-            "type": "string"
-          }
-        }
       },
       "ServerSendsErrorMessage": {
         "allOf": [
@@ -343,35 +372,6 @@
           "Daily",
           "Weekly",
           "Monthly"
-        ]
-      },
-      "AirQualityDataGraph": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseDto"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "requestedData": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "timePeriod": {
-                "$ref": "#/components/schemas/TimePeriod"
-              },
-              "data": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
         ]
       },
       "ClientRequestDeviceStatus": {
@@ -508,10 +508,10 @@
         "type": "string",
         "description": "Available eventType constants",
         "enum": [
+          "WebsocketMessage`1",
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
           "RequestAirQualityData",
-          "AirQualityDataGraph",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
           "ExampleClientDto",
@@ -531,6 +531,7 @@
           "DeviceStatus",
           "DeviceData",
           "Device",
+          "Graph",
           "GraphTotalMeasurements"
         ]
       },
@@ -539,7 +540,10 @@
         "description": "Websocket Events enums",
         "enum": [
           "GraphTotalMeasurement",
-          "AllDeviceStatus"
+          "AllDeviceStatus",
+          "DeviceUpdateStatus",
+          "GraphTemperatureUpdate",
+          "RequestAirQualityData"
         ]
       }
     }

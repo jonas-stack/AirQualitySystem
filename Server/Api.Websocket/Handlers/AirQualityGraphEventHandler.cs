@@ -50,7 +50,7 @@ public class RequestAirQualityData : BaseDto
     }
 }
  */
-public class AirQualityDataGraph : BaseDto
+public class AirQualityDataGraph
 {
     public required List<string> RequestedData { get; set; }
     
@@ -83,12 +83,14 @@ public class AirQualityGraphEventHandler(IGraphService graphService) : BaseEvent
         var response = new WebsocketMessage<AirQualityDataGraph>
         {
             Topic = WebsocketTopics.Dashboard,
+            requestId = dto.requestId,
+            eventType = WebsocketEvents.GraphTemperatureUpdate,
             Data = new AirQualityDataGraph
             {
                 RequestedData = dto.Data,
                 TimePeriod = dto.TimePeriod,
                 Data = flattenedData
-            }
+            },
         };
         
         await socket.Send(JsonSerializer.Serialize(response));

@@ -9,5 +9,6 @@ public static class WebsocketTopics
     public const string Device = nameof (Device);
 
     /* ---- Graphs ---- */
+    public const string Graph = nameof (Graph);
     public const string GraphTotalMeasurements = nameof(GraphTotalMeasurements);
 }
