@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import {
@@ -19,6 +19,7 @@ import { useWsClient } from "ws-request-hook"
 import { TimePeriod } from "@/generated-client"
 import { Spinner } from "../ui/spinner"
 import { useGraphData } from "@/hooks"
+import { formatLastUpdated } from "@/lib/time-formatter"
 
 type ChartConfigItem = {
   label: string
@@ -60,14 +61,13 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
   const [timePeriod, setTimePeriod] = useState<TimePeriod>(TimePeriod.Daily)
   const { readyState } = useWsClient();
 
-  const { requestGraphData, chartData, isLoading } = useGraphData();
+  const { requestGraphData, chartData, isLoading, lastFetch } = useGraphData();
 
   useEffect(() => {
     if (readyState === 1) {
       requestGraphData(currentTab, timePeriod);
     }
   }, [timePeriod, currentTab, readyState]);
-
 
   const handleTimeShift = (time: string) => {
     setTimePeriod(time as TimePeriod)
@@ -110,9 +110,16 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
   return (
       <Card className={`${className}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div>
         <CardTitle className="flex gap-2 text-lg font-bold">
           <CloudRainIcon className="text-yellow-600" /> Air Quality Metrics
         </CardTitle>
+            <CardDescription>
+              {lastFetch === undefined
+                ? "No data available"
+                : `Last updated: ${formatLastUpdated(lastFetch)}`}
+            </CardDescription>    
+        </div>
         <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8 cursor-pointer">
           <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           <span className="sr-only">Refresh data</span>

@@ -6,10 +6,12 @@ import { useWsClient } from "ws-request-hook";
 export function useGraphData() {
     const [chartData, setChartData] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [lastFetch, setLastFetch] = useState<Date>()
     const {sendRequest} = useWsClient()
 
     const requestGraphData = async (requestTypes: any[], timePeriod: TimePeriod) => {
         setIsLoading(true)
+        setLastFetch(undefined)
 
         const requestData: RequestAirQualityData = {
             eventType: WebsocketEvents.RequestAirQualityData,
@@ -24,10 +26,12 @@ export function useGraphData() {
         )
 
         setChartData(((signInResult as any)?.Data?.Data) ?? []);
+        setLastFetch(new Date())
         } catch (error) {
         toast.error("Chart data failed", {
             description: "An error occured while trying to fetching chart data.",
-        });      
+        });
+        setLastFetch(undefined)
     } finally {
         setIsLoading(false)
         }
@@ -37,5 +41,6 @@ export function useGraphData() {
     requestGraphData,
     chartData,
     isLoading,
+    lastFetch
   };
 }

@@ -29,6 +29,7 @@ import { useWsClient } from "ws-request-hook"
 import { TimePeriod } from "@/generated-client"
 import { useGraphData } from "@/hooks"
 import { Spinner } from "@/components/ui/spinner"
+import { formatLastUpdated } from "@/lib/time-formatter"
 
 type ChartConfigItem = {
   label: string
@@ -67,16 +68,12 @@ interface AirQualityChartsCardProps {
   lastUpdated?: Date
 }
 
-export function AirQualityChartsCard({
-  className = "",
-  onRefresh,
-  lastUpdated = new Date(),
-}: AirQualityChartsCardProps) {
+export function AirQualityChartsCard({className = "", onRefresh, lastUpdated = new Date() }: AirQualityChartsCardProps) {
   const [currentTab, setCurrentTab] = useState(["temperature", "humidity"])
   const [timePeriod, setTimePeriod] = useState<TimePeriod>(TimePeriod.Daily)
   const { readyState } = useWsClient()
 
-  const { requestGraphData, chartData, isLoading } = useGraphData()
+  const { requestGraphData, chartData, isLoading, lastFetch } = useGraphData()
 
   useEffect(() => {
     if (readyState === 1) {
@@ -111,16 +108,6 @@ export function AirQualityChartsCard({
     requestGraphData(currentTab, timePeriod)
   }
 
-  const formatLastUpdated = (date: Date) => {
-    return date.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-      month: "short",
-      day: "numeric",
-    })
-  }
-
   const ChartLoading = () => (
     <div className="flex items-center justify-center w-full h-full bg-card/50 rounded-md">
       <div className="flex flex-col items-center gap-3">
@@ -137,8 +124,12 @@ export function AirQualityChartsCard({
           <CardTitle className="flex gap-2 text-lg font-bold">
             <CloudRainIcon className="text-yellow-600" /> Air Quality Metrics
           </CardTitle>
-          <CardDescription>Last updated: {formatLastUpdated(lastUpdated)}</CardDescription>
-        </div>
+            <CardDescription>
+              {lastFetch === undefined
+                ? "No data available"
+                : `Last updated: ${formatLastUpdated(lastFetch)}`}
+            </CardDescription>        
+            </div>
         <Button className="cursor-pointer" variant="ghost" size="icon" onClick={handleRefresh}>
           <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           <span className="sr-only">Refresh data</span>
