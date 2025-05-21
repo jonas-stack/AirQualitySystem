@@ -16,10 +16,9 @@ import {
 import { CloudRainIcon, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useWsClient } from "ws-request-hook"
-import { RequestAirQualityData, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client"
-import { toast } from "sonner"
+import { TimePeriod } from "@/generated-client"
 import { Spinner } from "../ui/spinner"
-import { useGraphData } from "@/hooks/use-graph-data"
+import { useGraphData } from "@/hooks"
 
 type ChartConfigItem = {
   label: string

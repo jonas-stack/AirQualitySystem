@@ -10,8 +10,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchDialog } from '../command/SearchDialog';
 import { LogOut } from 'lucide-react';
-import { useAutoSubscription } from '@/hooks/use-auto-subscription';
 import { WebsocketTopics } from '@/generated-client';
+import { useAutoSubscription } from '@/hooks';
 
 export const AuthenticatedLayout = () => {
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);

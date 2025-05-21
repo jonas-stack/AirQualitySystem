@@ -27,8 +27,8 @@ import {
 import { CloudRainIcon, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useWsClient } from "ws-request-hook"
-import { useGraphData } from "@/hooks/use-graph-data"
 import { TimePeriod } from "@/generated-client"
+import { useGraphData } from "@/hooks"
 
 type ChartConfigItem = {
   label: string
@@ -68,7 +68,6 @@ interface AirQualityChartsCardProps {
 }
 
 export function AirQualityChartsCard({className = "", onRefresh, lastUpdated = new Date() }: AirQualityChartsCardProps) {
-  const [timeRange, setTimeRange] = useState("daily")
   const [currentTab, setCurrentTab] = useState(["temperature", "humidity"])
   const [timePeriod, setTimePeriod] = useState<TimePeriod>(TimePeriod.Daily)
   const { readyState } = useWsClient();
