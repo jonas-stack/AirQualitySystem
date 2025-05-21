@@ -19,6 +19,7 @@ import { useWsClient } from "ws-request-hook"
 import { RequestAirQualityData, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client"
 import { toast } from "sonner"
 import { Spinner } from "../ui/spinner"
+import { useGraphData } from "@/hooks/use-graph-data"
 
 type ChartConfigItem = {
   label: string
@@ -27,11 +28,11 @@ type ChartConfigItem = {
 
 const lineChartConfig: Record<string, ChartConfigItem> = {
   temperature: {
-    label: "Temperature (Celsius):",
+    label: "Temperature (°C)",
     color: "var(--chart-1)",
   },
   humidity: {
-    label: "Humidity",
+    label: "Humidity (%)",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig
@@ -56,45 +57,22 @@ interface SimpleAirQualityChartsCardProps {
 }
 
 export function SimpleAirQualityChartsCard({ className = "", onRefresh }: SimpleAirQualityChartsCardProps) {
-    const [currentTab, setCurrentTab] = useState(["temperature", "humidity"])
-    const [chartData, setChartData] = useState<any[]>([])
-    const [timePeriod, setTimePeriod] = useState<TimePeriod>(TimePeriod.Daily)
-    const {readyState, sendRequest} = useWsClient()
-    const [isLoading, setIsLoading] = useState(true)
+  const [currentTab, setCurrentTab] = useState(["temperature", "humidity"])
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>(TimePeriod.Daily)
+  const { readyState } = useWsClient();
 
-    const requestGraphData = async () => {
-        const requestData: RequestAirQualityData = {
-            eventType: WebsocketEvents.RequestAirQualityData,
-            timePeriod: timePeriod,
-            data: currentTab
-        }
+  const { requestGraphData, chartData, isLoading } = useGraphData();
 
-      try {
-        const signInResult: WebsocketMessage_1 = await sendRequest<RequestAirQualityData, WebsocketMessage_1>(
-          requestData,
-          WebsocketEvents.GraphTemperatureUpdate,
-        )
-
-        setChartData(((signInResult as any)?.Data?.Data) ?? []);
-      } catch (error) {
-        toast.error("Chart data failed", {
-          description: "An error occured whiel trying to fetching chart data.",
-        });      
-    } finally {
-        setIsLoading(false)
-      }
+  useEffect(() => {
+    if (readyState === 1) {
+      requestGraphData(currentTab, timePeriod);
     }
-
-    useEffect(() => {
-      if (readyState === 1) {
-        requestGraphData();
-      }
-    }, [timePeriod, currentTab, readyState]);
+  }, [timePeriod, currentTab, readyState]);
 
 
-    const handleTimeShift = (time: string) => {
-      setTimePeriod(time as TimePeriod)
-    }
+  const handleTimeShift = (time: string) => {
+    setTimePeriod(time as TimePeriod)
+  }
 
   const handleTabChange = (tab: string) => {
     switch (tab) {
@@ -113,14 +91,11 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
       default:
         break
     }
-
-      requestGraphData();
   }
 
   const handleRefresh = () => {
     if (onRefresh) {
-      setIsLoading(true)
-      requestGraphData();
+      requestGraphData(currentTab, timePeriod);
     }
   }
 
@@ -134,12 +109,12 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
   )
 
   return (
-        <Card className={`${className}`}>
+      <Card className={`${className}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="flex gap-2 text-lg font-bold">
           <CloudRainIcon className="text-yellow-600" /> Air Quality Metrics
         </CardTitle>
-        <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8">
+        <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8 cursor-pointer">
           <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           <span className="sr-only">Refresh data</span>
         </Button>
@@ -223,8 +198,8 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
               ) : (
                 <ChartContainer className="h-60 w-full" config={lineChartConfig}>
                   <LineChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                    <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10} />
+                    <CartesianGrid vertical={false}/>
+                    <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10}/>
                     <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                     {currentTab.map((key) => (
                       <Line
