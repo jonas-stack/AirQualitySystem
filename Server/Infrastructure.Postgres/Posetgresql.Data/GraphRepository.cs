@@ -62,30 +62,38 @@ public class GraphRepository : IGraphRepository {
         switch (timePeriod)
         {
             case TimePeriod.Hourly:
-                var hourlyQuery = query
-                    .GroupBy(d => d.Timestamp.Hour)
+                var hourlyGrouped = query
+                    .GroupBy(d => new { d.Timestamp.Date, d.Timestamp.Hour })
                     .Select(g => new
                     {
-                        TimeKey = g.Key,
+                        TimeKey = new DateTime(g.Key.Date.Year, g.Key.Date.Month, g.Key.Date.Day, g.Key.Hour, 0, 0),
                         Temperature = g.Average(d => d.Temperature),
                         Humidity = g.Average(d => d.Humidity),
                         AirQuality = g.Average(d => d.AirQuality),
                         Pm25 = g.Average(d => d.Pm25)
                     });
 
+                hourlyGrouped = hourlyGrouped.OrderBy(g => g.TimeKey);
+                
                 if (maxResults.HasValue)
-                    hourlyQuery = hourlyQuery.Take(maxResults.Value);
+                    hourlyGrouped = hourlyGrouped.Take(maxResults.Value);
 
-                var hourly = await hourlyQuery.ToListAsync();
+                var hourly = await hourlyGrouped.ToListAsync();
 
                 return hourly.Select(d => new MultiGraphEntity
                 {
-                    Timestamp = $"{d.TimeKey:00}:00",
+                    Timestamp = d.TimeKey.ToString("HH:mm"),
                     Values = BuildValuesDictionary(d)
                 }).ToList();
 
             case TimePeriod.Daily:
-                var dailyQuery = query
+                var today = DateTime.Today;
+                
+                // denne mandag
+                var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+
+                var dailyGrouped = query
+                    .Where(d => d.Timestamp.Date >= startOfWeek && d.Timestamp.Date <= today)
                     .GroupBy(d => d.Timestamp.Date)
                     .Select(g => new
                     {
@@ -97,10 +105,12 @@ public class GraphRepository : IGraphRepository {
                         Pm25 = g.Average(d => d.Pm25)
                     });
 
-                if (maxResults.HasValue)
-                    dailyQuery = dailyQuery.Take(maxResults.Value);
+                dailyGrouped = dailyGrouped.OrderBy(g => g.TimeKey);
 
-                var daily = await dailyQuery.ToListAsync();
+                if (maxResults.HasValue)
+                    dailyGrouped = dailyGrouped.Take(maxResults.Value);
+                
+                var daily = await dailyGrouped.ToListAsync();
 
                 return daily.Select(d => new MultiGraphEntity
                 {
@@ -114,15 +124,9 @@ public class GraphRepository : IGraphRepository {
                 var weeklyGrouped = weeklyRaw
                     .GroupBy(d =>
                     {
-                        var week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
-                            d.Timestamp,
-                            CalendarWeekRule.FirstDay,
-                            DayOfWeek.Monday);
-                        return new
-                        {
-                            Year = d.Timestamp.Year,
-                            Week = week
-                        };
+                        var week = ISOWeek.GetWeekOfYear(d.Timestamp);
+                        var year = ISOWeek.GetYear(d.Timestamp);
+                        return new { Year = year, Week = week };
                     })
                     .Select(g => new
                     {
@@ -133,6 +137,8 @@ public class GraphRepository : IGraphRepository {
                         AirQuality = g.Average(d => d.AirQuality),
                         Pm25 = g.Average(d => d.Pm25)
                     });
+
+                weeklyGrouped = weeklyGrouped.OrderBy(g => g.Week);
 
                 if (maxResults.HasValue)
                     weeklyGrouped = weeklyGrouped.Take(maxResults.Value);
@@ -144,38 +150,34 @@ public class GraphRepository : IGraphRepository {
                 }).ToList();
 
             case TimePeriod.Monthly:
-                var monthlyRaw = await query.ToListAsync();
+                var monthlyRaw = await query
+                    .Where(d => d.Timestamp >= query.FirstOrDefault()!.Timestamp)
+                    .ToListAsync();
 
                 var monthlyGrouped = monthlyRaw
-                    .GroupBy(d => new
-                    {
-                        Year = d.Timestamp.Year,
-                        Month = d.Timestamp.Month,
-                        Week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
-                            d.Timestamp,
-                            CalendarWeekRule.FirstDay,
-                            DayOfWeek.Monday) % 5 + 1
-                    })
+                    .GroupBy(d => d.Timestamp.Month)
                     .Select(g => new
                     {
-                        Year = g.Key.Year,
-                        Month = g.Key.Month,
-                        Week = g.Key.Week,
+                        Month = g.Key,
                         Temperature = g.Average(d => d.Temperature),
                         Humidity = g.Average(d => d.Humidity),
                         AirQuality = g.Average(d => d.AirQuality),
                         Pm25 = g.Average(d => d.Pm25)
                     });
 
+                monthlyGrouped = monthlyGrouped.OrderBy(g => g.Month);
+
                 if (maxResults.HasValue)
                     monthlyGrouped = monthlyGrouped.Take(maxResults.Value);
 
-                return monthlyGrouped.Select(d => new MultiGraphEntity
-                {
-                    Timestamp = $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(d.Month)} - Week {d.Week}",
-                    Values = BuildValuesDictionary(d)
-                }).ToList();
-
+                return monthlyGrouped
+                    .Select(d => new MultiGraphEntity
+                    {
+                        Timestamp = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(d.Month),
+                        Values = BuildValuesDictionary(d)
+                    })
+                    .ToList();
+            
             default:
                 throw new ArgumentOutOfRangeException(nameof(timePeriod));
         }
@@ -185,41 +187,29 @@ public class GraphRepository : IGraphRepository {
     {
         var dict = new Dictionary<string, double>();
 
-        if (d is IDictionary<string, object> expando)
+        var props = d.GetType().GetProperties();
+        foreach (var prop in props)
         {
-            foreach (var kvp in expando)
-            {
-                if (kvp.Value is string s && double.TryParse(s, out double dValue))
-                {
-                    dict[kvp.Key.ToLower()] = dValue;
-                }
-                else if (kvp.Value is double doub)
-                {
-                    dict[kvp.Key.ToLower()] = doub;
-                }
-            }
-        }
-        else
-        {
-            var props = d.GetType().GetProperties();
-            foreach (var prop in props)
-            {
-                var value = prop.GetValue(d);
+            var value = prop.GetValue(d);
 
-                if (value is string s && double.TryParse(s, out double dValue))
-                {
-                    dict[prop.Name.ToLower()] = dValue;
-                }
-                else if (value is double doub)
-                {
-                    dict[prop.Name.ToLower()] = doub;
-                }
+            if (value is string s && double.TryParse(s, out double dValue))
+            {
+                dict[prop.Name.ToLower()] = dValue;
+            }
+            else if (value is double doub)
+            {
+                dict[prop.Name.ToLower()] = doub;
+            }
+            else if (value is float f)
+            {
+                dict[prop.Name.ToLower()] = f;
+            }
+            else if (value is decimal dec)
+            {
+                dict[prop.Name.ToLower()] = (double)dec;
             }
         }
 
         return dict;
     }
-
-
-
 }
