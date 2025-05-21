@@ -99,6 +99,7 @@ export function AirQualityChartsCard({
         setCurrentTab(["airquality"])
         break
       case "pm25":
+        setTimePeriod(TimePeriod.Monthly)
         setCurrentTab(["pm25"])
         break
       default:
@@ -269,7 +270,6 @@ export function AirQualityChartsCard({
                         tickLine={false}
                         tickMargin={10}
                         axisLine={false}
-                        tickFormatter={(value) => value.slice(0, 1)}
                       />
                       <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                       <Bar dataKey="pm25" fill="var(--chart-4)" radius={5} />
