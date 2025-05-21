@@ -9,41 +9,11 @@ import { type RequestAirQualityData, TimePeriod, WebsocketEvents, type Websocket
 import { Thermometer } from "lucide-react"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
+import { useGraphData } from "@/hooks"
 
 export default function AirQualityTemperatureCard() {
-  const { onMessage, readyState, sendRequest } = useWsClient()
-
-  const [chartData, setChartData] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [lastFetch, setLastFetch] = useState<Date>()
-
-  const requestGraphData = async (requestTypes: any[], timePeriod: TimePeriod) => {
-    setIsLoading(true)
-    setLastFetch(undefined)
-
-    const requestData: RequestAirQualityData = {
-      eventType: WebsocketEvents.RequestAirQualityData,
-      timePeriod: timePeriod,
-      data: requestTypes,
-    }
-
-    try {
-      const graphResult: WebsocketMessage_1 = await sendRequest<RequestAirQualityData, WebsocketMessage_1>(
-        requestData,
-        WebsocketEvents.GraphGetMeasurement,
-      )
-
-      setChartData((graphResult as any)?.Data?.Data ?? [])
-      console.log(graphResult)
-    } catch (error) {
-      toast.error("Chart data failed", {
-        description: "An error occured while trying to fetching chart data.",
-      })
-      setLastFetch(undefined)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const { onMessage, readyState } = useWsClient()
+  const { requestGraphData, isLoading, chartData } = useGraphData();
 
   const chartConfig = {
     temperature: {
