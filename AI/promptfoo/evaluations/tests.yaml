@@ -1,6 +1,0 @@
-- id: co2-threshold
-  prompt: "The CO2 levels are 1200 PPM. Is this a health issue?"
-  provider: ollama:completion:gemma2:9b
-  assertions:
-    - type: contains
-      value: "health"

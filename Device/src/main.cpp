@@ -4,91 +4,70 @@
 #include "devices/mq135_sensor.h"
 #include "devices/lcd_display.h"
 #include "devices/pm25_sensor.h"
-#include "MQTT/MQTT.h"
+#include "MQTT/MqttManager.h"
+#include "WiFi/CustomWiFiManager.h"
+#include "MQTT/TimeManager.h"
+#include "MQTT/config.h"
+
+// Define WiFi reset button pin
+#define WIFI_RESET_BUTTON_PIN 25
+
+// Global topic definitions
+const char* MQTT_DATA_TOPIC = "AirQuality/Data";
+const char* MQTT_STATUS_TOPIC = "airquality/status";
+
+// Constructors for classes
+CustomWiFiManager customWiFiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_AP_NAME, WIFI_AP_PASSWORD, WIFI_RESET_BUTTON_PIN);
+
+TimeManager timeManager;
+
+MqttManager mqttClient(
+    &customWiFiManager,
+    &timeManager,
+    MQTT_SERVER,
+    MQTT_PORT,
+    MQTT_USERNAME,
+    MQTT_PASSWORD,
+    DEVICE_ID,
+    MQTT_DATA_TOPIC,
+    MQTT_STATUS_TOPIC
+);
 
 // Global timer variables
 unsigned long previousMillis = 0;
 const unsigned long interval = 3000;  // 3 seconds between readings
 
-// MQTT timing (publish less frequently to reduce network traffic)
+// MQTT timing
 unsigned long lastMqttPublish = 0;
 const unsigned long mqttInterval = 300000;  // 5 minutes between MQTT publishes
 
 void setup() {
-  // Initialize serial communication at 115200 baud
   Serial.begin(115200);
-  delay(2000);  // Longer wait for serial to initialize completely
+  delay(2000);
+  pinMode(WIFI_RESET_BUTTON_PIN, INPUT_PULLUP);
   
-  // Setup LED for status indication
   pinMode(2, OUTPUT);
   digitalWrite(2, HIGH);
   delay(300);
   digitalWrite(2, LOW);
   
-  Serial.println("\n\n");
-  Serial.println("=============================");
-  Serial.println("   AIR QUALITY SYSTEM v1.0   ");
-  Serial.println("=============================");
+  Serial.println("AIR QUALITY SYSTEM v1.0");
   
   Wire.begin();
-  Serial.println("Starting sensor initialization sequence...");
-
-  // Initialize sensors with basic error checking
   bool success = true;
   
-  Serial.print("BME280 sensor: ");
-  if (setupBME280Sensor()) {
-    Serial.println("OK");
-  } else {
-    Serial.println("FAILED");
-    success = false;
-  }
-  delay(500);  // Small delay between initializations
-  
-  Serial.print("LCD display: ");
-  if (setupLCDDisplay()) {
-    Serial.println("OK");
-  } else {
-    Serial.println("FAILED");
-    success = false;
-  }
-  delay(500);
-  
-  Serial.print("MQ135 sensor: ");
-if (setupMQ135Sensor()) {  
-  Serial.println("OK");
-} else {
-  Serial.println("FAILED");
-  success = false;
-}
-  delay(500);
-  
-  Serial.print("PM2.5 sensor: ");
-  if (setupPM25Sensor()) {
-    Serial.println("OK");
-  } else {
-    Serial.println("FAILED");
-    success = false;
-  }
+  if (!customWiFiManager.connect()) success = false;
+  timeManager.syncNTP();
+  if (!setupBME280Sensor()) success = false;
+  if (!setupLCDDisplay()) success = false;
+  if (!setupMQ135Sensor()) success = false;
+  if (!setupPM25Sensor()) success = false;
 
-  delay(500);
-
-  Serial.print("MQTT client: ");
-  if (setupMQTTClient()) {
-    Serial.println("OK");
-  } else {
-    Serial.println("FAILED - Will retry later");
-    // Not considering this a critical failure
-  }
+  mqttClient.setup();
+  mqttClient.clearRetainedMessage(MQTT_DATA_TOPIC);
   
-  // Handle initialization failure
   if (!success) {
-    Serial.println("\n=============================");
     Serial.println("INITIALIZATION FAILED - SYSTEM HALTED");
-    Serial.println("Please check sensor connections and restart");
-    Serial.println("=============================");
-    
-    // Error blink pattern (rapid blinking)
     while (true) {
       digitalWrite(2, HIGH);
       delay(200);
@@ -97,66 +76,41 @@ if (setupMQ135Sensor()) {
     }
   }
 
-  // All sensors initialized successfully
-  Serial.println("\n=============================");
-  Serial.println("ALL SENSORS INITIALIZED SUCCESSFULLY");
-  Serial.println("Starting monitoring loop...");
-  Serial.println("=============================\n");
-  
+  Serial.println("SYSTEM INITIALIZED");
 }
 
 void loop() {
   unsigned long currentMillis = millis();
 
-  loopMQTTClient();  // Handle MQTT client loop
+  if (digitalRead(WIFI_RESET_BUTTON_PIN) == LOW) {
+    Serial.println("Button pressed! Resetting WiFi and starting config portal...");
+    customWiFiManager.resetSettings();      // This erases WiFi credentials and restarts
+    // Optionally, you can also call customWiFiManager.startConfigPortal();
+    delay(1000); // Give time for message to print
+}
 
-  // Read sensor data at regular intervals
+  mqttClient.loop();
+  customWiFiManager.loop();
+  
+
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
     
-    Serial.println("\n====== SENSOR READINGS ======");
-    
-    // Read and display all sensor data with small delays for readability
-    Serial.println("\n>> BME280 ENVIRONMENTAL DATA:");
-    printBME280SensorData();
-    delay(100);
-    
-    Serial.println("\n>> MQ135 GAS SENSOR DATA:");
-    printMQ135SensorData();
-    delay(100);
-    
-    Serial.println("\n>> PM2.5 PARTICULATE DATA:");
-    printPM25SensorData();
-    delay(100);
-    
-    // Update LCD display with current readings
     float temp = readBME280Temperature();
     float humidity = readBME280Humidity();
     float gas = readMQ135Sensor();
     float particles = readPM25Value();
     updateLCDDisplay(temp, humidity, gas, particles);
 
-    // Publish MQTT data at the longer interval
     if (currentMillis - lastMqttPublish >= mqttInterval) {
       lastMqttPublish = currentMillis;
-      
-      Serial.println("\n>> PUBLISHING TO MQTT:");
-      bool published = publishSensorData(temp, humidity, gas, particles);
-      if (published) {
-        Serial.println("Data sent successfully");
-      } else {
-        Serial.println("Failed to send data");
-      }
+      mqttClient.publishSensorData(temp, humidity, gas, particles);
     }
     
-    // Blink LED once to indicate successful reading cycle
     digitalWrite(2, HIGH);
     delay(50);
     digitalWrite(2, LOW);
-    
-    Serial.println("\n====== END OF READINGS ======");
   }
   
-  // Small yield to allow other processes to run
   delay(10);
 }

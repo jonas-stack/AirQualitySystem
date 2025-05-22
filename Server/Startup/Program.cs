@@ -3,6 +3,7 @@ using Api.Websocket;
 using Application;
 using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
+using Infrastructure.Ai;
 using Infrastructure.MQTT;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
@@ -51,8 +52,6 @@ public class Program
         var app = builder.Build();
         await ConfigureMiddleware(app);
         await app.RunAsync();
-        
-        
     }
     
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -63,6 +62,7 @@ public class Program
 
         services.AddDataSourceAndRepositories();
         services.AddWebsocketInfrastructure();
+        services.RegisterAiService(appOptions);
 
         services.RegisterWebsocketApiServices();
         services.RegisterRestApiServices();
@@ -70,13 +70,16 @@ public class Program
         {
             conf.DocumentProcessors.Add(new AddAllDerivedTypesProcessor());
             conf.DocumentProcessors.Add(new AddStringConstantsProcessor());
+            conf.DocumentProcessors.Add(new AddWebsocketTopicsEnumProcessor());
+            conf.DocumentProcessors.Add(new AddWebsocketEventsProcessor());
+
         });
         services.AddSingleton<IProxyConfig, ProxyConfig>();
-
-        services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContextTestDocker>(options =>
+        
+        services.AddDbContext<Infrastructure.Postgres.Scaffolding.MyDbContext>(options =>
                     options.UseNpgsql(appOptions.DbConnectionString));
         
-        services.AddScoped<Infrastructure.Postgres.Seeder>();
+        services.AddScoped<Seeder>();
 
         services.RegisterMqttInfrastructure();
 
@@ -113,6 +116,6 @@ public class Program
         await File.WriteAllTextAsync("openapi.json", json);
         
         //TODO uncomment the line below. it's a function to generate a TypeScript client 
-        //app.GenerateTypeScriptClient("/../../client/src/generated-client.ts").GetAwaiter().GetResult();
+        app.GenerateTypeScriptClient("/../../client/src/generated-client.ts").GetAwaiter().GetResult();
     }
 }

@@ -11,10 +11,10 @@
 
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
 
-float rawPPM = 0;
-float correctedPPM = 0;
-int rawADC = 0;
-float voltage = 0;
+static float rawPPM = 0;
+static float correctedPPM = 0;
+static int rawADC = 0;
+static float voltage = 0;
 
 bool setupMQ135Sensor() {
     Serial.println("Initializing MQ135 sensor...");

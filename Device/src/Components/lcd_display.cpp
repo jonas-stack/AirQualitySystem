@@ -19,7 +19,14 @@ bool setupLCDDisplay() {
   lcd.backlight();
   Serial.println("LCD display initialized successfully.");
   return true;
-  delay(5000);
+}
+
+void displayMessage(const char* line1, const char* line2) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(line1);
+    lcd.setCursor(0, 1);
+    lcd.print(line2);
 }
 
 void updateLCDDisplay(float temperature, float humidity, float gas, float particles) {

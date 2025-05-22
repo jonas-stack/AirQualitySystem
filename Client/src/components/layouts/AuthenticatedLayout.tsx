@@ -6,14 +6,20 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import DynamicBreadcrumbs from '../header/DynamicBreadcrumbs';
 import { SearchForm } from '../header/SearchForm';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchDialog } from '../command/SearchDialog';
 import { LogOut } from 'lucide-react';
+import { WebsocketTopics } from '@/generated-client';
+import { useAutoSubscription } from '@/hooks';
 
 export const AuthenticatedLayout = () => {
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);
 
+    // brug memo for at sikre den ikke bliver oprettet på ny heletiden og kalder flere gange
+    const topicIds = useMemo(() => [WebsocketTopics.Dashboard], []);
+    useAutoSubscription(topicIds);
+  
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
           if ((event.ctrlKey || event.metaKey) && event.key === 's') {

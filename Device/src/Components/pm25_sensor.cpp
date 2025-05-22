@@ -8,9 +8,9 @@
 PMS pms(PMS_SERIAL);
 PMS::DATA data;
 
-int PM25Value = 0; 
-int PM10Value = 0; 
-int PM1Value = 0;  
+static int PM25Value = 0; 
+static int PM10Value = 0; 
+static int PM1Value = 0;  
 
 bool setupPM25Sensor()
 {
@@ -24,7 +24,6 @@ bool setupPM25Sensor()
   
   Serial.println("PM2.5 sensor initialized successfully.");
   return true;
-  delay(5000);
 }
 
 void updatePM25SensorValues()

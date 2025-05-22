@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
-import { useOutsideClick } from "@/hooks/use-outside-click"
 import type { Card, CardArray } from "@/types/card"
 import { ExpandedCard } from "./expanded-card"
 import { CardItem } from "./card-item"
+import { useOutsideClick } from "@/hooks"
 
 interface ExpandableCardListProps {
   cards?: CardArray

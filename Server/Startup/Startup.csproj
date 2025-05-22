@@ -8,6 +8,7 @@
     <ProjectReference Include="..\Infrastructure.MQTT\Infrastructure.MQTT.csproj" />
     <ProjectReference Include="..\Infrastructure.Postgres\Infrastructure.Postgres.csproj" />
     <ProjectReference Include="..\Infrastructure.Websocket\Infrastructure.Websocket.csproj" />
+    <ProjectReference Include="..\Infrastructure.Ai\Infrastructure.Ai.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +35,7 @@
     <PackageReference Include="NSwag.Generation" Version="14.3.0" />
     <PackageReference Include="patrikvalentiny-WebSocketProxy" Version="1.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3.0" />
+    <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="14.2.0"/>
   </ItemGroup>
 
   <ItemGroup>

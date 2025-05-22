@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import {
@@ -7,73 +7,49 @@ import {
   LineChart,
   Bar,
   BarChart,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   CartesianGrid,
-  ResponsiveContainer,
+  AreaChart,
+  Area,
+  LabelList,
 } from "recharts"
 import { CloudRainIcon, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useWsClient } from "ws-request-hook"
+import { TimePeriod } from "@/generated-client"
+import { Spinner } from "../ui/spinner"
+import { useGraphData } from "@/hooks"
+import { formatLastUpdated } from "@/lib/time-formatter"
 
-const airQualityData = {
-  daily: [
-    { time: "00:00", pm25: 12, aqi: 65 },
-    { time: "06:00", pm25: 10, aqi: 60 },
-    { time: "12:00", pm25: 18, aqi: 75 },
-    { time: "18:00", pm25: 14, aqi: 68 },
-  ],
-  weekly: [
-    { day: "Mon", pm25: 14, aqi: 68 },
-    { day: "Tue", pm25: 12, aqi: 65 },
-    { day: "Wed", pm25: 18, aqi: 75 },
-    { day: "Thu", pm25: 15, aqi: 70 },
-    { day: "Fri", pm25: 20, aqi: 80 },
-    { day: "Sat", pm25: 10, aqi: 60 },
-    { day: "Sun", pm25: 8, aqi: 55 },
-  ],
-  pollutantDistribution: [
-    { name: "PM2.5", value: 35 },
-    { name: "PM10", value: 25 },
-    { name: "VOCs", value: 20 },
-    { name: "CO2", value: 15 },
-    { name: "Other", value: 5 },
-  ],
+type ChartConfigItem = {
+  label: string
+  color: string
 }
 
-const lineChartConfig = {
-  pm25: {
-    label: "PM2.5 (μg/m³)",
+const lineChartConfig: Record<string, ChartConfigItem> = {
+  temperature: {
+    label: "Temperature (°C)",
     color: "var(--chart-1)",
   },
-  aqi: {
-    label: "AQI",
+  humidity: {
+    label: "Humidity (%)",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
-const barChartConfig = {
+const barChartConfig: Record<string, ChartConfigItem> = {
+  airquality: {
+    label: "Air quality",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig
+
+const pm25Config: Record<string, ChartConfigItem> = {
   pm25: {
-    label: "PM2.5 (μg/m³)",
-    color: "var(--chart-1)",
+    label: "PM25",
+    color: "var(--chart-4)",
   },
 } satisfies ChartConfig
-
-const pieChartConfig = {
-  value: {
-    label: "Distribution",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig
-
-const COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
-]
 
 interface SimpleAirQualityChartsCardProps {
   className?: string
@@ -81,117 +57,172 @@ interface SimpleAirQualityChartsCardProps {
 }
 
 export function SimpleAirQualityChartsCard({ className = "", onRefresh }: SimpleAirQualityChartsCardProps) {
-  const [timeRange, setTimeRange] = useState("daily")
+  const [currentTab, setCurrentTab] = useState(["temperature", "humidity"])
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>(TimePeriod.Daily)
+  const { readyState } = useWsClient();
 
-  const getTimeData = () => {
-    return timeRange === "daily" ? airQualityData.daily : airQualityData.weekly
+  const { requestGraphData, chartData, isLoading, lastFetch } = useGraphData();
+
+  useEffect(() => {
+    if (readyState === 1) {
+      requestGraphData(currentTab, timePeriod);
+    }
+  }, [timePeriod, currentTab, readyState]);
+
+  const handleTimeShift = (time: string) => {
+    setTimePeriod(time as TimePeriod)
   }
 
-  const getTimeKey = () => {
-    return timeRange === "daily" ? "time" : "day"
+  const handleTabChange = (tab: string) => {
+    switch (tab) {
+      case "general":
+        setTimePeriod(TimePeriod.Daily)
+        setCurrentTab(["temperature", "humidity"])
+        break
+      case "airquality":
+        setTimePeriod(TimePeriod.Weekly)
+        setCurrentTab(["airquality"])
+        break
+      case "pm25":
+        setTimePeriod(TimePeriod.Weekly)
+        setCurrentTab(["pm25"])
+        break
+      default:
+        break
+    }
   }
 
   const handleRefresh = () => {
     if (onRefresh) {
-      onRefresh()
+      requestGraphData(currentTab, timePeriod);
     }
   }
 
+  const ChartLoading = () => (
+    <div className="flex items-center justify-center w-full h-[200px] bg-card/50 rounded-md">
+      <div className="flex flex-col items-center gap-2">
+        <Spinner size="lg" className="text-primary" />
+        <p className="text-sm text-muted-foreground">Loading chart data...</p>
+      </div>
+    </div>
+  )
+
   return (
-    <Card className={`${className}`}>
+      <Card className={`${className}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="flex gap-2 text-lg font-bold"><CloudRainIcon className="text-yellow-600"/> Air Quality Metrics</CardTitle>
-        <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8">
-          <RefreshCcw className="h-4 w-4" />
+        <div>
+        <CardTitle className="flex gap-2 text-lg font-bold">
+          <CloudRainIcon className="text-yellow-600" /> Air Quality Metrics
+        </CardTitle>
+            <CardDescription>
+              {lastFetch === undefined
+                ? "No data available"
+                : `Last updated: ${formatLastUpdated(lastFetch)}`}
+            </CardDescription>    
+        </div>
+        <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8 cursor-pointer">
+          <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           <span className="sr-only">Refresh data</span>
         </Button>
       </CardHeader>
       <CardContent className="p-0">
-        <Tabs defaultValue="line" className="w-full">
+        <Tabs defaultValue="general" onValueChange={handleTabChange} className="w-full">
           <div className="px-4">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="line">Trends</TabsTrigger>
-              <TabsTrigger value="bar">Weekly</TabsTrigger>
-              <TabsTrigger value="pie">Distribution</TabsTrigger>
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="airquality">Air Quality</TabsTrigger>
+              <TabsTrigger value="pm25">PM25</TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="line" className="mt-0 pt-2">
+          <TabsContent value="general" className="mt-0 pt-2">
             <div className="px-4 pb-2">
-              <Tabs defaultValue="daily" onValueChange={setTimeRange}>
+              <Tabs defaultValue={TimePeriod.Daily} onValueChange={handleTimeShift}>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="daily">Daily</TabsTrigger>
-                  <TabsTrigger value="weekly">Weekly</TabsTrigger>
+                  <TabsTrigger value={TimePeriod.Daily}>Daily</TabsTrigger>
+                  <TabsTrigger value={TimePeriod.Weekly}>Weekly</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
             <div className="px-4 pt-4">
-              <ChartContainer config={lineChartConfig}>
-                <LineChart accessibilityLayer data={getTimeData()} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                  <XAxis dataKey={getTimeKey()} tickLine={false} axisLine={false} tickMargin={10} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="pm25"
-                    stroke="var(--color-pm25)"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 5 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="aqi"
-                    stroke="var(--color-aqi)"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 5 }}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="bar" className="mt-0 pt-2">
-            <div className="px-4 pt-8">
-              <ChartContainer config={barChartConfig}>
-                <BarChart
-                  accessibilityLayer
-                  data={airQualityData.weekly}
-                  margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={10} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="pm25" fill="var(--color-pm25)" radius={[4, 4, 0, 0]} barSize={20} />
-                </BarChart>
-              </ChartContainer>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="pie" className="mt-0 pt-2">
-            <div className="px-4">
-              <ChartContainer config={pieChartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={airQualityData.pollutantDistribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={70}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {airQualityData.pollutantDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
+              {isLoading ? (
+                <ChartLoading />
+              ) : (
+                <ChartContainer className="h-60 w-full" config={lineChartConfig}>
+                  <AreaChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+                    <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10} />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+                    {currentTab.map((key) => (
+                      <Area
+                        key={key}
+                        type="natural"
+                        dataKey={key}
+                        fillOpacity={0.4}
+                        fill={lineChartConfig[key]?.color ?? "var(--chart-1)"}
+                        stroke={lineChartConfig[key]?.color ?? "var(--chart-1)"}
+                        stackId="a"
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 5 }}
+                      />
+                    ))}
+                  </AreaChart>
+                </ChartContainer>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="airquality" className="mt-0 pt-2">
+            <div className="px-4 pt-8">
+              {isLoading ? (
+                <ChartLoading />
+              ) : (
+                <ChartContainer className="h-60 w-full" config={barChartConfig}>
+                  <BarChart accessibilityLayer data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+                    <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    {currentTab.map((key) => (
+                      <Bar
+                        key={key}
+                        dataKey={key}
+                        fill={barChartConfig[key]?.color ?? "var(--color-default)"}
+                        radius={[4, 4, 0, 0]}
+                        barSize={20}
+                      />
+                    ))}
+                  </BarChart>
+                </ChartContainer>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="pm25" className="mt-0 pt-2">
+            <div className="px-4 pt-4">
+              {isLoading ? (
+                <ChartLoading />
+              ) : (
+                <ChartContainer className="h-60 w-full" config={pm25Config}>
+                  <LineChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                    <CartesianGrid vertical={false}/>
+                    <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={10}/>
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                    {currentTab.map((key) => (
+                      <Line
+                        key={key}
+                        type="natural"
+                        dataKey={key}
+                        stroke={pm25Config[key]?.color ?? "var(--chart-1)"}
+                        strokeWidth={2}
+                        dot={{ fill: pm25Config[key]?.color ?? "var(--chart-1)" }}
+                        activeDot={{ r: 6 }}
+                      >
+                        <LabelList position="top" offset={12} className="fill-foreground" fontSize={12} />
+                      </Line>
+                    ))}
+                  </LineChart>
+                </ChartContainer>
+              )}
             </div>
           </TabsContent>
         </Tabs>

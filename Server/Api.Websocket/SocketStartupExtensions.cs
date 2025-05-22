@@ -7,12 +7,11 @@ using Fleck;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using WebSocketBoilerplate;
 
 namespace Api.Websocket;
 
-public static class SocketStartupExtensions
+public static class Extensions
 {
     public static IServiceCollection RegisterWebsocketApiServices(this IServiceCollection services)
     {
@@ -20,6 +19,19 @@ public static class SocketStartupExtensions
         var assembly = typeof(Extensions).Assembly;
         services.InjectEventHandlers(assembly);
         return services;
+    }
+    
+    public static bool IsValidJson(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return true;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 
     public static async Task<WebApplication> ConfigureWebsocketApi(this WebApplication app, int wsPort = 8181)
@@ -31,6 +43,7 @@ public static class SocketStartupExtensions
         var logger = app.Services.GetRequiredService<ILogger<NonStaticWsExtensionClassForLogger>>();
         logger.LogInformation("WS running on url: " + url);
         var server = new WebSocketServer(url);
+
         Action<IWebSocketConnection> config = ws =>
         {
             var queryString = ws.ConnectionInfo.Path.Split('?').Length > 1
@@ -39,10 +52,10 @@ public static class SocketStartupExtensions
 
             var id = HttpUtility.ParseQueryString(queryString)["id"] ??
                      throw new Exception("Please specify ID query param for websocket connection");
+            
             using var scope = app.Services.CreateScope();
             var manager = scope.ServiceProvider.GetRequiredService<IConnectionManager>();
-
-
+            
             ws.OnOpen = () => manager.OnOpen(ws, id);
             ws.OnClose = () => manager.OnClose(ws, id);
             ws.OnError = ex => ws.SendDto(new ServerSendsErrorMessage { Message = ex.Message });
@@ -50,11 +63,26 @@ public static class SocketStartupExtensions
             {
                 try
                 {
+                    if (!IsValidJson(message))
+                    {
+                        var errorResponse = new ServerSendsErrorMessage
+                        {
+                            Message = "Invalid JSON format",
+                            requestId = ""
+                        };
+                        ws.SendDto(errorResponse);
+                        return;
+                    }
+        
                     await app.CallEventHandler(ws, message);
+
                 }
                 catch (Exception e)
                 {
                     logger.LogError(e, "Error in handling message: {message}", message);
+                    
+                    // Validate that the message is valid JSON; otherwise, the entire program will crash.
+                    
                     var baseDto = JsonSerializer.Deserialize<BaseDto>(message, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
