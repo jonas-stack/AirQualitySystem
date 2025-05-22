@@ -48,7 +48,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             var payload = args.PublishMessage.Payload;
             if (payload == null) return;
             
-            // Deserialize json payload fra mqtt til DevicedDto
+            // Deserialize json payload fra mqtt til DeviceDto
             var result = _deserializer.Deserialize<DeviceDto>(payload);
 
             if (!result.Success)
