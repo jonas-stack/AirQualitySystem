@@ -47,7 +47,8 @@ public class SensorDataHandler : IMqttMessageHandler
         {
             var payload = args.PublishMessage.Payload;
             if (payload == null) return;
-
+            
+            // Deserialize json payload fra mqtt til SensorDataDto
             var result = _deserializer.Deserialize<SensorDataDto>(payload);
 
             if (!result.Success)
@@ -59,7 +60,7 @@ public class SensorDataHandler : IMqttMessageHandler
 
             var dto = result.Data!;
 
-            // Validate data before saving
+            // Valider data for database lagring
             if (!_validator.IsIdValid(dto))
             {
                 _logger.LogWarning("Invalid device ID format for device {DeviceId}. Skipping save.", dto.DeviceId);
@@ -78,17 +79,19 @@ public class SensorDataHandler : IMqttMessageHandler
                 return;
             }
 
-            var timestamp = DataTypeConverter.GetLocalDateTime(dto.TimestampUnix);
-            var deviceGuid = DataTypeConverter.GetDeviceGuid(dto.DeviceId);
+            var entity = _mapper.MapToEntity(dto);
 
-            if (!await _deviceRepository.DeviceExistsAsync(deviceGuid))
+            // register ny device hvis den ikke findes ud fra deviceGuid
+            if (!await _deviceRepository.DeviceExistsAsync(entity.DeviceId))
             {
                 _logger.LogInformation("New device detected with ID {DeviceId}. Auto-registering.", dto.DeviceId);
-                await _deviceRepository.RegisterNewDeviceAsync(deviceGuid, dto.DeviceId, timestamp);
+                await _deviceRepository.RegisterNewDeviceAsync(entity.DeviceId, dto.DeviceId, entity.Timestamp);
             }
-
-            _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp);
-            var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
+            
+            // opdater device status
+            _connectionTracker.UpdateDeviceStatus(entity.DeviceId, entity.Timestamp);
+            
+            // Send entity til repository for at gemme i database
             await _sensorDataRepository.SaveSensorDataAsync(entity);
 
             _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);

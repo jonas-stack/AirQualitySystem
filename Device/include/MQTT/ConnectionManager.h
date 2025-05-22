@@ -1,18 +1,18 @@
 #ifndef CONNECTION_MANAGER_H
 #define CONNECTION_MANAGER_H
 
-#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
-#include "WiFiManager.h"
+#include "WiFi/CustomWiFiManager.h"
 #include "TimeManager.h"
+#include <WiFiClientSecure.h>
 
 // Callback signature from PubSubClient
 typedef void (*MessageCallback)(char*, byte*, unsigned int);
 
 class ConnectionManager {
 private:
-    WiFiManager* _wifiManager;
+    CustomWiFiManager* _customWiFiManager;
     WiFiClientSecure _espClient;
     PubSubClient* _client;
     
@@ -24,7 +24,7 @@ private:
     bool _configured;
     
 public:
-    ConnectionManager(WiFiManager* wifiManager, 
+    ConnectionManager(CustomWiFiManager* customWiFiManager, 
                      const char* server, 
                      int port,
                      const char* username,

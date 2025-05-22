@@ -1,8 +1,9 @@
-#include "MqttManager.h"
+#include "MQTT/MqttManager.h"
 #include <ArduinoJson.h>
+#include "WiFi/CustomWiFiManager.h"
 
 MqttManager::MqttManager(
-    WiFiManager* wifiManager, 
+    CustomWiFiManager* customWiFiManager, 
     TimeManager* timeManager, 
     const char* server, 
     int port, 
@@ -12,7 +13,7 @@ MqttManager::MqttManager(
     const char* dataTopic,
     const char* statusTopic
 ) : 
-    _wifiManager(wifiManager),
+    _customWiFiManager(customWiFiManager),
     _timeManager(timeManager),
     _server(server),
     _port(port),
@@ -43,7 +44,7 @@ bool MqttManager::setup() {
 }
 
 bool MqttManager::connect() {
-    if (!_wifiManager->isConnected()) {
+    if (!_customWiFiManager->isConnected()) {
         return false;
     }
     
