@@ -222,6 +222,9 @@ export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
 
+export interface ClientRequestAiLiveData extends BaseDto {
+}
+
 export interface ClientRequestDeviceStatus extends BaseDto {
 }
 
@@ -261,6 +264,7 @@ export interface Pong extends BaseDto {
 export enum StringConstants {
     LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    ClientRequestAiLiveData = "ClientRequestAiLiveData",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
     ExampleClientDto = "ExampleClientDto",

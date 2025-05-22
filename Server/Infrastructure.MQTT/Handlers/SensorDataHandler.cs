@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Infrastructure.MQTT;
+﻿using Application.Interfaces;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Mappers;
 using Application.Models.Dtos.MQTT;
@@ -19,13 +20,15 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly ISensorDataMapper _mapper;
     private readonly ISensorDataRepository _sensorDataRepository;
     private readonly IDataValidator _validator;
+    private readonly IAiCommunication _aiCommunication;
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
         DeviceConnectionTracker connectionTracker,
         IDataValidator validator,
         ISensorDataMapper mapper,
-        ISensorDataRepository sensorDataRepository, IJsonDeserializer deserializer, IDeviceRepository deviceRepository)
+        ISensorDataRepository sensorDataRepository, IJsonDeserializer deserializer, IDeviceRepository deviceRepository,
+        IAiCommunication aiCommunicator)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -34,6 +37,7 @@ public class SensorDataHandler : IMqttMessageHandler
         _sensorDataRepository = sensorDataRepository;
         _deserializer = deserializer;
         _deviceRepository = deviceRepository;
+        _aiCommunication = aiCommunicator;
     }
 
     public string TopicFilter => "AirQuality/Data";
@@ -88,6 +92,8 @@ public class SensorDataHandler : IMqttMessageHandler
             _connectionTracker.UpdateDeviceStatus(deviceGuid, timestamp);
             var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
             await _sensorDataRepository.SaveSensorDataAsync(entity);
+            
+            await _aiCommunication.BroadCastData();
 
             _logger.LogInformation("Data saved successfully for device: {DeviceId}", entity.DeviceId);
         }

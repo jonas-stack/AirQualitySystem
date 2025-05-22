@@ -1,12 +1,13 @@
 "use client"
 import React, {useRef} from "react"
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Bot, Sparkles } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useEffect, useState } from "react"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Bot, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import {useWsClient} from "ws-request-hook";
+import {LiveAiFeedbackDto, WebsocketTopics} from "@/generated-client.ts";
+import {useAutoSubscription} from "@/hooks/use-auto-subscription.ts";
 
 
 
@@ -19,55 +20,34 @@ export function LiveDataCard({
   className,
   title = "🍃 Environment Watcher",
 }: LiveDataCardProps) {
-  const [messages, setMessages] = useState<string[]>([])
-  const [timestamps, setTimestamps] = useState<Date[]>([])
-  const socketRef = useRef< WebSocket | null>(null);
+    const [messages, setMessages] = useState<string[]>([])
+    const [timestamps, setTimestamps] = useState<Date[]>([])
+    const { onMessage, readyState } = useWsClient();
 
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8181/ws?id=0")
-    socketRef.current =  socket;
 
-    socket.onopen = () => {
-      console.log("Web socket Connected")
-    }
+    useAutoSubscription([WebsocketTopics.Ai])
 
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
 
-        if (
-            data?.eventType === "LiveAiFeedbackDto" &&
-            data?.topic === "Ai" &&
-            data?.data?.aiAdvice
-        ) {
-          const advice = data.data.aiAdvice
+    useEffect(() => {
+        const unsubscribe = onMessage<LiveAiFeedbackDto>(
+        WebsocketTopics.Ai,
+        (dto) => {
+            console.log("✅ AI WebSocket message received:", dto);
 
-          setMessages((prev) => {
-            if (prev[prev.length - 1] !== advice) {
-              return [...prev, advice]
-            }
-            return [...prev];
-          })
+            const advice = dto.aiAdvice;
+            setMessages((prev) => {
+                if (prev[prev.length - 1] !== advice) {
+                    return [...prev, advice];
+                }
+                return [...prev];
+            });
 
-          setTimestamps((prev) => [...prev, new Date()])
+            setTimestamps((prev) => [...prev, new Date()]);
         }
-      } catch (error) {
-        console.error("Error parsing Websocket message:",error)
-      }
-    }
+    );
 
-    socket.onerror = (error) => {
-      console.error("Websocket error:", error)
-    }
-
-    socket.onclose = () => {
-      console.warn("Web socket Closed")
-    }
-
-    return () => {
-      socket.close()
-    }
-  }, [])
+    return () => unsubscribe();
+    }, [readyState]);
 
   return (
     <Card className={cn("flex flex-col", className)}>

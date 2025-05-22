@@ -249,6 +249,17 @@
           }
         ]
       },
+      "ClientRequestAiLiveData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
       "ClientRequestDeviceStatus": {
         "allOf": [
           {
@@ -385,6 +396,7 @@
         "enum": [
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
+          "ClientRequestAiLiveData",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
           "ExampleClientDto",

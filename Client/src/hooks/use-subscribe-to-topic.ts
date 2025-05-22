@@ -1,32 +1,63 @@
-import {useEffect} from "react";
+import {useCallback, useState} from "react";
 import {ChangeSubscriptionDto, StringConstants, WebsocketTopics} from "../generated-client.ts";
-import {useWsClient} from "ws-request-hook";
 import { subscriptionClient } from "@/api/api-controller-clients.ts";
-import { randomUid } from "@/App.tsx";
 import { toast } from "sonner";
+import { randomUid } from "@/App.tsx";
 
-export default function useSubscribeToTopics() {
+export function useSubscriptionHook() {
+    const clientId = randomUid;
+    const jwt = "totallysecretjwt";
 
-    const [jwt] = "asdasdasd";
-    const {readyState} = useWsClient();
+    const [isSubscribed, setIsSubscribed] = useState(false);
 
-    useEffect(() => {
-        if (readyState != 1 || jwt == null || jwt.length < 1)
-            return;
-        const subscribeDto: ChangeSubscriptionDto = {
-            clientId: randomUid,
-            topicIds: [WebsocketTopics.Dashboard],
+    // vi bruger usecallback for at sikre der ikke kommer unødvendige re-renders
+    const subscribe = useCallback(async (topicIds: string[]) => {
+        if (!jwt || jwt.length < 1) return;
+
+        const dto: ChangeSubscriptionDto = {
+            clientId,
+            topicIds,
         };
 
-        subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
-        toast.success("Subscription", {
-          description: "Successfully subscribing to " + WebsocketTopics.Dashboard,
-          action: {
-            label: "OK",
-            onClick: () => {}, // lidt dumt, men ellers kan man ik trykke ok
-          }
-        })
-        })
+        try {
+            await subscriptionClient.subscribe(jwt, dto);
+            setIsSubscribed(true);
+            toast.success("Subscription", {
+                description: "Successfully subscribed to " + topicIds,
+                action: { label: "OK", onClick: () => {} },
+            });
+        } catch (error) {
+            toast.error("Subscription Failed", {
+                description: "Could not subscribe to topics.",
+            });
+        }
+    }, [jwt, clientId]);
 
-    }, [readyState, jwt])
+    const unsubscribe = useCallback(async (topicIds: string[]) => {
+        if (!jwt || jwt.length < 1) return;
+
+        const dto: ChangeSubscriptionDto = {
+            clientId,
+            topicIds,
+        };
+
+        try {
+            await subscriptionClient.unsubscribe(jwt, dto);
+            setIsSubscribed(false);
+            toast.success("Unsubscribed", {
+                description: "Successfully unsubscribed from " + topicIds,
+                action: { label: "OK", onClick: () => {} },
+            });
+        } catch (error) {
+            toast.error("Unsubscription Failed", {
+                description: "Could not unsubscribe from topics.",
+            });
+        }
+    }, [jwt, clientId]);
+
+    return {
+        subscribe,
+        unsubscribe,
+        isSubscribed,
+    };
 }
