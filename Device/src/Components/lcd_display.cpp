@@ -19,7 +19,6 @@ bool setupLCDDisplay() {
   lcd.backlight();
   Serial.println("LCD display initialized successfully.");
   return true;
-  delay(5000);
 }
 
 void displayMessage(const char* line1, const char* line2) {
