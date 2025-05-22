@@ -22,6 +22,7 @@ export function LiveDataCard({
   const [messages, setMessages] = useState<string[]>([])
   const [timestamps, setTimestamps] = useState<Date[]>([])
 
+  /*
   useEffect(() => {
     const fetchLiveData = async () => {
       try {
@@ -40,7 +41,7 @@ export function LiveDataCard({
     fetchLiveData();
     const interval = setInterval(fetchLiveData, 330000);
     return () => clearInterval(interval);
-  }, [messages]);
+  }, [messages]);*/
 
   return (
     <Card className={cn("flex flex-col", className)}>

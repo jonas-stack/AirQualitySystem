@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Infrastructure.MQTT;
+﻿using Application.Interfaces;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Mappers;
 using Application.Models.Dtos.MQTT;
@@ -19,6 +20,7 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly ISensorDataMapper _mapper;
     private readonly ISensorDataRepository _sensorDataRepository;
     private readonly IDataValidator _validator;
+    private readonly IGraphService _graphService;
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,

@@ -13,12 +13,12 @@ namespace Api.Websocket.Handlers;
 /// </summary>
 public class ExampleClientDto : BaseDto
 {
-    public string SomethingTheClientSends { get; set; }
+    public required string SomethingTheClientSends { get; set; }
 }
 
 public class ExampleServerResponse : BaseDto
 {
-    public string SomethingTheServerSends { get; set; }
+    public required string SomethingTheServerSends { get; set; }
 }
 
 public class ExampleEventHandler : BaseEventHandler<ExampleClientDto>

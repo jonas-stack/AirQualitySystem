@@ -1,4 +1,5 @@
-﻿using Namotion.Reflection;
+﻿using Application.Models.Dtos;
+using Namotion.Reflection;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
 using WebSocketBoilerplate;
@@ -32,7 +33,8 @@ public sealed class AddAllDerivedTypesProcessor : IDocumentProcessor
             .Where(t =>
                 t != typeof(BaseDto) &&
                 !t.IsAbstract &&
-                typeof(BaseDto).IsAssignableFrom(t)
+                typeof(BaseDto).IsAssignableFrom(t) ||
+                typeof(ApplicationBaseDto).IsAssignableFrom(t)
             )
             .ToList();
 

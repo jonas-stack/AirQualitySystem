@@ -5,11 +5,11 @@ using NSwag.Generation.Processors.Contexts;
 
 namespace Startup.Documentation;
 
-public sealed class AddWebsocketTopicsEnumProcessor : IDocumentProcessor
+public sealed class AddWebsocketEventsProcessor : IDocumentProcessor
 {
     public void Process(DocumentProcessorContext context)
     {
-        var topicsType = typeof(Application.Models.Websocket.WebsocketTopics);
+        var topicsType = typeof(Application.Models.Websocket.WebsocketEvents);
 
         var constants = topicsType
             .GetFields(BindingFlags.Public | BindingFlags.Static)
@@ -18,15 +18,16 @@ public sealed class AddWebsocketTopicsEnumProcessor : IDocumentProcessor
             .Where(value => value != null)
             .Distinct()
             .ToList();
+
         var schema = new JsonSchema
         {
             Type = JsonObjectType.String,
-            Description = "Websocket Topic Enums"
+            Description = "Websocket Events enums"
         };
 
         foreach (var topic in constants)
             schema.Enumeration.Add(topic);
 
-        context.Document.Definitions["WebsocketTopics"] = schema;
+        context.Document.Definitions["WebsocketEvents"] = schema;
     }
 }
