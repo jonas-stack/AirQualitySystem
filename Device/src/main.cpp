@@ -16,14 +16,11 @@
 const char* MQTT_DATA_TOPIC = "AirQuality/Data";
 const char* MQTT_STATUS_TOPIC = "airquality/status";
 
-// Create class instances
-CustomWiFiManager customWiFiManager(
-    WIFI_SSID, WIFI_PASSWORD,
-    WIFI_AP_NAME, WIFI_AP_PASSWORD,
-    WIFI_RESET_BUTTON_PIN
-);
+// Constructors for classes
+CustomWiFiManager customWiFiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_AP_NAME, WIFI_AP_PASSWORD, WIFI_RESET_BUTTON_PIN);
 
 TimeManager timeManager;
+
 MqttManager mqttClient(
     &customWiFiManager,
     &timeManager,

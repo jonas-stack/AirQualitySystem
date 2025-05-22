@@ -8,7 +8,6 @@ class CustomWiFiManager {
 private:
     WiFiConnection _connection;
     ConfigPortalManager _portalManager;
-    bool _configMode;
     int _configButtonPin;
     
 public:

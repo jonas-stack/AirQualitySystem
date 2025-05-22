@@ -12,6 +12,8 @@ private:
 public:
     ConfigPortalManager(const char* apName, const char* apPassword);
     
+    const char* getApName() const { return _apName; }
+    const char* getApPassword() const { return _apPassword; }
     bool startPortal();
     bool autoConnect();
     void resetSettings();

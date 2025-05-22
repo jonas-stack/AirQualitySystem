@@ -47,7 +47,7 @@ void CustomWiFiManager::startConfigPortal() {
     Serial.println("Starting config portal");
     displayMessage("WiFi Setup Mode", "Connect to AP:");
     delay(1000);
-    displayMessage(WIFI_AP_NAME, WIFI_AP_PASSWORD);
+    displayMessage(_portalManager.getApName(), _portalManager.getApPassword());
     delay(2000);
     displayMessage("Enter in URL", "http://192.168.4.1");
     delay(3000);
