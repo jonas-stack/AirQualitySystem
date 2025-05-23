@@ -20,6 +20,19 @@ public static class Extensions
         services.InjectEventHandlers(assembly);
         return services;
     }
+    
+    public static bool IsValidJson(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return true;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
 
     public static async Task<WebApplication> ConfigureWebsocketApi(this WebApplication app, int wsPort = 8181)
     {
@@ -50,7 +63,19 @@ public static class Extensions
             {
                 try
                 {
+                    if (!IsValidJson(message))
+                    {
+                        var errorResponse = new ServerSendsErrorMessage
+                        {
+                            Message = "Invalid JSON format",
+                            requestId = ""
+                        };
+                        ws.SendDto(errorResponse);
+                        return;
+                    }
+        
                     await app.CallEventHandler(ws, message);
+
                 }
                 catch (Exception e)
                 {

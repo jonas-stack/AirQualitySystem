@@ -31,6 +31,7 @@ public static class PostgresStartupExtensions
         // Register repositories
         services.AddScoped<ISensorDataRepository, SensorDataRepository>();
         services.AddScoped<IDeviceRepository, DeviceRepository>();
+        services.AddScoped<IGraphRepository, GraphRepository>();
 
         return services;
     }

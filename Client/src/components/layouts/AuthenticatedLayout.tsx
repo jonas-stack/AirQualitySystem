@@ -19,6 +19,7 @@ export const AuthenticatedLayout = () => {
   
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);
 
+    // brug memo for at sikre den ikke bliver oprettet på ny heletiden og kalder flere gange
     const topicIds = useMemo(() => [WebsocketTopics.Dashboard, WebsocketTopics.Ai], []);
     useAutoSubscription(topicIds);
 

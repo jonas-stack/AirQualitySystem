@@ -1,11 +1,12 @@
 #include "ConnectionManager.h"
+#include "WiFi/CustomWiFiManager.h"
 
-ConnectionManager::ConnectionManager(WiFiManager* wifiManager, 
+ConnectionManager::ConnectionManager(CustomWiFiManager* customWiFiManager, 
                                    const char* server, 
                                    int port,
                                    const char* username,
                                    const char* password) :
-    _wifiManager(wifiManager),
+    _customWiFiManager(customWiFiManager),
     _server(server),
     _port(port),
     _username(username),
@@ -52,7 +53,7 @@ bool ConnectionManager::connect(const char* willTopic,
                               bool willRetain, 
                               const char* willMessage) {
     if (!_configured || !_client) return false;
-    if (!_wifiManager->isConnected()) {
+    if (!_customWiFiManager->isConnected()) {
         Serial.println("WiFi not connected. Cannot connect to MQTT broker.");
         return false;
     }

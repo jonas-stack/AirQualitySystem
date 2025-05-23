@@ -48,15 +48,10 @@ export function AirQualityInsightsCard({
               {description} <br/> Last updated: {formattedTime}
             </CardDescription>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleRefresh}
-            className="rounded-full"
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span className="sr-only">Refresh data</span>
-          </Button>
+        <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8 cursor-pointer">
+          <RefreshCw className={`h-4 w-4`} />
+          <span className="sr-only">Refresh data</span>
+        </Button>
         </div>
       </CardHeader>
       <CardContent className="p-0 mt-[-1rem] border-t">

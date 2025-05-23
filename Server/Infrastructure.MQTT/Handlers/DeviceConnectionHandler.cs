@@ -47,7 +47,8 @@ public class DeviceConnectionHandler : IMqttMessageHandler
         {
             var payload = args.PublishMessage.Payload;
             if (payload == null) return;
-
+            
+            // Deserialize json payload fra mqtt til DeviceDto
             var result = _deserializer.Deserialize<DeviceDto>(payload);
 
             if (!result.Success)
@@ -59,7 +60,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
 
             var dto = result.Data!;
 
-            // Validate data before processing
+            // valider data i dto før det kan gemmes
             if (!_validator.IsIdValid(dto))
             {
                 _logger.LogWarning("Invalid device ID format for device {DeviceId}. Skipping save.", dto.DeviceName);
@@ -78,10 +79,13 @@ public class DeviceConnectionHandler : IMqttMessageHandler
                 return;
             }
             
-            // Use mapper to create entity
+            // brug mapper til at omdanne dto til entity
             var entity = _mapper.MapToEntity(dto); //TODO CHANGE TO ACTUAL ENTITY FORM MAPPER
+            
+            // send en entity til repository for at gemme i database
             await _deviceRepository.SaveDevicesAsync(entity);
             
+            // opdaterer device status i connection tracker
              _connectionTracker.UpdateDeviceStatus(entity.DeviceId, entity.LastSeen, dto.IsConnected);
             
             // broadcast for at sørge for at klienten får opdatering om nuværende status

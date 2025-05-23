@@ -17,7 +17,7 @@ public class ClientRequestDeviceList : BaseDto { }
 // serveren sender dette tilbage til klienten
 public class ServerResponseList : BaseDto
 {
-    public List<DeviceDto> DeviceList { get; set; }
+    public required List<DeviceDto> DeviceList { get; set; }
 }
 
 /*

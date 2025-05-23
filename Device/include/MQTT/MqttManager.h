@@ -3,12 +3,12 @@
 
 #include <PubSubClient.h>
 #include <WiFiClientSecure.h>
-#include "WiFiManager.h"
+#include "WiFi/CustomWiFiManager.h"
 #include "TimeManager.h"
 
 class MqttManager {
 public:
-    MqttManager(WiFiManager* wifiManager, 
+    MqttManager(CustomWiFiManager* customWiFiManager, 
               TimeManager* timeManager,
               const char* server,
               int port,
@@ -26,7 +26,7 @@ public:
     bool clearRetainedMessage(const char* topic);
     
 private:
-    WiFiManager* _wifiManager;
+    CustomWiFiManager* _customWiFiManager;
     TimeManager* _timeManager;
     PubSubClient* _mqttManager;
     WiFiClientSecure _wifiClient;

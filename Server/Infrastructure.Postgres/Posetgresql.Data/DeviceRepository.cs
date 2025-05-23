@@ -10,7 +10,6 @@ namespace Infrastructure.Postgres.Posetgresql.Data;
 
 public class DeviceRepository : IDeviceRepository
 {
-    
     private readonly MyDbContext _dbContext;
     private readonly ILogger<SensorDataRepository> _logger;
     

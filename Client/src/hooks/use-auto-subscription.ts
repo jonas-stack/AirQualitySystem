@@ -3,13 +3,13 @@ import { useWsClient } from "ws-request-hook";
 import { useSubscriptionHook } from "./use-subscribe-to-topic";
 
 export function useAutoSubscription(topicIds: string[]) {
-    const { readyState } = useWsClient();
-    const { subscribe, unsubscribe } = useSubscriptionHook();
+  const { readyState } = useWsClient();
+  const { subscribe, unsubscribe } = useSubscriptionHook();
 
-    useEffect(() => {
-        if (readyState === 1) {
-            subscribe(topicIds);
-        }
+  useEffect(() => {
+    if (readyState === 1) {
+      subscribe(topicIds);
+    }
 
-    }, [readyState, subscribe, unsubscribe, topicIds]);
+  }, [readyState, subscribe, unsubscribe, topicIds]);
 }

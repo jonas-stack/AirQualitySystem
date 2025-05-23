@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, WifiOff, Loader2, AlertTriangle } from "lucide-react"
-import { useEffect } from "react"
 import { useWsClient } from "ws-request-hook"
 
 export interface ConnectionStatusCardProps {
@@ -17,6 +16,7 @@ export function ConnectionStatusCard({
 }: ConnectionStatusCardProps) {
   const { readyState } = useWsClient()
 
+  
   // WebSocket readyState:
   // 0: CONNECTING
   // 1: OPEN (connected)
