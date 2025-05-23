@@ -6,16 +6,21 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import DynamicBreadcrumbs from '../header/DynamicBreadcrumbs';
 import { SearchForm } from '../header/SearchForm';
-import { useEffect, useState } from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchDialog } from '../command/SearchDialog';
 import { LogOut } from 'lucide-react';
 import {useSubscriptionHook} from '@/hooks/use-subscribe-to-topic';
+import {WebsocketTopics} from "@/generated-client.ts";
+import {useAutoSubscription} from "@/hooks/use-auto-subscription.ts";
 
 export const AuthenticatedLayout = () => {
     useSubscriptionHook();
   
     const [commandSearchOpen, setCommandSearchOpen] = useState(false);
+
+    const topicIds = useMemo(() => [WebsocketTopics.Dashboard, WebsocketTopics.Ai], []);
+    useAutoSubscription(topicIds);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
