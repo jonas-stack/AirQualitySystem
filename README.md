@@ -25,9 +25,9 @@ This project is a prototype IoT-based environmental monitoring system designed t
 
 ## Project Description
 The prototype integrates multiple sensors with an ESP32E microcontroller to:
-- Measure PM2.5 (fine particles) with a PMS5003
+- Measure PM2.5 (fine particles) with a PM25
 - Measure pressure and temperature using BMP280
-- Detect CO2 and other gases with MQ-135
+- Detect CO2 and other gases with MQ-2
 - Display data on a 16x2 I2C LCD
 - Transmit data to a server for storage and analysis
 
@@ -36,7 +36,7 @@ The prototype integrates multiple sensors with an ESP32E microcontroller to:
 - **16x2 I2C LCD**: Displays real-time data from sensors.
 - **BME280**: Measures temperature and pressure, providing environmental context.
 - **PM25 Sensor**: Measures fine dust particles, crucial for air quality.
-- **MQ-135**: Detects CO2 and other gases, important for indoor air quality.
+- **MQ-2**: Detects CO2 and other gases, important for indoor air quality.
 - **ESP32E**: The microcontroller that collects data from sensors and transmits it to the server.
 - **Button**: Used to trigger wifi change.
 
@@ -44,7 +44,7 @@ The prototype integrates multiple sensors with an ESP32E microcontroller to:
 - LCD: VCC, GND, SDA, SCL → ESP32
 - BME280: VCC, GND, SDA, SCL → ESP32
 - PM25: VCC, GND, TX → GPIO1, RX → GPIO3
-- MQ-135: VCC, GND, ANALOG → GPIO14
+- MQ-2: VCC, GND, ANALOG → GPIO14
 - Button: GND, GPIO → GPIO25
 
 ### Pinout
@@ -53,7 +53,7 @@ The prototype integrates multiple sensors with an ESP32E microcontroller to:
 | 16x2 I2C LCD | GPIO21 (SDA), GPIO22 (SCL) |
 | BME280       | GPIO21 (SDA), GPIO22 (SCL) |
 | PM25         | GPIO1 (TX), GPIO3 (RX)    |
-| MQ-135       | GPIO14 (Analog)            |
+| MQ-2         | GPIO14 (Analog)            |
 | Button       | GPIO25 (Digital)           |
 
 ### Schematic
@@ -66,9 +66,9 @@ The prototype integrates multiple sensors with an ESP32E microcontroller to:
 Sensor → ESP32E → HiveMQ (MQTT) → .NET Backend → PostgreSQL + WebSocket → React Frontend → AI Module
 
 ### Communication Protocols
-- I2C: For LCD & BMP280
-- UART: For PMS5003
-- GPIO: For MQ-135
+- I2C: For LCD & BME280
+- UART: For PM25
+- GPIO: For MQ-2
 - MQTT: ESP32 → Backend
 - WebSocket: Backend → Frontend (real-time updates)
 - REST API: Backend ↔ Frontend
@@ -94,7 +94,7 @@ Sensor → ESP32E → HiveMQ (MQTT) → .NET Backend → PostgreSQL + WebSocket 
 
 ## Software Architecture
 
-![Architecture Diagram](Images/System.Png)
+![Architecture Diagram](Images/System.png)
 
 
 ### Frontend (React + TypeScript)
