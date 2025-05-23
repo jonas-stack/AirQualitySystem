@@ -1,4 +1,5 @@
 # IoT Indoor Air Quality Monitoring System
+Link to the webapp: https://airqualitysystem.netlify.app/dashboard
 
 ## Overview
 This project is a prototype IoT-based environmental monitoring system designed to measure air quality and atmospheric parameters indoors. The system provides real-time data on pollutants, temperature, pressure, and gas levels to help identify potential health and safety issues.
@@ -32,19 +33,33 @@ The prototype integrates multiple sensors with an ESP32E microcontroller to:
 
 ## Hardware Architecture
 ### Component List
-| Component     | Description                                           |
-|--------------|-------------------------------------------------------|
-| 16x2 I2C LCD | Displays sensor data                                  |
-| BMP280       | Measures temperature and pressure                    |
-| PMS5003      | Measures fine dust particles (PM2.5)                 |
-| MQ-135       | Gas sensor for CO2 and other pollutants              |
-| ESP32E       | Microcontroller for collecting and transmitting data |
+- **16x2 I2C LCD**: Displays real-time data from sensors.
+- **BME280**: Measures temperature and pressure, providing environmental context.
+- **PM25 Sensor**: Measures fine dust particles, crucial for air quality.
+- **MQ-135**: Detects CO2 and other gases, important for indoor air quality.
+- **ESP32E**: The microcontroller that collects data from sensors and transmits it to the server.
+- **Button**: Used to trigger wifi change.
 
 ### Wiring Summary
 - LCD: VCC, GND, SDA, SCL → ESP32
-- BMP280: VCC, GND, SDA, SCL → ESP32
-- PMS5003: VCC, GND, TX → GPIO1, RX → GPIO3
+- BME280: VCC, GND, SDA, SCL → ESP32
+- PM25: VCC, GND, TX → GPIO1, RX → GPIO3
 - MQ-135: VCC, GND, ANALOG → GPIO14
+- Button: GND, GPIO → GPIO25
+
+### Pinout
+| Component    | ESP32 Pin |
+|--------------|-----------|
+| 16x2 I2C LCD | GPIO21 (SDA), GPIO22 (SCL) |
+| BME280       | GPIO21 (SDA), GPIO22 (SCL) |
+| PM25         | GPIO1 (TX), GPIO3 (RX)    |
+| MQ-135       | GPIO14 (Analog)            |
+| Button       | GPIO25 (Digital)           |
+
+### Schematic
+
+![Wiring Diagram](Images/AirQualityCircut.png)
+
 
 ## System Architecture
 ### Data Flow
@@ -66,7 +81,11 @@ Sensor → ESP32E → HiveMQ (MQTT) → .NET Backend → PostgreSQL + WebSocket 
 - **PostgreSQL** – Database
 - **HiveMQ** – MQTT Broker
 - **WebSocket** – Real-time communication
-- **Python + LLM (Ollama)** – AI module for insights
+- **Python (Ollama)** – AI module for insights
+- **Python (Gemma2:9b)** - AI module for data analysis
+- **Netlify** – Frontend hosting
+- **Fly.io** – Backend and database hosting
+- 
 
 ### Design Principles
 - Onion architecture for clean separation of concerns
@@ -81,14 +100,25 @@ Sensor → ESP32E → HiveMQ (MQTT) → .NET Backend → PostgreSQL + WebSocket 
 ### Frontend (React + TypeScript)
 - Real-time data from WebSocket
 - Natural language recommendations from AI
-- Hosted on Firebase
+- Hosted on Netlify https://www.netlify.com/
 
 ### Backend (.NET, C#)
 - MQTT listener for incoming sensor data
 - REST API for frontend
 - WebSocket server for live updates
-- Data storage in PostgreSQL
 - AI data pipeline support
+- Onion architecture for maintainability
+- Hosted on Fly.io https://fly.io/
+
+### Database (PostgreSQL)
+- Stores data from sensors
+- Stores devices status and history
+- Hosted on Flyio https://fly.io/
+
+### MQTT Broker (HiveMQ)
+- Recieves sensor data from ESP32
+- Sends data to the backend in json format
+- Hosted on HiveMQ Cloud https://www.hivemq.com/
 
 ### AI Module (Python + LLM)
 - Fetches data from PostgreSQL
