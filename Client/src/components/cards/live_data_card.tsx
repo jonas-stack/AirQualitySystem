@@ -75,7 +75,7 @@ export function LiveDataCard({
         </div>
       </CardHeader>
 
-      <ScrollArea className="h-24 p-4 border-t text-center text-sm text-muted-foreground">
+      <ScrollArea className="h-24 p-4 border-t text-center text-base md:text-lg text-muted-foreground">
         {messages.length > 0 ? messages[messages.length - 1] : "Waiting for data..."}
       </ScrollArea>
     </Card>
