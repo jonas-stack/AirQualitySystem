@@ -5,13 +5,13 @@ import { toast } from "sonner";
 import { randomUid } from "@/App.tsx";
 
 export function useSubscriptionHook() {
-  const clientId = randomUid;
-  const jwt = "totallysecretjwt";
+    const clientId = randomUid;
+    const jwt = "totallysecretjwt";
 
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   // vi bruger usecallback for at sikre der ikke kommer unødvendige re-renders
-  const subscribe = useCallback(async (topicIds: string[]) => {
+    const subscribe = useCallback(async (topicIds: string[]) => {
     if (!jwt || jwt.length < 1) return;
 
     const dto: ChangeSubscriptionDto = {
