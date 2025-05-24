@@ -534,6 +534,7 @@
           "GraphTotalMeasurement",
           "ClientRequestDeviceList",
           "ServerResponseDeviceList",
+          "BroadcastDeviceConnectionUpdate",
           "AllDeviceStatus",
           "DeviceUpdateStatus",
           "GraphGetMeasurement",

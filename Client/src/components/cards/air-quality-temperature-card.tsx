@@ -22,7 +22,7 @@ export default function AirQualityTemperatureCard() {
   useEffect(() => {
     if (readyState !== 1) return
 
-    requestGraphData(["temperature"], TimePeriod.Daily)
+    requestGraphData(["temperature"], TimePeriod.Hourly)
 
     const reactToMessageSetup = onMessage<WebsocketMessage_1>(WebsocketEvents.GraphTemperatureUpdate, (dto) => {
       setChartData((prevData) => {

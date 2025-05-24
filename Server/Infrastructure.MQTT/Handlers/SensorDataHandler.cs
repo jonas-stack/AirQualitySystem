@@ -22,6 +22,8 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly IDataValidator _validator;
     private readonly IAiCommunication _aiCommunication;
     private readonly IGraphService _graphService;
+    private readonly IDeviceService _deviceService;
+    
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
@@ -29,7 +31,9 @@ public class SensorDataHandler : IMqttMessageHandler
         IDataValidator validator,
         ISensorDataMapper mapper,
         ISensorDataRepository sensorDataRepository, IJsonDeserializer deserializer, IDeviceRepository deviceRepository,
-        IAiCommunication aiCommunicator)
+        IAiCommunication aiCommunicator,
+        IGraphService graphService,
+        IDeviceService deviceService)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -39,6 +43,8 @@ public class SensorDataHandler : IMqttMessageHandler
         _deserializer = deserializer;
         _deviceRepository = deviceRepository;
         _aiCommunication = aiCommunicator;
+        _graphService = graphService;
+        _deviceService = deviceService;
     }
 
     public string TopicFilter => "AirQuality/Data";
@@ -96,6 +102,9 @@ public class SensorDataHandler : IMqttMessageHandler
 
             // Send entity til repository for at gemme i database
             await _sensorDataRepository.SaveSensorDataAsync(entity);
+
+            await _graphService.BroadcastMeasurementsAsync(entity);
+            //await _deviceService.BroadcastData(entity);
 
             await _aiCommunication.BroadCastData();
 

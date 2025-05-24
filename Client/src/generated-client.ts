@@ -373,6 +373,7 @@ export enum WebsocketEvents {
     GraphTotalMeasurement = "GraphTotalMeasurement",
     ClientRequestDeviceList = "ClientRequestDeviceList",
     ServerResponseDeviceList = "ServerResponseDeviceList",
+    BroadcastDeviceConnectionUpdate = "BroadcastDeviceConnectionUpdate",
     AllDeviceStatus = "AllDeviceStatus",
     DeviceUpdateStatus = "DeviceUpdateStatus",
     GraphGetMeasurement = "GraphGetMeasurement",

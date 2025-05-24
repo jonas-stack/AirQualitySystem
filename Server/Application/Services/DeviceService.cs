@@ -5,6 +5,7 @@ using Application.Models;
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
 using Application.Models.Websocket;
+using Core.Domain.Entities;
 
 namespace Application.Services;
 
@@ -40,5 +41,17 @@ public class DeviceService : IDeviceService {
         var result = await _deviceRepository.GetDeviceStatus();
         
         return result;
+    }
+
+    public async Task BroadcastData(DeviceDto entity)
+    {
+        var response = new WebsocketMessage<DeviceDto>
+        {
+            Topic = WebsocketTopics.Device,
+            eventType = WebsocketEvents.BroadcastDeviceConnectionUpdate,
+            Data = entity
+        };
+        
+        await _connectionManager.BroadcastToTopic(WebsocketTopics.Device, response);
     }
 }
