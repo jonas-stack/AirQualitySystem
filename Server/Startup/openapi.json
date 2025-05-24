@@ -431,6 +431,103 @@
           }
         }
       },
+      "ClientRequestSensorData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "sensorId": {
+                "type": "string"
+              },
+              "pageNumber": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "pageSize": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "ServerResponseSensorData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "sensorData": {
+                "$ref": "#/components/schemas/PagedResultOfSensorDataDto"
+              }
+            }
+          }
+        ]
+      },
+      "PagedResultOfSensorDataDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SensorDataDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SensorDataDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "humidity": {
+            "type": "number",
+            "format": "double"
+          },
+          "air_quality": {
+            "type": "number",
+            "format": "double"
+          },
+          "pm25": {
+            "type": "number",
+            "format": "double"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "ExampleClientDto": {
         "allOf": [
           {
@@ -507,6 +604,8 @@
           "RequestAirQualityData",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
+          "ClientRequestSensorData",
+          "ServerResponseSensorData",
           "ExampleClientDto",
           "ExampleServerResponse",
           "ClientRequestDeviceList",

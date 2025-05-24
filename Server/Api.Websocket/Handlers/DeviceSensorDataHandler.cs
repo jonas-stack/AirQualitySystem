@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Application.Interfaces;
 using Application.Models;
+using Application.Models.Dtos;
 using Application.Models.Dtos.Ai;
 using Application.Models.Dtos.MQTT;
 using Application.Models.Websocket;
@@ -15,12 +16,16 @@ namespace Api.Websocket.Handlers;
 public class ClientRequestSensorData : BaseDto
 {
     public required string SensorId { get; set; }
+    
+    // sæt default values
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 50;
 }
 
 // serveren sender dette tilbage til klienten
 public class ServerResponseSensorData : BaseDto
 {
-    public required List<SensorDataDto> SensorData { get; set; }
+    public required PagedResult<SensorDataDto> SensorData { get; set; }
 }
 
 /*
@@ -29,25 +34,21 @@ public class ExampleServerResponse : BaseDto
     public string SomethingTheServerSends { get; set; }
 }*/
 
-public class DeviceSensorDataHandler : BaseEventHandler<ClientRequestSensorData>
+public class DeviceSensorDataHandler(ISensorDataService sensorDataService) : BaseEventHandler<ClientRequestSensorData>
 {
-    private readonly IDeviceService _deviceService;
-    
-    public DeviceSensorDataHandler(IDeviceService deviceService)
-    {
-        _deviceService = deviceService;
-    }
     
     public override async Task Handle(ClientRequestSensorData dto, IWebSocketConnection socket)
     {
+        var sensorData = await sensorDataService.GetSensorDataForDeviceAsync(dto.SensorId, dto.PageNumber, dto.PageSize);
+        
         var response = new WebsocketMessage<ServerResponseSensorData>
         {
             Topic = WebsocketTopics.Device,
-            eventType = WebsocketEvents.ServerResponseDeviceList,
+            eventType = "ServerResponseSensorData",
             requestId = dto.requestId,
             Data = new ServerResponseSensorData
             {
-                SensorData = null
+                SensorData = sensorData
             }
         };
         

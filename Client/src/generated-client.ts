@@ -324,6 +324,33 @@ export interface DeviceDto {
     IsConnected?: boolean;
 }
 
+export interface ClientRequestSensorData extends BaseDto {
+    sensorId?: string;
+    pageNumber?: number;
+    pageSize?: number;
+}
+
+export interface ServerResponseSensorData extends BaseDto {
+    sensorData?: PagedResultOfSensorDataDto;
+}
+
+export interface PagedResultOfSensorDataDto {
+    items?: SensorDataDto[];
+    pageNumber?: number;
+    pageSize?: number;
+    totalCount?: number;
+    totalPages?: number;
+}
+
+export interface SensorDataDto {
+    temperature?: number;
+    humidity?: number;
+    air_quality?: number;
+    pm25?: number;
+    device_id?: string;
+    timestamp?: number;
+}
+
 export interface ExampleClientDto extends BaseDto {
     somethingTheClientSends?: string;
 }
@@ -350,6 +377,8 @@ export enum StringConstants {
     RequestAirQualityData = "RequestAirQualityData",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
+    ClientRequestSensorData = "ClientRequestSensorData",
+    ServerResponseSensorData = "ServerResponseSensorData",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     ClientRequestDeviceList = "ClientRequestDeviceList",

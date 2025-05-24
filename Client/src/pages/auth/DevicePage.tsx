@@ -15,11 +15,14 @@ const fakeDevice: DeviceDto = {
 };
 
 export default function DevicePage() {
-    const { getDevicesArray } = useDeviceData();
+    const { getDevicesArray, requestSensorDataForDevice, sensorData } = useDeviceData();
     const devices = getDevicesArray();
 
     const connectedDevicesCount = devices.filter((d) => d.IsConnected).length
     const [selectedDevice, setSelectedDevice] = useState<DeviceDto | null>(null);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const stats: DashboardStats = {
         totalMeasurements: 15847,
@@ -33,10 +36,11 @@ export default function DevicePage() {
         }
     }, [devices]);
 
-    const mockDevices: DeviceDto[] = [];
-    mockDevices.push(fakeDevice);
-
-    const currentSensorData: any = []
+    useEffect(() => {
+      if (selectedDevice?.device_id) {
+          requestSensorDataForDevice(selectedDevice.device_id, currentPage, itemsPerPage);
+      }
+    }, [selectedDevice, currentPage, itemsPerPage]);
 
     return (
     <div className="space-y-6 py-2">
@@ -48,7 +52,7 @@ export default function DevicePage() {
         </div>
 
         <div className="lg:col-span-8">
-          <SensorDataTable selectedDevice={selectedDevice} sensorData={currentSensorData} />
+          <SensorDataTable selectedDevice={selectedDevice} sensorData={sensorData?.items ?? []} currentPage={currentPage} setCurrentPage={setCurrentPage} itemsPerPage={itemsPerPage} totalPages={sensorData?.totalPages ?? 1} />
         </div>
       </div>
     </div>
