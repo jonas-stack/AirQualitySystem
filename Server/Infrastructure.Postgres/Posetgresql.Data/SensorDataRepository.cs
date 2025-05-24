@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
+using Application.Interfaces.Mappers;
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
@@ -13,11 +14,13 @@ public class SensorDataRepository : ISensorDataRepository
 {
     private readonly MyDbContext _dbContext;
     private readonly ILogger<SensorDataRepository> _logger;
+    private readonly ISensorDataMapper _sensorDataMapper;
 
-    public SensorDataRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger)
+    public SensorDataRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger, ISensorDataMapper sensorDataMapper)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _sensorDataMapper = sensorDataMapper;
     }
 
     public async Task SaveSensorDataAsync(SensorData sensorData)
@@ -50,10 +53,10 @@ public class SensorDataRepository : ISensorDataRepository
             .Take(pageSize)
             .Select(sd => new SensorDataDto
             {
-                Temperature = sd.Temperature,
-                Humidity = sd.Humidity,
-                AirQuality = sd.AirQuality,
-                Pm25 = sd.Pm25,
+                Temperature = Math.Round(sd.Temperature, 2),
+                Humidity = Math.Round(sd.Humidity, 2),
+                AirQuality = Math.Round(sd.AirQuality, 2),
+                Pm25 = Math.Round(sd.Pm25, 2),
                 DeviceId = sd.DeviceId.ToString(),
                 TimestampUnix = sd.Timestamp.Ticks
             })

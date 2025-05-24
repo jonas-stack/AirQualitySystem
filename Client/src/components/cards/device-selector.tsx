@@ -32,7 +32,7 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect }: Devi
                 <div className="flex items-center justify-between w-full">
                   <div className="text-left">
                     <div className="font-medium">{device.DeviceName}</div>
-                    <div className="text-xs text-muted-foreground">  Last seen: {device.LastSeen ? formatTicksToUTC(device.LastSeen) : "Unknown"}</div>
+                    <div className="text-xs text-muted-foreground">Last seen: {device.LastSeen ? formatTicksToUTC(device.LastSeen) : "Unknown"}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     {device.IsConnected ? (
