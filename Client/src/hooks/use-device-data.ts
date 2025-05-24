@@ -10,7 +10,7 @@ export function useDeviceData() {
     const [sensorData, setSensorData] = useState<PagedResultOfSensorDataDto | undefined>(undefined);
     const [isSensorDataLoading, setIsSensorDataLoading] = useState(true)
 
-    const {sendRequest, onMessage, readyState} = useWsClient()
+    const { sendRequest, onMessage, readyState } = useWsClient()
 
     const getDevicesArray = (): DeviceDto[] => Object.values(devices);
 
@@ -109,7 +109,6 @@ export function useDeviceData() {
     const registerSensorDataUpdates = () => {
         return onMessage<WebsocketMessage_1>(WebsocketEvents.BroadcastDeviceSensorDataUpdate, (dto) => {
             const updatedSensorData = dto.data as SensorDataDto;
-            console.log(dto)
             if (!updatedSensorData) return;
 
             setSensorData(prev => {

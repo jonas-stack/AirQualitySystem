@@ -13,7 +13,6 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination"
-import { useEffect } from "react"
 import { formatTicksToUTC } from "@/lib/time-formatter"
 import { CpuIcon } from "lucide-react"
 
@@ -36,17 +35,6 @@ export function SensorDataTable({
   setItemsPerPage,
   totalPages,
 }: SensorDataTableProps) {
-  const getAirQualityVariant = (airQuality: number) => {
-    if (airQuality >= 80) return "default"
-    if (airQuality >= 60) return "secondary"
-    return "destructive"
-  }
-
-  const getPM25Variant = (pm25: number) => {
-    if (pm25 <= 15) return "default"
-    if (pm25 <= 25) return "secondary"
-    return "destructive"
-  }
 
   const generatePaginationItems = () => {
     const items = []
@@ -69,13 +57,9 @@ export function SensorDataTable({
     return items
   }
 
-  useEffect(() => {
-    console.log(sensorData)
-  }, [sensorData])
-
   if (!selectedDevice) {
     return (
-      <Card className="h-[600px] flex items-center justify-center">
+      <Card className="h-[580px] flex items-center justify-center">
         <CardContent>
           <p className="text-muted-foreground">No device selected.</p>
         </CardContent>
@@ -135,10 +119,10 @@ export function SensorDataTable({
                       <TableCell>{data.temperature}°C</TableCell>
                       <TableCell>{data.humidity}%</TableCell>
                       <TableCell>
-                        <Badge variant={getAirQualityVariant(data.air_quality ?? 0)}>{data.air_quality}</Badge>
+                        <Badge>{data.air_quality}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getPM25Variant(data.pm25 ?? 0)}>{data.pm25}</Badge>
+                        <Badge>{data.pm25}</Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {data.timestamp ? formatTicksToUTC(data.timestamp) : "Unknown"}

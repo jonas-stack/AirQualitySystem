@@ -6,8 +6,10 @@ import { SensorDataTable } from "@/components/cards/sensor-data-table";
 import { useEffect, useState } from "react";
 import { useDeviceData } from "@/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useWsClient } from "ws-request-hook";
 
 export default function DevicePage() {
+    const { readyState } = useWsClient();
     const { getDevicesArray, requestSensorDataForDevice, sensorData, iseDevicesLoading } = useDeviceData();
     const devices = getDevicesArray();
 
@@ -24,6 +26,12 @@ export default function DevicePage() {
         totalDevices: 1,
         disconnectionsLast24h: 3,
     }
+
+    useEffect(() => {
+      if (readyState !== 1) {
+        setSelectedDevice(null);
+      }
+    }, [readyState])
     
     useEffect(() => {
       if (selectedDevice?.device_id) {
