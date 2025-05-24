@@ -46,6 +46,9 @@ public class SensorDataRepository : ISensorDataRepository
         var query = _dbContext.SensorData.Where(sd => sd.DeviceId == guid);
 
         var totalCount = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        if (pageNumber > totalPages)
+            pageNumber = totalPages == 0 ? 1 : totalPages;
 
         var items = await query
             .OrderByDescending(sd => sd.Timestamp)
@@ -61,6 +64,7 @@ public class SensorDataRepository : ISensorDataRepository
                 TimestampUnix = sd.Timestamp.Ticks
             })
             .ToListAsync();
+
 
         return new PagedResult<SensorDataDto>
         {

@@ -1,24 +1,21 @@
-"use client"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
 import type { DeviceDto, SensorDataDto } from "@/generated-client"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination"
 import { useEffect } from "react"
 import { formatTicksToUTC } from "@/lib/time-formatter"
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Thermometer,
-  Droplets,
-  Wind,
-  Gauge,
-} from "lucide-react"
+import { CpuIcon } from "lucide-react"
 
 interface SensorDataTableProps {
   selectedDevice: DeviceDto | null
@@ -28,7 +25,6 @@ interface SensorDataTableProps {
   itemsPerPage: number
   setItemsPerPage?: (itemsPerPage: number) => void
   totalPages: number
-  totalItems?: number
 }
 
 export function SensorDataTable({
@@ -39,18 +35,11 @@ export function SensorDataTable({
   itemsPerPage,
   setItemsPerPage,
   totalPages,
-  totalItems,
 }: SensorDataTableProps) {
   const getAirQualityVariant = (airQuality: number) => {
     if (airQuality >= 80) return "default"
     if (airQuality >= 60) return "secondary"
     return "destructive"
-  }
-
-  const getAirQualityLabel = (airQuality: number) => {
-    if (airQuality >= 80) return "Good"
-    if (airQuality >= 60) return "Moderate"
-    return "Poor"
   }
 
   const getPM25Variant = (pm25: number) => {
@@ -59,50 +48,25 @@ export function SensorDataTable({
     return "destructive"
   }
 
-  const getPM25Label = (pm25: number) => {
-    if (pm25 <= 15) return "Good"
-    if (pm25 <= 25) return "Moderate"
-    return "Unhealthy"
-  }
+  const generatePaginationItems = () => {
+    const items = []
+    const showEllipsis = totalPages > 7
 
-  const getTemperatureColor = (temp: number) => {
-    if (temp < 10) return "text-blue-600"
-    if (temp < 25) return "text-green-600"
-    if (temp < 35) return "text-orange-600"
-    return "text-red-600"
-  }
-
-  const getHumidityColor = (humidity: number) => {
-    if (humidity < 30) return "text-orange-600"
-    if (humidity < 70) return "text-green-600"
-    return "text-blue-600"
-  }
-
-  // Generate pagination range
-  const generatePaginationRange = () => {
-    const delta = 2
-    const range = []
-    const rangeWithDots = []
-
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i)
-    }
-
-    if (currentPage - delta > 2) {
-      rangeWithDots.push(1, "...")
+    if (!showEllipsis) {
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(i)
+      }
     } else {
-      rangeWithDots.push(1)
+      if (currentPage <= 4) {
+        items.push(1, 2, 3, 4, 5, "ellipsis", totalPages)
+      } else if (currentPage >= totalPages - 3) {
+        items.push(1, "ellipsis", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages)
+      } else {
+        items.push(1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages)
+      }
     }
 
-    rangeWithDots.push(...range)
-
-    if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push("...", totalPages)
-    } else if (totalPages > 1) {
-      rangeWithDots.push(totalPages)
-    }
-
-    return rangeWithDots
+    return items
   }
 
   useEffect(() => {
@@ -111,43 +75,35 @@ export function SensorDataTable({
 
   if (!selectedDevice) {
     return (
-      <Card className="h-[700px] flex items-center justify-center">
-        <CardContent className="text-center">
-          <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
-            <Gauge className="w-12 h-12 text-muted-foreground" />
-          </div>
-          <h3 className="text-lg font-semibold mb-2">No Device Selected</h3>
-          <p className="text-muted-foreground">Please select a device to view sensor data</p>
+      <Card className="h-[600px] flex items-center justify-center">
+        <CardContent>
+          <p className="text-muted-foreground">No device selected.</p>
         </CardContent>
       </Card>
     )
   }
 
-  const startItem = (currentPage - 1) * itemsPerPage + 1
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems || sensorData.length)
-
   return (
-    <Card className="h-[700px] flex flex-col">
-      <CardHeader className="pb-4">
+    <Card className="h-[600px] flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Gauge className="w-5 h-5" />
-              Sensor Data - {selectedDevice.DeviceName}
+            <CardTitle className="flex items-center justify-center gap-2 text-lg font-bold">
+              <CpuIcon className="text-green-600" /> Sensor Data - {selectedDevice.DeviceName}
             </CardTitle>
             <CardDescription>Recent measurements from the selected device</CardDescription>
           </div>
           {setItemsPerPage && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Rows per page:</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium">Rows per page:</span>
               <Select
                 value={itemsPerPage.toString()}
                 onValueChange={(value) => setItemsPerPage(Number.parseInt(value))}
               >
-                <SelectTrigger className="w-20">
+                <SelectTrigger className="w-[100px]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent side="bottom" align="end">
                   <SelectItem value="10">10</SelectItem>
                   <SelectItem value="25">25</SelectItem>
                   <SelectItem value="50">50</SelectItem>
@@ -159,73 +115,40 @@ export function SensorDataTable({
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col p-0">
-        <div className="flex-1 border-b">
-          <ScrollArea className="h-[480px]">
+      <CardContent className="p-0 flex-1 flex flex-col">
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-100">
             <Table>
-              <TableHeader className="sticky top-0 bg-background z-10">
+              <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[120px]">
-                    <div className="flex items-center gap-2">
-                      <Thermometer className="w-4 h-4" />
-                      Temperature
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-[120px]">
-                    <div className="flex items-center gap-2">
-                      <Droplets className="w-4 h-4" />
-                      Humidity
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-[140px]">
-                    <div className="flex items-center gap-2">
-                      <Wind className="w-4 h-4" />
-                      Air Quality
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-[140px]">PM2.5</TableHead>
+                  <TableHead>Temperature (°C)</TableHead>
+                  <TableHead>Humidity (%)</TableHead>
+                  <TableHead>Air Quality</TableHead>
+                  <TableHead>PM2.5 (μg/m³)</TableHead>
                   <TableHead>Timestamp</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sensorData.length > 0 ? (
-                  sensorData.map((data, index) => (
-                    <TableRow key={data.timestamp || index} className="hover:bg-muted/50">
+                  sensorData.map((data) => (
+                    <TableRow key={data.timestamp}>
+                      <TableCell>{data.temperature}°C</TableCell>
+                      <TableCell>{data.humidity}%</TableCell>
                       <TableCell>
-                        <span className={`font-medium ${getTemperatureColor(data.temperature || 0)}`}>
-                          {data.temperature}°C
-                        </span>
+                        <Badge variant={getAirQualityVariant(data.air_quality ?? 0)}>{data.air_quality}</Badge>
                       </TableCell>
                       <TableCell>
-                        <span className={`font-medium ${getHumidityColor(data.humidity || 0)}`}>{data.humidity}%</span>
+                        <Badge variant={getPM25Variant(data.pm25 ?? 0)}>{data.pm25}</Badge>
                       </TableCell>
-                      <TableCell>
-                        <Badge variant={getAirQualityVariant(data.air_quality ?? 0)} className="font-medium">
-                          {data.air_quality} - {getAirQualityLabel(data.air_quality ?? 0)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getPM25Variant(data.pm25 ?? 0)} className="font-medium">
-                          {data.pm25} μg/m³ - {getPM25Label(data.pm25 ?? 0)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground font-mono text-sm">
+                      <TableCell className="text-muted-foreground">
                         {data.timestamp ? formatTicksToUTC(data.timestamp) : "Unknown"}
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-12">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                          <Gauge className="w-8 h-8 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold mb-1">No Data Available</h3>
-                          <p className="text-muted-foreground text-sm">No sensor data available for this device</p>
-                        </div>
-                      </div>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                      No sensor data available for this device
                     </TableCell>
                   </TableRow>
                 )}
@@ -233,74 +156,52 @@ export function SensorDataTable({
             </Table>
           </ScrollArea>
         </div>
-
-        {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 bg-muted/30">
-            <div className="text-sm text-muted-foreground">
-              Showing {startItem} to {endItem} of {totalItems || sensorData.length} entries
-            </div>
+          <div className="border-t p-4 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (currentPage > 1) setCurrentPage(currentPage - 1)
+                    }}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
-                disabled={currentPage === 1}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-
-              <div className="flex items-center gap-1">
-                {generatePaginationRange().map((page, index) => (
-                  <div key={index}>
-                    {page === "..." ? (
-                      <span className="px-2 py-1 text-muted-foreground">...</span>
+                {generatePaginationItems().map((item, index) => (
+                  <PaginationItem key={index}>
+                    {item === "ellipsis" ? (
+                      <PaginationEllipsis />
                     ) : (
-                      <Button
-                        variant={page === currentPage ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page as number)}
-                        className="h-8 w-8 p-0"
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setCurrentPage(item as number)
+                        }}
+                        isActive={currentPage === item}
                       >
-                        {page}
-                      </Button>
+                        {item}
+                      </PaginationLink>
                     )}
-                  </div>
+                  </PaginationItem>
                 ))}
-              </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (currentPage < totalPages) setCurrentPage(currentPage + 1)
+                    }}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
       </CardContent>

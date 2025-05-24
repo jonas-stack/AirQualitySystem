@@ -2,24 +2,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Wifi, WifiOff } from "lucide-react"
+import { Wifi, WifiOff, ZapIcon } from "lucide-react"
 import { DeviceDto } from "@/generated-client"
 import { formatTicksToUTC } from "@/lib/time-formatter"
+import Flex from "../utils/Flex"
+import { Spinner } from "../ui/spinner"
 
 interface DeviceSelectorProps {
   devices: DeviceDto[]
   selectedDevice: DeviceDto | null
+  isDevicesLoading: boolean,
   onDeviceSelect: (device: DeviceDto) => void
 }
 
-export function DeviceSelector({ devices, selectedDevice, onDeviceSelect }: DeviceSelectorProps) {
+export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevicesLoading }: DeviceSelectorProps) {
+
   return (
     <Card className="h-[600px]">
       <CardHeader>
-        <CardTitle>Device Selection</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold">
+          <ZapIcon className="text-purple-600" /> Device Selection
+        </CardTitle>
         <CardDescription>Select a device to view its sensor data</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
+        {isDevicesLoading ? (
+            <Flex alignItems="center" justifyContent="center" className="w-full h-100">
+              <Flex direction="column" alignItems="center" gap="2">
+                <Spinner size="lg" className="text-primary" />
+                <p className="text-sm text-muted-foreground">Loading devices...</p>
+              </Flex>
+            </Flex>
+        ) : (
         <ScrollArea className="h-[500px]">
           <div className="space-y-2 p-4">
             {devices.map((device) => (
@@ -52,6 +66,7 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect }: Devi
             ))}
           </div>
         </ScrollArea>
+        )}
       </CardContent>
     </Card>
   )

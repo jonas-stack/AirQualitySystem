@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStats } from "@/types/dashboard"
-import { Activity, Thermometer, WifiOff } from "lucide-react"
+import { Activity, CableIcon, CalendarRangeIcon, Thermometer, WifiOff, XCircleIcon, XIcon } from "lucide-react"
 
 interface StatisticsCardsProps {
   stats: DashboardStats
@@ -12,7 +12,9 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
     <div className="grid gap-4 lg:grid-cols-3">
       <Card className="overflow-hidden relative">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">All Time Measurements</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg font-bold">
+            <CalendarRangeIcon className="text-blue-600" /> All Time Measurements
+          </CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -23,7 +25,9 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
 
       <Card className="overflow-hidden relative">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Connected Devices</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg font-bold">
+            <CableIcon className="text-orange-600" /> Connected Devices
+          </CardTitle>
           <Thermometer className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -34,7 +38,9 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
 
       <Card className="overflow-hidden relative">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Disconnections (24h)</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg font-bold">
+            <XIcon className="text-red-600" /> Disconnections (24h)
+          </CardTitle>
           <WifiOff className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>

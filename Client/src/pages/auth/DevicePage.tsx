@@ -5,24 +5,16 @@ import { DeviceSelector } from "@/components/cards/device-selector";
 import { SensorDataTable } from "@/components/cards/sensor-data-table";
 import { useEffect, useState } from "react";
 import { useDeviceData } from "@/hooks";
-import { useWsClient } from "ws-request-hook";
-
-const fakeDevice: DeviceDto = {
-    device_id: "123",
-    DeviceName: "ESP-32",
-    LastSeen: 937193729,
-    IsConnected: true
-};
 
 export default function DevicePage() {
-    const { getDevicesArray, requestSensorDataForDevice, sensorData } = useDeviceData();
+    const { getDevicesArray, requestSensorDataForDevice, sensorData, iseDevicesLoading } = useDeviceData();
     const devices = getDevicesArray();
 
     const connectedDevicesCount = devices.filter((d) => d.IsConnected).length
     const [selectedDevice, setSelectedDevice] = useState<DeviceDto | null>(null);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     const stats: DashboardStats = {
         totalMeasurements: 15847,
@@ -48,11 +40,11 @@ export default function DevicePage() {
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <DeviceSelector devices={devices} selectedDevice={selectedDevice} onDeviceSelect={setSelectedDevice} />
+          <DeviceSelector devices={devices} isDevicesLoading={iseDevicesLoading} selectedDevice={selectedDevice} onDeviceSelect={setSelectedDevice} />
         </div>
 
         <div className="lg:col-span-8">
-          <SensorDataTable selectedDevice={selectedDevice} sensorData={sensorData?.items ?? []} currentPage={currentPage} setCurrentPage={setCurrentPage} itemsPerPage={itemsPerPage} totalPages={sensorData?.totalPages ?? 1} />
+          <SensorDataTable selectedDevice={selectedDevice} sensorData={sensorData?.items ?? []} currentPage={currentPage} setCurrentPage={setCurrentPage} setItemsPerPage={setItemsPerPage} itemsPerPage={itemsPerPage} totalPages={sensorData?.totalPages ?? 1} />
         </div>
       </div>
     </div>

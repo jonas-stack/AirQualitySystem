@@ -106,7 +106,6 @@ export function useDeviceData() {
         setIsSensorDataLoading(false)
         }
     }
-
  
     // lad os bare køre requestdevices på mount
     useEffect(() => {
@@ -129,5 +128,6 @@ export function useDeviceData() {
     getDevicesArray,
     devices,
     iseDevicesLoading,
+    isSensorDataLoading,
   };
 }
