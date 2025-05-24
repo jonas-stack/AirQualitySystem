@@ -15,7 +15,7 @@ import {
 import { useMemo, useState } from "react"
 
 interface SensorDataTableProps {
-  selectedDevice: DeviceDto
+  selectedDevice: DeviceDto | null
   sensorData: any
   // skal have lavet en sensordata dto..
   //sensorData: SensorData[]
@@ -43,6 +43,17 @@ export function SensorDataTable({ selectedDevice, sensorData }: SensorDataTableP
     const start = (currentPage - 1) * itemsPerPage
     return sensorData.slice(start, start + itemsPerPage)
     }, [currentPage, sensorData])
+
+
+  if (!selectedDevice) {
+    return (
+      <Card className="h-[600px] flex items-center justify-center">
+        <CardContent>
+          <p className="text-muted-foreground">No device selected.</p>
+        </CardContent>
+      </Card>
+    )
+  }
 
 
   return (

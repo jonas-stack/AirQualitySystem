@@ -15,19 +15,10 @@ const fakeDevice: DeviceDto = {
 };
 
 export default function DevicePage() {
-    const {readyState} = useWsClient()
-    
-    const { requestDevices } = useDeviceData();
+    const { devices } = useDeviceData();
 
-    useEffect(() => {
-        if (readyState !== 1)
-            return;
-
-            requestDevices();
-
-    }, [readyState])
-
-    const [selectedDevice, setSelectedDevice] = useState<DeviceDto>(fakeDevice);
+    const connectedDevicesCount = devices.filter((d) => d.IsConnected).length
+    const [selectedDevice, setSelectedDevice] = useState<DeviceDto | null>(null);
 
     const stats: DashboardStats = {
         totalMeasurements: 15847,
@@ -35,8 +26,12 @@ export default function DevicePage() {
         disconnectionsLast24h: 3,
     }
 
-    const connectedDevicesCount = 1;
-
+    useEffect(() => {
+        if (devices.length > 0) {
+            setSelectedDevice(devices[0]);
+        }
+    }, [devices]);
+    
     const mockDevices: DeviceDto[] = [];
     mockDevices.push(fakeDevice);
 
@@ -48,7 +43,7 @@ export default function DevicePage() {
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <DeviceSelector devices={mockDevices} selectedDevice={selectedDevice} onDeviceSelect={setSelectedDevice} />
+          <DeviceSelector devices={devices} selectedDevice={selectedDevice} onDeviceSelect={setSelectedDevice} />
         </div>
 
         <div className="lg:col-span-8">

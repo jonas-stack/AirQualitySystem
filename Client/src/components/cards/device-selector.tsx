@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Wifi, WifiOff } from "lucide-react"
 import { DeviceDto } from "@/generated-client"
+import { formatTicksToUTC } from "@/lib/time-formatter"
 
 interface DeviceSelectorProps {
   devices: DeviceDto[]
-  selectedDevice: DeviceDto
+  selectedDevice: DeviceDto | null
   onDeviceSelect: (device: DeviceDto) => void
 }
 
@@ -24,14 +25,14 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect }: Devi
             {devices.map((device) => (
               <Button
                 key={device.device_id}
-                variant={selectedDevice.device_id === device.device_id ? "default" : "ghost"}
+                variant={selectedDevice?.device_id === device.device_id ? "secondary" : "ghost"}
                 className="w-full justify-start h-auto p-4"
                 onClick={() => onDeviceSelect(device)}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="text-left">
                     <div className="font-medium">{device.DeviceName}</div>
-                    <div className="text-xs text-muted-foreground">Last seen: {device.LastSeen}</div>
+                    <div className="text-xs text-muted-foreground">  Last seen: {device.LastSeen ? formatTicksToUTC(device.LastSeen) : "Unknown"}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     {device.IsConnected ? (
