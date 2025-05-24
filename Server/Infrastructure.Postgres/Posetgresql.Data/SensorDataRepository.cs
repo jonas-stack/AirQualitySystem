@@ -4,6 +4,7 @@ using Application.Interfaces.Mappers;
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
+using Infrastructure.Postgres.Helpers;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -43,18 +44,15 @@ public class SensorDataRepository : ISensorDataRepository
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
 
-        var query = _dbContext.SensorData.Where(sd => sd.DeviceId == guid);
+        var query = _dbContext.SensorData
+            .Where(sd => sd.DeviceId == guid)
+            .OrderByDescending(sd => sd.Timestamp);
 
-        var totalCount = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-        if (pageNumber > totalPages)
-            pageNumber = totalPages == 0 ? 1 : totalPages;
-
-        var items = await query
-            .OrderByDescending(sd => sd.Timestamp)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .Select(sd => new SensorDataDto
+        return await PaginationHelper.PaginateAsync(
+            query,
+            pageNumber,
+            pageSize,
+            q => q.Select(sd => new SensorDataDto
             {
                 Temperature = Math.Round(sd.Temperature, 2),
                 Humidity = Math.Round(sd.Humidity, 2),
@@ -62,16 +60,6 @@ public class SensorDataRepository : ISensorDataRepository
                 Pm25 = Math.Round(sd.Pm25, 2),
                 DeviceId = sd.DeviceId.ToString(),
                 TimestampUnix = sd.Timestamp.Ticks
-            })
-            .ToListAsync();
-
-
-        return new PagedResult<SensorDataDto>
-        {
-            TotalCount = totalCount,
-            PageNumber = pageNumber,
-            PageSize = pageSize,
-            Items = items
-        };
+            }));
     }
 }

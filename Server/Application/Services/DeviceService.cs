@@ -54,4 +54,10 @@ public class DeviceService : IDeviceService {
         
         await _connectionManager.BroadcastToTopic(WebsocketTopics.Device, response);
     }
+
+    public Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceHistory(string dtoDeviceId, int dtoPageNumber, int dtoPageSize)
+    {
+        var historyData = _deviceRepository.GetDeviceHistory(string)
+        throw new NotImplementedException();
+    }
 }
