@@ -403,6 +403,7 @@ export enum WebsocketEvents {
     ClientRequestDeviceList = "ClientRequestDeviceList",
     ServerResponseDeviceList = "ServerResponseDeviceList",
     BroadcastDeviceConnectionUpdate = "BroadcastDeviceConnectionUpdate",
+    BroadcastDeviceSensorDataUpdate = "BroadcastDeviceSensorDataUpdate",
     AllDeviceStatus = "AllDeviceStatus",
     DeviceUpdateStatus = "DeviceUpdateStatus",
     GraphGetMeasurement = "GraphGetMeasurement",

@@ -47,17 +47,16 @@ export function useDeviceData() {
     }
 
     const registerDeviceConnectionUpdates = () => {
-    return onMessage<WebsocketMessage_1>(WebsocketEvents.BroadcastDeviceConnectionUpdate, (dto) => {
-        const updatedDevice = dto.data as DeviceDto;
-        console.log(updatedDevice)
-        if (updatedDevice && updatedDevice.device_id) {
-            const id = updatedDevice.device_id;
-            setDevices(prevDevices => ({
-                ...prevDevices,
-                [id]: updatedDevice,
-            }));
-        }
-    });
+        return onMessage<WebsocketMessage_1>(WebsocketEvents.BroadcastDeviceConnectionUpdate, (dto) => {
+            const updatedDevice = dto.data as DeviceDto;
+            if (updatedDevice && updatedDevice.device_id) {
+                const id = updatedDevice.device_id;
+                setDevices(prevDevices => ({
+                    ...prevDevices,
+                    [id]: updatedDevice,
+                }));
+            }
+        });
     };
 
     const requestSensorDataForDevice = async (deviceId: string, pageNumber: number, pageSize: number) => {
@@ -106,19 +105,59 @@ export function useDeviceData() {
         setIsSensorDataLoading(false)
         }
     }
+
+    const registerSensorDataUpdates = () => {
+        return onMessage<WebsocketMessage_1>(WebsocketEvents.BroadcastDeviceSensorDataUpdate, (dto) => {
+            const updatedSensorData = dto.data as SensorDataDto;
+            console.log(dto)
+            if (!updatedSensorData) return;
+
+            setSensorData(prev => {
+                if (!prev) {
+                    return {
+                        items: [updatedSensorData],
+                        pageNumber: 1,
+                        pageSize: 10,
+                        totalCount: 1,
+                        totalPages: 1,
+                    };
+                }
+
+                const pageSize = prev.pageSize ?? 10;
+                const totalCount = prev.totalCount ?? 0;
+
+                if (prev.pageNumber !== 1) {
+                    return prev;
+                }
+
+                const newItems = [updatedSensorData, ...(prev.items ?? [])];
+                const trimmedItems = newItems.slice(0, pageSize);
+
+                return {
+                    ...prev,
+                    items: trimmedItems,
+                    totalCount: totalCount + 1,
+                    totalPages: Math.ceil((totalCount + 1) / pageSize),
+                };
+            });
+        });
+    };
+
  
     // lad os bare køre requestdevices på mount
     useEffect(() => {
-    if (readyState !== 1) return;
+        if (readyState !== 1) return;
 
-    requestDevices();
+        requestDevices();
 
-    const cleanup = registerDeviceConnectionUpdates();
+        const cleanupDeviceConnectionUpdates = registerDeviceConnectionUpdates();
+        const cleanupSensorDataUpdates = registerSensorDataUpdates();
 
-    // cleanup op på unmount eller readyState
-    return () => {
-        if (cleanup) cleanup();
-    };
+        // cleanup op på unmount eller readyState
+        return () => {
+            if (cleanupDeviceConnectionUpdates) cleanupDeviceConnectionUpdates();
+            if (cleanupSensorDataUpdates) cleanupSensorDataUpdates();
+        };
     }, [readyState]);
 
   return {

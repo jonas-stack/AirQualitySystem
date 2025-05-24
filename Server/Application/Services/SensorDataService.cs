@@ -11,11 +11,15 @@ public class SensorDataService(IDeviceRepository deviceRepository, ISensorDataRe
 {
     public async Task Broadcast(SensorDataDto sensorData)
     {
-        await BroadcastSensorData(sensorData);
+        BroadcastSensorData(sensorData);
     }
 
     private async void BroadcastSensorData(SensorDataDto sensorData)
     {
+        sensorData.Temperature = Math.Round(sensorData.Temperature, 2);
+        sensorData.AirQuality = Math.Round(sensorData.AirQuality, 2);
+        sensorData.Humidity = Math.Round(sensorData.Humidity, 2);
+        
         var response = new WebsocketMessage<SensorDataDto>
         {
             Topic = WebsocketTopics.Device,

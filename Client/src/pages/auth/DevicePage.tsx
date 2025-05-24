@@ -24,6 +24,7 @@ export default function DevicePage() {
         totalDevices: 1,
         disconnectionsLast24h: 3,
     }
+    
     useEffect(() => {
       if (selectedDevice?.device_id) {
           requestSensorDataForDevice(selectedDevice.device_id, currentPage, itemsPerPage);

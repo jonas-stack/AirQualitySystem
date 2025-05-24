@@ -634,6 +634,7 @@
           "ClientRequestDeviceList",
           "ServerResponseDeviceList",
           "BroadcastDeviceConnectionUpdate",
+          "BroadcastDeviceSensorDataUpdate",
           "AllDeviceStatus",
           "DeviceUpdateStatus",
           "GraphGetMeasurement",

@@ -99,9 +99,13 @@ public class SensorDataHandler : IMqttMessageHandler
 
             // opdater device status
             _connectionTracker.UpdateDeviceStatus(entity.DeviceId, entity.Timestamp);
-
+            
             // Send entity til repository for at gemme i database
             await _sensorDataRepository.SaveSensorDataAsync(entity);
+            
+            // opdater DTO så vi kan bruge den andre steder
+            dto.DeviceId = entity.DeviceId.ToString();
+            dto.TimestampUnix = entity.Timestamp.Ticks;
 
             await _graphService.BroadcastMeasurementsAsync(entity);
             await _sensorDataService.Broadcast(dto);
