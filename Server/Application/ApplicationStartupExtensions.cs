@@ -19,6 +19,8 @@ public static class ApplicationStartupExtensions
         services.AddScoped<IDevicesMapper, DevicesMapper>();
         services.AddScoped<IAiCommunication, AiCommunicationService>();
         services.AddScoped<IDeviceService, DeviceService>();
+        services.AddScoped<ISensorDataService, SensorDataService>();
+
         return services;
     }
 }
