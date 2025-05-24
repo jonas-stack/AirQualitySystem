@@ -7,11 +7,14 @@ import { useEffect, useState } from "react";
 import { useDeviceData, useDeviceSensorData } from "@/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWsClient } from "ws-request-hook";
+import { useDeviceConnectionHistory } from "@/hooks/use-device-connection-history";
+import { DeviceConnectionHistoryTable } from "@/components/table/device-connection-history-table";
 
 export default function DevicePage() {
     const { readyState } = useWsClient();
     const { getDevicesArray, iseDevicesLoading } = useDeviceData();
     const { requestSensorDataForDevice, sensorData } = useDeviceSensorData();
+    const { requestDeviceConnectionHistoryForDevice, deviceConnectionHistory } = useDeviceConnectionHistory();
 
     const devices = getDevicesArray();
 
@@ -37,9 +40,16 @@ export default function DevicePage() {
     
     useEffect(() => {
       if (selectedDevice?.device_id) {
-          requestSensorDataForDevice(selectedDevice.device_id, currentPage, itemsPerPage);
+          switch (activeTab) {
+            case "sensor-data":
+              requestSensorDataForDevice(selectedDevice.device_id, currentPage, itemsPerPage);
+              break;
+            case "connection-history":
+              requestDeviceConnectionHistoryForDevice(selectedDevice.device_id, currentPage, itemsPerPage);
+              break;
+          }
       }
-    }, [selectedDevice, currentPage, itemsPerPage]);
+    }, [selectedDevice, activeTab, currentPage, itemsPerPage]);
 
     return (
     <div className="space-y-4 py-2">
@@ -70,7 +80,7 @@ export default function DevicePage() {
             </TabsContent>
 
             <TabsContent value="connection-history" className="mt-4">
-              
+                <DeviceConnectionHistoryTable selectedDevice={selectedDevice} deviceConnectionHistory={deviceConnectionHistory?.items ?? []}/>
             </TabsContent>
           </Tabs>
         </div>

@@ -64,16 +64,41 @@ public class DeviceService : IDeviceService {
 
     public async Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceHistory(string deviceId, int pageNumber, int pageSize)
     {
-        // thrower hvis ikke eksisterer, så ingen grund til at tjekke
         await _deviceRepository.GetDevice(deviceId);
-        
+
         var pagedEntities = await _deviceRepository.GetDeviceConnectionHistoryAsync(deviceId, pageNumber, pageSize);
+        var items = new List<DeviceConnectionHistoryDto>();
+
+        DeviceConnectionHistory? nextConnected = null;
+
+        foreach (var entry in pagedEntities.Items)
+        {
+            var unixTimestamp = ((DateTimeOffset)entry.LastSeen).ToUnixTimeSeconds();
+        
+            var dto = new DeviceConnectionHistoryDto
+            {
+                Id = entry.Id,
+                DeviceId = entry.DeviceId.ToString(),
+                IsConnected = entry.IsConnected,
+                LastSeen = unixTimestamp,
+                Duration = !entry.IsConnected && nextConnected != null
+                    ? (long)(nextConnected.LastSeen - entry.LastSeen).TotalSeconds
+                    : null
+            };
+
+            if (entry.IsConnected)
+                nextConnected = entry;
+
+            items.Add(dto);
+        }
+
         return new PagedResult<DeviceConnectionHistoryDto>
         {
             TotalCount = pagedEntities.TotalCount,
             PageNumber = pagedEntities.PageNumber,
             PageSize = pagedEntities.PageSize,
-            Items = pagedEntities.Items.Select(_deviceConnectionHistoryMapper.MapToDto).ToList()
+            Items = items
         };
     }
+    
 }

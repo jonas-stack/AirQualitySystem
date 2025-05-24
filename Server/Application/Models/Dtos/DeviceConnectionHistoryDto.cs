@@ -16,4 +16,8 @@ public class DeviceConnectionHistoryDto
 
     [JsonPropertyName("lastSeen")]
     public long LastSeen { get; set; }
+    
+    // vi kan finde ud af hvor længe nedetiden var
+    [JsonPropertyName("duration")]
+    public long? Duration { get; set; }
 }

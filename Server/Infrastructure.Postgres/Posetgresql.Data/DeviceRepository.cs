@@ -36,16 +36,39 @@ public class DeviceRepository : IDeviceRepository
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
 
-        var query = _dbContext.DeviceConnectionHistory
+        var fullHistory = await _dbContext.DeviceConnectionHistory
             .Where(sd => sd.DeviceId == guid)
-            .OrderByDescending(sd => sd.LastSeen);
+            .OrderByDescending(sd => sd.LastSeen)
+            .Take(500)
+            .ToListAsync();
 
-        return await PaginationHelper.PaginateAsync(
-            query,
-            pageNumber,
-            pageSize,
-            q => q);
+        var filtered = new List<DeviceConnectionHistory>();
+        bool? lastConnectionState = null;
+
+        foreach (var entry in fullHistory)
+        {
+            if (entry.IsConnected == lastConnectionState)
+                continue;
+
+            filtered.Add(entry);
+            lastConnectionState = entry.IsConnected;
+        }
+
+        var paged = filtered
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return new PagedResult<DeviceConnectionHistory>
+        {
+            TotalCount = filtered.Count,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            Items = paged
+        };
     }
+
+
 
     public async Task SaveDevicesAsync(Devices devices)
     {

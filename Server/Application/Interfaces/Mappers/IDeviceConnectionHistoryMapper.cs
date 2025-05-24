@@ -6,4 +6,5 @@ namespace Application.Interfaces.Mappers;
 public interface IDeviceConnectionHistoryMapper
 {
     DeviceConnectionHistoryDto MapToDto(DeviceConnectionHistory deviceConnectionHistory);
+    List<DeviceConnectionHistoryDto> MapWithDurationAndFilter(List<DeviceConnectionHistory> history);
 }

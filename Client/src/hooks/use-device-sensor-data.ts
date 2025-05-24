@@ -28,23 +28,23 @@ export function useDeviceSensorData() {
             const rawSensorData = deviceResult?.Data?.SensorData;
 
             if (rawSensorData) {
-            const mappedSensorData: PagedResultOfSensorDataDto = {
-                items: rawSensorData.Items ?? [],
-                pageNumber: rawSensorData.PageNumber,
-                pageSize: rawSensorData.PageSize,
-                totalCount: rawSensorData.TotalCount,
-                totalPages: rawSensorData.TotalPages,
-            };
+                const mappedSensorData: PagedResultOfSensorDataDto = {
+                    items: rawSensorData.Items ?? [],
+                    pageNumber: rawSensorData.PageNumber,
+                    pageSize: rawSensorData.PageSize,
+                    totalCount: rawSensorData.TotalCount,
+                    totalPages: rawSensorData.TotalPages,
+                };
 
-            setSensorData(mappedSensorData);
+                setSensorData(mappedSensorData);
             } else {
-            setSensorData({
-                items: [],
-                pageNumber: 1,
-                pageSize: 10,
-                totalCount: 0,
-                totalPages: 1,
-            });
+                setSensorData({
+                    items: [],
+                    pageNumber: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    totalPages: 1,
+                });
             }
 
         } catch (error) {

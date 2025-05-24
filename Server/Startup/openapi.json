@@ -470,6 +470,11 @@
           "lastSeen": {
             "type": "integer",
             "format": "int64"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
           }
         }
       },

@@ -333,6 +333,7 @@ export interface DeviceConnectionHistoryDto {
     deviceId?: string;
     isConnected?: boolean;
     lastSeen?: number;
+    duration?: number | undefined;
 }
 
 export interface ClientRequestDeviceStatus extends BaseDto {
