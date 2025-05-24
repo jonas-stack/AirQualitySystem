@@ -64,7 +64,10 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevi
     <Card className="h-[624px]">
       <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2 text-lg font-bold">
-          <ZapIcon className="text-purple-600" /> Device Selection
+          <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+              <ZapIcon className="text-white h-5 w-5" /> 
+          </div>
+          Device Selection
         </CardTitle>
         <CardDescription>Select a device to view its sensor data</CardDescription>
       </CardHeader>

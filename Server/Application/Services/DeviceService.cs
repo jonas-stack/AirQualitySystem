@@ -69,7 +69,7 @@ public class DeviceService : IDeviceService {
         var pagedEntities = await _deviceRepository.GetDeviceConnectionHistoryAsync(deviceId, pageNumber, pageSize);
         var items = new List<DeviceConnectionHistoryDto>();
 
-        DeviceConnectionHistory? nextConnected = null;
+        DeviceConnectionHistory? nextEvent = null;
 
         foreach (var entry in pagedEntities.Items)
         {
@@ -81,14 +81,12 @@ public class DeviceService : IDeviceService {
                 DeviceId = entry.DeviceId.ToString(),
                 IsConnected = entry.IsConnected,
                 LastSeen = unixTimestamp,
-                Duration = !entry.IsConnected && nextConnected != null
-                    ? (long)(nextConnected.LastSeen - entry.LastSeen).TotalSeconds
+                Duration = nextEvent != null
+                    ? (long)(nextEvent.LastSeen - entry.LastSeen).TotalSeconds
                     : null
             };
 
-            if (entry.IsConnected)
-                nextConnected = entry;
-
+            nextEvent = entry;
             items.Add(dto);
         }
 
@@ -100,5 +98,4 @@ public class DeviceService : IDeviceService {
             Items = items
         };
     }
-    
 }

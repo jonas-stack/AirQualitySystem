@@ -7,76 +7,22 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import type { DeviceConnectionHistoryDto, DeviceDto } from "@/generated-client"
 import { Wifi, WifiOff, Zap, AlertTriangle, History } from "lucide-react"
 import { formatDuration, unixToDateString } from "@/lib/time-formatter"
-
-interface ConnectionEvent {
-  id: string
-  timestamp: string
-  event: "connected" | "disconnected"
-  duration?: string
-  reason?: string
-  signalStrength?: number
-}
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 interface DeviceConnectionHistoryTableProps {
-  selectedDevice: DeviceDto | null
-  deviceConnectionHistory: DeviceConnectionHistoryDto[];
+    selectedDevice: DeviceDto | null
+    deviceConnectionHistory: DeviceConnectionHistoryDto[];
+    currentPage: number
+    setCurrentPage: (page: number) => void
+    itemsPerPage: number
+    setItemsPerPage?: (itemsPerPage: number) => void
+    totalPages: number
 }
 
-export function DeviceConnectionHistoryTable({ selectedDevice, deviceConnectionHistory }: DeviceConnectionHistoryTableProps) {
-  // Mock data - replace with actual API call
-  const connectionHistory: ConnectionEvent[] = [
-    {
-      id: "1",
-      timestamp: "2024-01-20 14:30:25",
-      event: "connected",
-      duration: "2h 15m",
-      signalStrength: 85,
-    },
-    {
-      id: "2",
-      timestamp: "2024-01-20 12:15:10",
-      event: "disconnected",
-      reason: "Network timeout",
-      signalStrength: 45,
-    },
-    {
-      id: "3",
-      timestamp: "2024-01-20 10:00:00",
-      event: "connected",
-      duration: "2h 15m",
-      signalStrength: 92,
-    },
-    {
-      id: "4",
-      timestamp: "2024-01-20 07:45:30",
-      event: "disconnected",
-      reason: "Device restart",
-      signalStrength: 78,
-    },
-    {
-      id: "5",
-      timestamp: "2024-01-19 23:30:15",
-      event: "connected",
-      duration: "8h 15m",
-      signalStrength: 88,
-    },
-  ]
-
-  const getSignalStrengthColor = (strength: number) => {
-    if (strength >= 80) return "text-green-600"
-    if (strength >= 60) return "text-yellow-600"
-    return "text-red-600"
-  }
-
-  const getSignalStrengthIcon = (strength: number) => {
-    if (strength >= 80) return <Zap className="w-4 h-4 text-green-600" />
-    if (strength >= 60) return <Zap className="w-4 h-4 text-yellow-600" />
-    return <AlertTriangle className="w-4 h-4 text-red-600" />
-  }
-
+export function DeviceConnectionHistoryTable({ selectedDevice, deviceConnectionHistory, currentPage, setCurrentPage, setItemsPerPage, itemsPerPage, totalPages }: DeviceConnectionHistoryTableProps) {
   if (!selectedDevice) {
     return (
-      <Card className="h-[565px]">
+      <Card className="h-[580px]">
         <CardContent className="flex items-center justify-center h-full">
           <div className="text-center space-y-4">
             <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-full flex items-center justify-center mx-auto">
@@ -93,26 +39,40 @@ export function DeviceConnectionHistoryTable({ selectedDevice, deviceConnectionH
   }
 
   return (
-    <Card className="h-[565px] flex flex-col">
+    <Card className="h-[580px] flex flex-col">
       <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <CardTitle className="flex items-center gap-3 text-xl font-bold">
+            <CardTitle className="flex items-center gap-2 text-lg font-bold">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
                 <History className="w-5 h-5 text-white" />
               </div>
               Connection History
             </CardTitle>
-            <CardDescription className="text-base">
+            <CardDescription>
               Recent connection events for{" "}
               <span className="font-medium text-foreground">{selectedDevice.DeviceName}</span>
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-background/50 backdrop-blur-sm">
-              {connectionHistory.filter((e) => e.event === "connected").length} connections
-            </Badge>
-          </div>
+          {setItemsPerPage && (
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium">Rows per page:</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number.parseInt(value))}
+              >
+                <SelectTrigger className="w-[100px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent side="bottom" align="end">
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </CardHeader>
 
@@ -125,8 +85,6 @@ export function DeviceConnectionHistoryTable({ selectedDevice, deviceConnectionH
                   <TableHead className="font-semibold">Status</TableHead>
                   <TableHead className="font-semibold">Timestamp</TableHead>
                   <TableHead className="font-semibold">Duration</TableHead>
-                  <TableHead className="font-semibold">Signal</TableHead>
-                  <TableHead className="font-semibold">Details</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

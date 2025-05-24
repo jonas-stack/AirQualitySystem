@@ -67,7 +67,7 @@ export default function DevicePage() {
               <TabsTrigger value="connection-history" className="cursor-pointer">Connection History</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="sensor-data" className="">
+            <TabsContent value="sensor-data">
               <SensorDataTable
                 selectedDevice={selectedDevice}
                 sensorData={sensorData?.items ?? []}
@@ -79,8 +79,16 @@ export default function DevicePage() {
               />
             </TabsContent>
 
-            <TabsContent value="connection-history" className="mt-4">
-                <DeviceConnectionHistoryTable selectedDevice={selectedDevice} deviceConnectionHistory={deviceConnectionHistory?.items ?? []}/>
+            <TabsContent value="connection-history">
+                <DeviceConnectionHistoryTable 
+                  selectedDevice={selectedDevice} 
+                  deviceConnectionHistory={deviceConnectionHistory?.items ?? []}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  setItemsPerPage={setItemsPerPage} 
+                  itemsPerPage={itemsPerPage} 
+                  totalPages={deviceConnectionHistory?.totalPages ?? 1} 
+                  />
             </TabsContent>
           </Tabs>
         </div>

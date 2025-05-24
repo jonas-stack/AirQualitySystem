@@ -71,9 +71,12 @@ export function SensorDataTable({
     <Card className="h-[580px] flex flex-col">
       <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="space-y-2">
             <CardTitle className="flex items-center justify-center gap-2 text-lg font-bold">
-              <CpuIcon className="text-green-700" /> Sensor Data - {selectedDevice.DeviceName}
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg">
+                <CpuIcon className="text-white w-5 h-5" /> 
+              </div>
+              Sensor Data - {selectedDevice.DeviceName}
             </CardTitle>
             <CardDescription>Recent measurements from the selected device</CardDescription>
           </div>
@@ -103,19 +106,19 @@ export function SensorDataTable({
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-100">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Temperature (°C)</TableHead>
-                  <TableHead>Humidity (%)</TableHead>
-                  <TableHead>Air Quality</TableHead>
-                  <TableHead>PM2.5 (μg/m³)</TableHead>
-                  <TableHead>Timestamp</TableHead>
+              <TableHeader className="bg-muted/30 backdrop-blur-sm">
+                <TableRow className="border-b border-border/50">
+                  <TableHead className="font-semibold">Temperature (°C)</TableHead>
+                  <TableHead className="font-semibold">Humidity (%)</TableHead>
+                  <TableHead className="font-semibold">Air Quality</TableHead>
+                  <TableHead className="font-semibold">PM2.5 (μg/m³)</TableHead>
+                  <TableHead className="font-semibold">Timestamp</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sensorData.length > 0 ? (
                   sensorData.map((data) => (
-                    <TableRow key={data.timestamp}>
+                    <TableRow key={data.timestamp} className="hover:bg-muted/20 transition-colors border-b border-border/30">
                       <TableCell>{data.temperature}°C</TableCell>
                       <TableCell>{data.humidity}%</TableCell>
                       <TableCell>
@@ -124,7 +127,7 @@ export function SensorDataTable({
                       <TableCell>
                         <Badge>{data.pm25}</Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="text-muted-foreground font-mono text-sm">
                         {data.timestamp ? formatTicksToUTC(data.timestamp) : "Unknown"}
                       </TableCell>
                     </TableRow>

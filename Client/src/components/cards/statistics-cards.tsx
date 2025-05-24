@@ -13,7 +13,10 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
       <Card className="overflow-hidden relative">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="flex items-center gap-2 text-lg font-bold">
-            <CalendarRangeIcon className="text-blue-700" /> All Time Measurements
+            <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+              <CalendarRangeIcon className="text-white w-5 h-5" /> 
+            </div>
+            All Time Measurements
           </CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -26,7 +29,10 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
       <Card className="overflow-hidden relative">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="flex items-center gap-2 text-lg font-bold">
-            <CableIcon className="text-orange-700" /> Connected Devices
+            <div className="p-2 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg">
+              <CableIcon className="text-white w-5 h-5" />
+            </div>
+            Connected Devices
           </CardTitle>
           <Thermometer className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -39,7 +45,10 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
       <Card className="overflow-hidden relative">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="flex items-center gap-2 text-lg font-bold">
-            <InfoIcon className="text-red-700" /> Disconnections (24h)
+            <div className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-lg">
+              <InfoIcon className="text-white w-5 h-5" /> 
+            </div>            
+            Disconnections (24h)
           </CardTitle>
           <WifiOff className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
