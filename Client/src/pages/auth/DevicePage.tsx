@@ -4,13 +4,15 @@ import { StatisticsCards } from "@/components/cards/statistics-cards";
 import { DeviceSelector } from "@/components/cards/device-selector";
 import { SensorDataTable } from "@/components/table/sensor-data-table";
 import { useEffect, useState } from "react";
-import { useDeviceData } from "@/hooks";
+import { useDeviceData, useDeviceSensorData } from "@/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWsClient } from "ws-request-hook";
 
 export default function DevicePage() {
     const { readyState } = useWsClient();
-    const { getDevicesArray, requestSensorDataForDevice, sensorData, iseDevicesLoading } = useDeviceData();
+    const { getDevicesArray, iseDevicesLoading } = useDeviceData();
+    const { requestSensorDataForDevice, sensorData } = useDeviceSensorData();
+
     const devices = getDevicesArray();
 
     const connectedDevicesCount = devices.filter((d) => d.IsConnected).length

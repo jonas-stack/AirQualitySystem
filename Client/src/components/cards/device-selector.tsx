@@ -93,12 +93,12 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevi
                   </div>
                   <div className="flex items-center gap-2">
                     {device.IsConnected ? (
-                      <Badge variant="default" className="bg-green-500">
+                      <Badge variant="default" className="bg-green-500 text-white">
                         <Wifi className="h-3 w-3 mr-1" />
                         Online
                       </Badge>
                     ) : (
-                      <Badge variant="destructive">
+                      <Badge variant="destructive" className="text-white">
                         <WifiOff className="h-3 w-3 mr-1" />
                         Offline
                       </Badge>
