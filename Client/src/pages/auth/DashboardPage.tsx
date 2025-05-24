@@ -137,7 +137,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="lg:col-span-4">
-                <LiveDataCard className="h-[500px] lg:h-[496px]" title="🍃 Environment Watcher" />
+                <LiveDataCard className="h-[500px] lg:h-[496px]" title="Environment Watcher" />
             </div>
 
             <div className="lg:col-span-4">

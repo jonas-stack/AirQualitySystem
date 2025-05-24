@@ -41,7 +41,9 @@ export function AirQualityInsightsCard({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-lg font-bold">
-              <Wind className="h-5 w-5 text-emerald-500" />
+              <div className="p-2 bg-gradient-to-br from-emerald-500 to-emerald-800 rounded-lg">
+                <Wind className="h-5 w-5 text-white" />
+              </div>
               {title}
             </CardTitle>
             <CardDescription className="text-sm mt-1">

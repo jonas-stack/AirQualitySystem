@@ -110,9 +110,12 @@ export function SimpleAirQualityChartsCard({ className = "", onRefresh }: Simple
   return (
       <Card className={`${className}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div>
-        <CardTitle className="flex gap-2 text-lg font-bold">
-          <CloudRainIcon className="text-yellow-600" /> Air Quality Metrics
+        <div className="space-y-2">
+        <CardTitle className="flex items-center gap-2 text-lg font-bold">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+            <CloudRainIcon className="text-white w-5 h-5" /> 
+          </div>
+          Air Quality Metrics
         </CardTitle>
             <CardDescription>
               {lastFetch === undefined

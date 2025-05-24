@@ -56,9 +56,11 @@ export default function AirQualityTemperatureCard() {
       <div className="h-full flex flex-col">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
+            <div className="space-y-2">
               <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <Thermometer className="h-5 w-5 text-primary" />
+                <div className="p-2 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg">
+                  <Thermometer className="h-5 w-5 text-white" />
+                </div>
                 Current Temperature
               </CardTitle>
               <p className="text-sm text-muted-foreground">Measured in celsius</p>

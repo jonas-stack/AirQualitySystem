@@ -6,6 +6,7 @@ import { Bot, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import {useWsClient} from "ws-request-hook";
+import { Badge } from "../ui/badge";
 
 interface LiveDataCardProps {
   className?: string
@@ -14,7 +15,7 @@ interface LiveDataCardProps {
 
 export function LiveDataCard({
   className,
-  title = "🍃 Environment Watcher",
+  title = "Environment Watcher",
 }: LiveDataCardProps) {
     const [messages, setMessages] = useState<string[]>([])
     const [timestamps, setTimestamps] = useState<Date[]>([])
@@ -57,14 +58,21 @@ export function LiveDataCard({
   return (
     <Card className={cn("flex flex-col", className)}>
       <CardHeader className="px-4 flex-shrink-0">
-        <div className="flex items-center justify-between">
+        <div className="flex w-full items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg font-bold">
-            <Bot className="h-5 w-5 text-indigo-500" />
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg">
+              <Bot className="h-5 w-5 text-white" />
+            </div>
             {title}
-            <Sparkles className="h-4 w-4 text-amber-500" />
-            {status === "good" && <span className="text-green-500 text-xl">✅</span>}
-            {status === "warning" && <span className="text-yellow-500 text-xl">❗</span>}
           </CardTitle>
+
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-background/50 backdrop-blur-sm">
+                {status === "good" && <span className="text-muted-foreground">All values are good!</span>}
+                {status === "warning" && <span className="text-muted-foreground">Warning values are NOT good!</span>}
+                {status === null && <span className="text-muted-foreground">Waiting on status...</span>}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
 
