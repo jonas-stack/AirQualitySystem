@@ -60,6 +60,6 @@ public class SensorDataRepository : ISensorDataRepository
                 Pm25 = Math.Round(sd.Pm25, 2),
                 DeviceId = sd.DeviceId.ToString(),
                 TimestampUnix = sd.Timestamp.Ticks
-            }));
+        }));
     }
 }

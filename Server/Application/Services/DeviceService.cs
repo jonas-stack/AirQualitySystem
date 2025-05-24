@@ -55,9 +55,24 @@ public class DeviceService : IDeviceService {
         await _connectionManager.BroadcastToTopic(WebsocketTopics.Device, response);
     }
 
-    public Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceHistory(string dtoDeviceId, int dtoPageNumber, int dtoPageSize)
+    public async Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceHistory(string deviceId, int pageNumber, int pageSize)
     {
-        var historyData = _deviceRepository.GetDeviceHistory(string)
-        throw new NotImplementedException();
+        // thrower hvis ikke eksisterer, så ingen grund til at tjekke
+        await _deviceRepository.GetDevice(deviceId);
+        
+        var pagedEntities = await _deviceRepository.GetDeviceConnectionHistoryAsync(deviceId, pageNumber, pageSize);
+        return new PagedResult<DeviceConnectionHistoryDto>
+        {
+            TotalCount = pagedEntities.TotalCount,
+            PageNumber = pagedEntities.PageNumber,
+            PageSize = pagedEntities.PageSize,
+            Items = pagedEntities.Items.Select(entity => new DeviceConnectionHistoryDto
+            {
+                Id = entity.Id,
+                DeviceId = entity.DeviceId.ToString(),
+                LastSeen = entity.LastSeen.Ticks,
+                IsConnected = entity.IsConnected,
+            }).ToList()
+        };
     }
 }

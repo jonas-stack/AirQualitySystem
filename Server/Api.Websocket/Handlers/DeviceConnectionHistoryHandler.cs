@@ -25,7 +25,7 @@ public class ClientRequestDeviceHistory : BaseDto
 // serveren sender dette tilbage til klienten
 public class ServerResponseDeviceHistory : BaseDto
 {
-    public required PagedResult<DeviceConnectionHistoryDto> SensorData { get; set; }
+    public required PagedResult<DeviceConnectionHistoryDto> ConnectionData { get; set; }
 }
 
 public class DeviceConnectionHistoryHandler(IDeviceService deviceService) : BaseEventHandler<ClientRequestDeviceHistory>
@@ -42,7 +42,7 @@ public class DeviceConnectionHistoryHandler(IDeviceService deviceService) : Base
             requestId = dto.requestId,
             Data = new ServerResponseDeviceHistory
             {
-                SensorData = sensorData
+                ConnectionData = historyData
             }
         };
         

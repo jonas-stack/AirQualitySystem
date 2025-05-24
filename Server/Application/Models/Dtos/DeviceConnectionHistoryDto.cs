@@ -9,7 +9,7 @@ public class DeviceConnectionHistoryDto
     public int Id { get; set; }
 
     [JsonPropertyName("deviceId")]
-    public Guid DeviceId { get; set; }
+    public required string DeviceId { get; set; }
 
     [JsonPropertyName("isConnected")]
     public bool IsConnected { get; set; }

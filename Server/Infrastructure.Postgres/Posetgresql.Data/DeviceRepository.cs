@@ -2,6 +2,7 @@
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
+using Infrastructure.Postgres.Helpers;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,23 @@ public class DeviceRepository : IDeviceRepository
             LastSeen = result.LastSeen.Ticks,
         };
     }
-    
+
+    public async Task<PagedResult<DeviceConnectionHistory>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize)
+    {
+        if (!Guid.TryParse(deviceId, out var guid))
+            throw new ArgumentException($"'{deviceId}' is not a valid GUID");
+
+        var query = _dbContext.DeviceConnectionHistory
+            .Where(sd => sd.DeviceId == guid)
+            .OrderByDescending(sd => sd.LastSeen);
+
+        return await PaginationHelper.PaginateAsync(
+            query,
+            pageNumber,
+            pageSize,
+            q => q);
+    }
+
     public async Task SaveDevicesAsync(Devices devices)
     {
         try
