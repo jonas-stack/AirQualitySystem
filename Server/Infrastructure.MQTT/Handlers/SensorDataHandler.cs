@@ -22,7 +22,7 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly IDataValidator _validator;
     private readonly IAiCommunication _aiCommunication;
     private readonly IGraphService _graphService;
-    private readonly IDeviceService _deviceService;
+    private readonly ISensorDataService _sensorDataService;
     
 
     public SensorDataHandler(
@@ -33,7 +33,7 @@ public class SensorDataHandler : IMqttMessageHandler
         ISensorDataRepository sensorDataRepository, IJsonDeserializer deserializer, IDeviceRepository deviceRepository,
         IAiCommunication aiCommunicator,
         IGraphService graphService,
-        IDeviceService deviceService)
+        ISensorDataService sensorDataService)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -44,7 +44,7 @@ public class SensorDataHandler : IMqttMessageHandler
         _deviceRepository = deviceRepository;
         _aiCommunication = aiCommunicator;
         _graphService = graphService;
-        _deviceService = deviceService;
+        _sensorDataService = sensorDataService;
     }
 
     public string TopicFilter => "AirQuality/Data";
@@ -104,6 +104,7 @@ public class SensorDataHandler : IMqttMessageHandler
             await _sensorDataRepository.SaveSensorDataAsync(entity);
 
             await _graphService.BroadcastMeasurementsAsync(entity);
+            await _sensorDataService.Broadcast(dto);
             //await _deviceService.BroadcastData(entity);
 
             await _aiCommunication.BroadCastData();

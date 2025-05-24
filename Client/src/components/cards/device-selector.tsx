@@ -18,8 +18,8 @@ interface DeviceSelectorProps {
 export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevicesLoading }: DeviceSelectorProps) {
 
   return (
-    <Card className="h-[644px]">
-      <CardHeader>
+    <Card className="h-[624px]">
+      <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2 text-lg font-bold">
           <ZapIcon className="text-purple-600" /> Device Selection
         </CardTitle>
@@ -35,7 +35,7 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevi
             </Flex>
         ) : (
         <ScrollArea className="h-[500px]">
-          <div className="space-y-2 p-4">
+          <div className="space-y-2 px-4">
             {devices.map((device) => (
               <Button
                 key={device.device_id}

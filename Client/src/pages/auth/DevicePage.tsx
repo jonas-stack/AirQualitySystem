@@ -24,13 +24,6 @@ export default function DevicePage() {
         totalDevices: 1,
         disconnectionsLast24h: 3,
     }
-
-    useEffect(() => {
-        if (devices.length > 0) {
-            setSelectedDevice(devices[0]);
-        }
-    }, [devices]);
-
     useEffect(() => {
       if (selectedDevice?.device_id) {
           requestSensorDataForDevice(selectedDevice.device_id, currentPage, itemsPerPage);
@@ -38,7 +31,7 @@ export default function DevicePage() {
     }, [selectedDevice, currentPage, itemsPerPage]);
 
     return (
-    <div className="space-y-6 py-2">
+    <div className="space-y-4 py-2">
       <StatisticsCards stats={stats} connectedDevicesCount={connectedDevicesCount} />
 
       <div className="grid gap-4 lg:grid-cols-12">
