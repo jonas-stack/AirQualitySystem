@@ -39,7 +39,7 @@ public class SensorDataRepository : ISensorDataRepository
         }
     }
 
-    public async Task<PagedResult<SensorDataDto>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50)
+    public async Task<PagedResult<SensorData>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50)
     {
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
@@ -52,14 +52,6 @@ public class SensorDataRepository : ISensorDataRepository
             query,
             pageNumber,
             pageSize,
-            q => q.Select(sd => new SensorDataDto
-            {
-                Temperature = Math.Round(sd.Temperature, 2),
-                Humidity = Math.Round(sd.Humidity, 2),
-                AirQuality = Math.Round(sd.AirQuality, 2),
-                Pm25 = Math.Round(sd.Pm25, 2),
-                DeviceId = sd.DeviceId.ToString(),
-                TimestampUnix = sd.Timestamp.Ticks
-        }));
+            q => q);
     }
 }

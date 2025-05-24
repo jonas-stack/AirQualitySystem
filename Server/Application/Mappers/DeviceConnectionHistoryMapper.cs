@@ -14,6 +14,6 @@ public class DeviceConnectionHistoryMapper : IDeviceConnectionHistoryMapper
             DeviceId = deviceConnectionHistory.DeviceId.ToString(),
             IsConnected = deviceConnectionHistory.IsConnected,
             LastSeen = deviceConnectionHistory.LastSeen.Ticks,
-        }
+        };
     }
 }

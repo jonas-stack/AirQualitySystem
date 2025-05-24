@@ -15,12 +15,14 @@ public class DeviceService : IDeviceService {
     private readonly IDeviceRepository _deviceRepository;
     private readonly IConnectionManager _connectionManager;
     private readonly IDevicesMapper _devicesMapper;
+    private readonly IDeviceConnectionHistoryMapper _deviceConnectionHistoryMapper;
     
-    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper)
+    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper, IDeviceConnectionHistoryMapper deviceConnectionHistoryMapper)
     {
         _deviceRepository = deviceRepository;
         _connectionManager = connectionManager;
         _devicesMapper = devicesMapper;
+        _deviceConnectionHistoryMapper = deviceConnectionHistoryMapper;
     }
     
     public async Task<List<DeviceDto>> GetAllDeviceStatus()
@@ -71,13 +73,7 @@ public class DeviceService : IDeviceService {
             TotalCount = pagedEntities.TotalCount,
             PageNumber = pagedEntities.PageNumber,
             PageSize = pagedEntities.PageSize,
-            Items = pagedEntities.Items.Select(entity => new DeviceConnectionHistoryDto
-            {
-                Id = entity.Id,
-                DeviceId = entity.DeviceId.ToString(),
-                LastSeen = entity.LastSeen.Ticks,
-                IsConnected = entity.IsConnected,
-            }).ToList()
+            Items = pagedEntities.Items.Select(_deviceConnectionHistoryMapper.MapToDto).ToList()
         };
     }
 }

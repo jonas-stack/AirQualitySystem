@@ -19,4 +19,19 @@ public class SensorDataMapper : ISensorDataMapper
             Timestamp = DataTypeConverter.GetLocalDateTime(dto.TimestampUnix)
         };
     }
+
+    public SensorDataDto MapToDto(SensorData entity)
+    {
+        // vælger at runde ned fordi vi primært bruger det her i frontend
+        // det her er "readonly" data og intet andet
+        return new SensorDataDto
+        {
+            Temperature = Math.Round(entity.Temperature, 2),
+            Humidity = Math.Round(entity.Humidity, 2),
+            AirQuality = Math.Round(entity.AirQuality, 2),
+            Pm25 = Math.Round(entity.Pm25, 2),
+            DeviceId = entity.DeviceId.ToString(),
+            TimestampUnix = entity.Timestamp.Ticks
+        };
+    }
 }

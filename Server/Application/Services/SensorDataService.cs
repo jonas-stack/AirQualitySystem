@@ -1,14 +1,22 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Infrastructure.Websocket;
+using Application.Interfaces.Mappers;
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
 using Application.Models.Websocket;
+using Core.Domain.Entities;
 
 namespace Application.Services;
 
-public class SensorDataService(IDeviceRepository deviceRepository, ISensorDataRepository sensorDataRepository, IConnectionManager connectionManager) : ISensorDataService
+public class SensorDataService(
+    IDeviceRepository deviceRepository,
+    ISensorDataRepository sensorDataRepository,
+    IConnectionManager connectionManager,
+    ISensorDataMapper sensorDataMapper)
+    : ISensorDataService
 {
+    
     public async Task Broadcast(SensorDataDto sensorData)
     {
         BroadcastSensorData(sensorData);
@@ -34,6 +42,15 @@ public class SensorDataService(IDeviceRepository deviceRepository, ISensorDataRe
     {
         // den her thrower hvis fejl, så ingen grund til null checks
         await deviceRepository.GetDevice(deviceId);
-        return await sensorDataRepository.GetSensorDataForDeviceAsync(deviceId, pageNumber, pageSize);
+
+        var pageedSensorData = await sensorDataRepository.GetSensorDataForDeviceAsync(deviceId, pageNumber, pageSize);
+        
+        return new PagedResult<SensorDataDto>
+        {
+            TotalCount = pageedSensorData.TotalCount,
+            PageNumber = pageedSensorData.PageNumber,
+            PageSize = pageedSensorData.PageSize,
+            Items = pageedSensorData.Items.Select(sensorDataMapper.MapToDto).ToList()
+        };   
     }
 }

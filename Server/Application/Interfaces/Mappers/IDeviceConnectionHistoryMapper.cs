@@ -1,6 +1,9 @@
-﻿namespace Application.Interfaces.Mappers;
+﻿using Application.Models.Dtos;
+using Core.Domain.Entities;
+
+namespace Application.Interfaces.Mappers;
 
 public interface IDeviceConnectionHistoryMapper
 {
-    
+    DeviceConnectionHistoryDto MapToDto(DeviceConnectionHistory deviceConnectionHistory);
 }

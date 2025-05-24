@@ -7,4 +7,5 @@ namespace Application.Interfaces.Mappers;
 public interface ISensorDataMapper
 {
     SensorData MapToEntity(SensorDataDto dto);
+    SensorDataDto MapToDto(SensorData entity);
 }

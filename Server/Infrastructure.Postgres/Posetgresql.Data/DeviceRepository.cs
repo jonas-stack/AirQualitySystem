@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces.Infrastructure.Postgres;
 using Application.Models.Dtos;
-using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
 using Infrastructure.Postgres.Helpers;
 using Infrastructure.Postgres.Scaffolding;
