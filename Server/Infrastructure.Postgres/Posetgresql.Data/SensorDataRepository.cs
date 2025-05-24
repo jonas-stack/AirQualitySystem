@@ -1,7 +1,10 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
+using Application.Models.Dtos;
+using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Postgres.Posetgresql.Data;
@@ -30,5 +33,38 @@ public class SensorDataRepository : ISensorDataRepository
             _logger.LogError(ex, "Error saving sensor data for device {DeviceId}", sensorData.DeviceId);
             throw; // Re-throw to allow higher layers to handle or report the error
         }
+    }
+
+    public async Task<PagedResult<SensorDataDto>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50)
+    {
+        if (!Guid.TryParse(deviceId, out var guid))
+            throw new ArgumentException($"'{deviceId}' is not a valid GUID");
+
+        var query = _dbContext.SensorData.Where(sd => sd.DeviceId == guid);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(sd => sd.Timestamp)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(sd => new SensorDataDto
+            {
+                Temperature = sd.Temperature,
+                Humidity = sd.Humidity,
+                AirQuality = sd.AirQuality,
+                Pm25 = sd.Pm25,
+                DeviceId = sd.DeviceId.ToString(),
+                TimestampUnix = sd.Timestamp.Ticks
+            })
+            .ToListAsync();
+
+        return new PagedResult<SensorDataDto>
+        {
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            Items = items
+        };
     }
 }
