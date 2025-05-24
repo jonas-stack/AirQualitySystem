@@ -15,7 +15,7 @@ namespace Api.Websocket.Handlers;
 // { "eventType": "ClientRequestDeviceList" }
 public class ClientRequestDeviceHistory : BaseDto
 {
-    public required string SensorId { get; set; }
+    public required string DeviceId { get; set; }
     
     // sæt default values
     public int PageNumber { get; set; } = 1;
@@ -25,15 +25,15 @@ public class ClientRequestDeviceHistory : BaseDto
 // serveren sender dette tilbage til klienten
 public class ServerResponseDeviceHistory : BaseDto
 {
-    public required PagedResult<SensorDataDto> SensorData { get; set; }
+    public required PagedResult<DeviceConnectionHistoryDto> SensorData { get; set; }
 }
 
-public class DeviceConnectionHistoryHandler(ISensorDataService sensorDataService) : BaseEventHandler<ClientRequestDeviceHistory>
+public class DeviceConnectionHistoryHandler(IDeviceService deviceService) : BaseEventHandler<ClientRequestDeviceHistory>
 {
     
     public override async Task Handle(ClientRequestDeviceHistory dto, IWebSocketConnection socket)
     {
-        var sensorData = await sensorDataService.GetSensorDataForDeviceAsync(dto.SensorId, dto.PageNumber, dto.PageSize);
+        var historyData = await deviceService.GetDeviceHistory(dto.DeviceId, dto.PageNumber, dto.PageSize);
         
         var response = new WebsocketMessage<ServerResponseDeviceHistory>
         {
