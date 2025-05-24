@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Infrastructure.Websocket;
+using Application.Interfaces.Mappers;
 using Application.Models;
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
@@ -13,16 +14,21 @@ public class DeviceService : IDeviceService {
     
     private readonly IDeviceRepository _deviceRepository;
     private readonly IConnectionManager _connectionManager;
+    private readonly IDevicesMapper _devicesMapper;
     
-    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager)
+    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper)
     {
         _deviceRepository = deviceRepository;
         _connectionManager = connectionManager;
+        _devicesMapper = devicesMapper;
     }
     
-    public Task<List<DeviceDto>> GetAllDeviceStatus()
+    public async Task<List<DeviceDto>> GetAllDeviceStatus()
     {
-        return _deviceRepository.GetAllDevices();
+        var devices = await _deviceRepository.GetAllDevices();
+        var result = devices.Select(d => _devicesMapper.MapToDto(d)).ToList();
+        
+        return result;
     }
 
     public async Task BroadcastDeviceStatus(DeviceDto dto)
@@ -39,8 +45,7 @@ public class DeviceService : IDeviceService {
     public async Task<DeviceDto> GetDeviceStatus()
     {
         var result = await _deviceRepository.GetDeviceStatus();
-        
-        return result;
+        return _devicesMapper.MapToDto(result);
     }
 
     public async Task BroadcastData(DeviceDto entity)

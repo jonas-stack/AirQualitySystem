@@ -20,7 +20,7 @@ public class DeviceRepository : IDeviceRepository
         _logger = logger;
     }
 
-    public async Task<DeviceDto> GetDevice(string deviceId)
+    public async Task<Devices> GetDevice(string deviceId)
     {
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
@@ -29,13 +29,7 @@ public class DeviceRepository : IDeviceRepository
         if (result == null)
             throw new ArgumentException($"'{deviceId}' does not exist");
 
-        return new DeviceDto()
-        {
-            DeviceGuid = result.DeviceId.ToString(),
-            DeviceName = result.DeviceName,
-            IsConnected = result.IsConnected,
-            LastSeen = result.LastSeen.Ticks,
-        };
+        return result;
     }
 
     public async Task<PagedResult<DeviceConnectionHistory>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize)
@@ -135,19 +129,11 @@ public class DeviceRepository : IDeviceRepository
         }
     }
     
-    public async Task<List<DeviceDto>> GetAllDevices()
+    public async Task<List<Devices>> GetAllDevices()
     {
         try
         {
-            return await _dbContext.Devices
-                .Select(d => new DeviceDto
-                {
-                    DeviceGuid = d.DeviceId.ToString(),
-                    DeviceName = d.DeviceName,
-                    IsConnected = d.IsConnected,
-                    LastSeen = d.LastSeen.Ticks
-                })
-                .ToListAsync();
+            return await _dbContext.Devices.ToListAsync();
         }
         catch (Exception ex)
         {
@@ -156,17 +142,11 @@ public class DeviceRepository : IDeviceRepository
         }
     }
 
-    public async Task<DeviceDto> GetDeviceStatus()
+    public async Task<Devices> GetDeviceStatus()
     {
         try
         {
-            return await _dbContext.Devices
-                .Select(d => new DeviceDto
-                {
-                    DeviceGuid = d.DeviceId.ToString(),
-                    IsConnected = d.IsConnected,
-                })
-                .FirstOrDefaultAsync() ?? throw new InvalidOperationException("Device not found");
+            return await _dbContext.Devices.FirstOrDefaultAsync() ?? throw new InvalidOperationException("Device not found");
         }
         catch (Exception ex)
         {

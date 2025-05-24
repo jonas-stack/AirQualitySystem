@@ -17,4 +17,15 @@ public class DevicesMapper : IDevicesMapper
             LastSeen = DataTypeConverter.GetLocalDateTime(dto.LastSeen)
         };
     }
+
+    public DeviceDto MapToDto(Devices entity)
+    {
+        return new DeviceDto
+        {
+            DeviceGuid = entity.DeviceId.ToString(),
+            DeviceName = entity.DeviceName,
+            IsConnected = entity.IsConnected,
+            LastSeen = entity.LastSeen.Ticks
+        };
+    }
 }

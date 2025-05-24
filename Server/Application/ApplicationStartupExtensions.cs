@@ -17,6 +17,7 @@ public static class ApplicationStartupExtensions
         services.AddScoped<IDataValidator, DataValidator>();
         services.AddScoped<ISensorDataMapper, SensorDataMapper>();
         services.AddScoped<IDevicesMapper, DevicesMapper>();
+        services.AddScoped<IDeviceConnectionHistoryMapper, DeviceConnectionHistoryMapper>();
         services.AddScoped<IAiCommunication, AiCommunicationService>();
         services.AddScoped<IDeviceService, DeviceService>();
         services.AddScoped<ISensorDataService, SensorDataService>();
