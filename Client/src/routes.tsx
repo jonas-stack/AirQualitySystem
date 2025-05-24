@@ -7,6 +7,7 @@ import { ROUTE } from "@/routes-constants";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "@/components/ui/sonner";
 import AIPage from "@/pages/auth/AIPage.tsx";
+import DevicePage from "./pages/auth/DevicePage";
 
 export default function ApplicationRoutes() {
   return (
@@ -18,7 +19,8 @@ export default function ApplicationRoutes() {
         <Route element={<AuthenticatedLayout />}>
           <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
           <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
-        <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
+          <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
+          <Route path={ROUTE.DASHBOARD.DEVICE.INDEX} element={<DevicePage />} />
     </Route>
 
       </Routes>
