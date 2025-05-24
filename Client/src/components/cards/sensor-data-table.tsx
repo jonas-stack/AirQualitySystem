@@ -3,6 +3,16 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DeviceDto } from "@/generated-client"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis
+} from "@/components/ui/pagination"
+import { useMemo, useState } from "react"
 
 interface SensorDataTableProps {
   selectedDevice: DeviceDto
@@ -24,6 +34,17 @@ export function SensorDataTable({ selectedDevice, sensorData }: SensorDataTableP
     return "destructive"
   }
 
+  const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
+
+    const totalPages = Math.ceil(sensorData.length / itemsPerPage)
+
+    const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    return sensorData.slice(start, start + itemsPerPage)
+    }, [currentPage, sensorData])
+
+
   return (
     <Card className="h-[600px]">
       <CardHeader>
@@ -44,8 +65,8 @@ export function SensorDataTable({ selectedDevice, sensorData }: SensorDataTableP
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sensorData.length > 0 ? (
-                sensorData.map((reading) => (
+              {paginatedData.length > 0 ? (
+                paginatedData.map((reading) => (
                   <TableRow key={reading.id}>
                     <TableCell className="font-medium">{reading.id}</TableCell>
                     <TableCell>{reading.temperature}°C</TableCell>
@@ -69,6 +90,53 @@ export function SensorDataTable({ selectedDevice, sensorData }: SensorDataTableP
             </TableBody>
           </Table>
         </ScrollArea>
+        <Pagination>
+        <PaginationContent>
+            <PaginationItem>
+            <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                e.preventDefault()
+                setCurrentPage((prev) => Math.max(prev - 1, 1))
+                }}
+            />
+            </PaginationItem>
+
+            {[...Array(totalPages)].map((_, i) => {
+            const page = i + 1
+            return (
+                <PaginationItem key={page}>
+                <PaginationLink
+                    href="#"
+                    isActive={page === currentPage}
+                    onClick={(e) => {
+                    e.preventDefault()
+                    setCurrentPage(page)
+                    }}
+                >
+                    {page}
+                </PaginationLink>
+                </PaginationItem>
+            )
+            })}
+
+            {totalPages > 5 && currentPage < totalPages - 2 && (
+            <PaginationItem>
+                <PaginationEllipsis />
+            </PaginationItem>
+            )}
+
+            <PaginationItem>
+            <PaginationNext
+                href="#"
+                onClick={(e) => {
+                e.preventDefault()
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }}
+            />
+            </PaginationItem>
+        </PaginationContent>
+        </Pagination>
       </CardContent>
     </Card>
   )
