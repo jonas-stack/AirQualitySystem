@@ -18,7 +18,7 @@ interface DeviceSelectorProps {
 export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevicesLoading }: DeviceSelectorProps) {
 
   return (
-    <Card className="h-[600px]">
+    <Card className="h-[644px]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg font-bold">
           <ZapIcon className="text-purple-600" /> Device Selection

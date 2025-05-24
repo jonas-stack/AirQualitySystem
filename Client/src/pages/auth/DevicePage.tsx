@@ -5,6 +5,7 @@ import { DeviceSelector } from "@/components/cards/device-selector";
 import { SensorDataTable } from "@/components/cards/sensor-data-table";
 import { useEffect, useState } from "react";
 import { useDeviceData } from "@/hooks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function DevicePage() {
     const { getDevicesArray, requestSensorDataForDevice, sensorData, iseDevicesLoading } = useDeviceData();
@@ -12,6 +13,8 @@ export default function DevicePage() {
 
     const connectedDevicesCount = devices.filter((d) => d.IsConnected).length
     const [selectedDevice, setSelectedDevice] = useState<DeviceDto | null>(null);
+
+    const [activeTab, setActiveTab] = useState("sensor-data")
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -44,8 +47,30 @@ export default function DevicePage() {
         </div>
 
         <div className="lg:col-span-8">
-          <SensorDataTable selectedDevice={selectedDevice} sensorData={sensorData?.items ?? []} currentPage={currentPage} setCurrentPage={setCurrentPage} setItemsPerPage={setItemsPerPage} itemsPerPage={itemsPerPage} totalPages={sensorData?.totalPages ?? 1} />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="sensor-data" className="cursor-pointer">Sensor Data</TabsTrigger>
+              <TabsTrigger value="connection-history" className="cursor-pointer">Connection History</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="sensor-data" className="">
+              <SensorDataTable
+                selectedDevice={selectedDevice}
+                sensorData={sensorData?.items ?? []}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                setItemsPerPage={setItemsPerPage}
+                itemsPerPage={itemsPerPage}
+                totalPages={sensorData?.totalPages ?? 1}
+              />
+            </TabsContent>
+
+            <TabsContent value="connection-history" className="mt-4">
+              
+            </TabsContent>
+          </Tabs>
         </div>
+
       </div>
     </div>
 
