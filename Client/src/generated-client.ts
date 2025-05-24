@@ -295,6 +295,9 @@ export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
 
+export interface ClientRequestAiLiveData extends BaseDto {
+}
+
 export interface RequestAirQualityData extends BaseDto {
     timePeriod?: TimePeriod;
     data?: string[];
@@ -305,12 +308,6 @@ export enum TimePeriod {
     Daily = "Daily",
     Weekly = "Weekly",
     Monthly = "Monthly",
-}
-
-export interface ClientRequestDeviceStatus extends BaseDto {
-
-}
-export interface ClientRequestAiLiveData extends BaseDto {
 }
 
 export interface ClientRequestDeviceStatus extends BaseDto {
@@ -353,10 +350,10 @@ export enum StringConstants {
     WebsocketMessage_1 = "WebsocketMessage`1",
     LiveAiFeedbackDto = "LiveAiFeedbackDto",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    ClientRequestAiLiveData = "ClientRequestAiLiveData",
     RequestAirQualityData = "RequestAirQualityData",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
-    ClientRequestAiLiveData = "ClientRequestAiLiveData",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     ClientRequestDeviceList = "ClientRequestDeviceList",
