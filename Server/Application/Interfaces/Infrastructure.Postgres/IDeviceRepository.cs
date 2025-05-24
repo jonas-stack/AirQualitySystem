@@ -12,4 +12,6 @@ public interface IDeviceRepository
     public Task RegisterNewDeviceAsync(Guid deviceId, string deviceName, DateTime lastSeen);
     public Task<List<DeviceDto>> GetAllDevices();
     public Task<DeviceDto> GetDeviceStatus();
+
+    Task<DeviceDto> GetDevice(string deviceId);
 }

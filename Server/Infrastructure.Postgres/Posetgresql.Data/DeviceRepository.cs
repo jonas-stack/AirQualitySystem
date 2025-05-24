@@ -18,6 +18,24 @@ public class DeviceRepository : IDeviceRepository
         _dbContext = dbContext;
         _logger = logger;
     }
+
+    public async Task<DeviceDto> GetDevice(string deviceId)
+    {
+        if (!Guid.TryParse(deviceId, out var guid))
+            throw new ArgumentException($"'{deviceId}' is not a valid GUID");
+
+        var result = await _dbContext.Devices.FirstOrDefaultAsync(d => d.DeviceId == guid);
+        if (result == null)
+            throw new ArgumentException($"'{deviceId}' does not exist");
+
+        return new DeviceDto()
+        {
+            DeviceGuid = result.DeviceId.ToString(),
+            DeviceName = result.DeviceName,
+            IsConnected = result.IsConnected,
+            LastSeen = result.LastSeen.Ticks,
+        };
+    }
     
     public async Task SaveDevicesAsync(Devices devices)
     {
