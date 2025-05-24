@@ -73,7 +73,7 @@ export function SensorDataTable({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center justify-center gap-2 text-lg font-bold">
-              <CpuIcon className="text-green-600" /> Sensor Data - {selectedDevice.DeviceName}
+              <CpuIcon className="text-green-700" /> Sensor Data - {selectedDevice.DeviceName}
             </CardTitle>
             <CardDescription>Recent measurements from the selected device</CardDescription>
           </div>

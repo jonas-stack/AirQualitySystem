@@ -2,7 +2,7 @@ import { DashboardStats } from "@/types/dashboard";
 import { DeviceDto } from "@/generated-client";
 import { StatisticsCards } from "@/components/cards/statistics-cards";
 import { DeviceSelector } from "@/components/cards/device-selector";
-import { SensorDataTable } from "@/components/cards/sensor-data-table";
+import { SensorDataTable } from "@/components/table/sensor-data-table";
 import { useEffect, useState } from "react";
 import { useDeviceData } from "@/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
