@@ -28,8 +28,8 @@ export function useGraphData() {
         setChartData(((graphResult as any)?.Data?.Data) ?? []);
         setLastFetch(new Date())
         } catch (error) {
-        toast.error("Chart data failed", {
-            description: "An error occured while trying to fetching chart data.",
+        toast.error("Chart data fetching failed", {
+            description: "An error occured while trying to fetch chart data.",
         });
         setLastFetch(undefined)
     } finally {

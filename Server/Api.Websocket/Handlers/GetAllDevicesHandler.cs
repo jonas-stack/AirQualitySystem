@@ -15,7 +15,7 @@ namespace Api.Websocket.Handlers;
 public class ClientRequestDeviceList : BaseDto { }
 
 // serveren sender dette tilbage til klienten
-public class ServerResponseList : BaseDto
+public class ServerResponseList
 {
     public required List<DeviceDto> DeviceList { get; set; }
 }
@@ -42,6 +42,8 @@ public class GetAllDevicesHandler : BaseEventHandler<ClientRequestDeviceList>
         var response = new WebsocketMessage<ServerResponseList>
         {
             Topic = WebsocketTopics.Device,
+            eventType = WebsocketEvents.ServerResponseDeviceList,
+            requestId = dto.requestId,
             Data = new ServerResponseList
             {
                 DeviceList = result

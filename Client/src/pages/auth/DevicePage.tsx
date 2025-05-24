@@ -3,7 +3,9 @@ import { DeviceDto } from "@/generated-client";
 import { StatisticsCards } from "@/components/cards/statistics-cards";
 import { DeviceSelector } from "@/components/cards/device-selector";
 import { SensorDataTable } from "@/components/cards/sensor-data-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDeviceData } from "@/hooks";
+import { useWsClient } from "ws-request-hook";
 
 const fakeDevice: DeviceDto = {
     device_id: "123",
@@ -13,6 +15,18 @@ const fakeDevice: DeviceDto = {
 };
 
 export default function DevicePage() {
+    const {readyState} = useWsClient()
+    
+    const { requestDevices } = useDeviceData();
+
+    useEffect(() => {
+        if (readyState !== 1)
+            return;
+
+            requestDevices();
+
+    }, [readyState])
+
     const [selectedDevice, setSelectedDevice] = useState<DeviceDto>(fakeDevice);
 
     const stats: DashboardStats = {

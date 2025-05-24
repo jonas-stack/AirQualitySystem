@@ -6,10 +6,6 @@ import { Bot, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import {useWsClient} from "ws-request-hook";
-import {LiveAiFeedbackDto, WebsocketTopics} from "@/generated-client.ts";
-import {useAutoSubscription} from "@/hooks/use-auto-subscription.ts";
-
-
 
 interface LiveDataCardProps {
   className?: string
@@ -24,9 +20,6 @@ export function LiveDataCard({
     const [timestamps, setTimestamps] = useState<Date[]>([])
     const [status, setStatus] = useState<"good" | "warning" | null>(null);
     const { onMessage, readyState } = useWsClient();
-
-    useAutoSubscription([WebsocketTopics.Ai, WebsocketTopics.Dashboard])
-    console.log("✅ Subscribed to topics: ", WebsocketTopics.Ai);
 
     useEffect(() => {
       const unsubscribe = onMessage("*", (raw: any) => {

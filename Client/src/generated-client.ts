@@ -335,10 +335,6 @@ export interface ExampleServerResponse extends BaseDto {
 export interface ClientRequestDeviceList extends BaseDto {
 }
 
-export interface ServerResponseList extends BaseDto {
-    deviceList?: DeviceDto[];
-}
-
 export interface Ping extends BaseDto {
 }
 
@@ -357,7 +353,6 @@ export enum StringConstants {
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     ClientRequestDeviceList = "ClientRequestDeviceList",
-    ServerResponseList = "ServerResponseList",
     Ping = "Ping",
     Pong = "Pong",
 }
@@ -376,6 +371,8 @@ export enum WebsocketTopics {
 /** Websocket Events enums */
 export enum WebsocketEvents {
     GraphTotalMeasurement = "GraphTotalMeasurement",
+    ClientRequestDeviceList = "ClientRequestDeviceList",
+    ServerResponseDeviceList = "ServerResponseDeviceList",
     AllDeviceStatus = "AllDeviceStatus",
     DeviceUpdateStatus = "DeviceUpdateStatus",
     GraphGetMeasurement = "GraphGetMeasurement",

@@ -474,25 +474,6 @@
           }
         ]
       },
-      "ServerResponseList": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseDto"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "deviceList": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DeviceDto"
-                }
-              }
-            }
-          }
-        ]
-      },
       "Ping": {
         "allOf": [
           {
@@ -529,7 +510,6 @@
           "ExampleClientDto",
           "ExampleServerResponse",
           "ClientRequestDeviceList",
-          "ServerResponseList",
           "Ping",
           "Pong"
         ]
@@ -552,6 +532,8 @@
         "description": "Websocket Events enums",
         "enum": [
           "GraphTotalMeasurement",
+          "ClientRequestDeviceList",
+          "ServerResponseDeviceList",
           "AllDeviceStatus",
           "DeviceUpdateStatus",
           "GraphGetMeasurement",
