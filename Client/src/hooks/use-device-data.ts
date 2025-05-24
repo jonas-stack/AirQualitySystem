@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
 
 export function useDeviceData() {
-    const [devices, setDevices] = useState<DeviceDto[]>([])
+    const [devices, setDevices] = useState<Record<string, DeviceDto>>({});
     const [iseDevicesLoading, setIsDevicesLoading] = useState(true)
     const {sendRequest, readyState} = useWsClient()
 
@@ -22,7 +22,15 @@ export function useDeviceData() {
         )
 
         const deviceList = deviceResult?.Data?.DeviceList ?? [];
-        setDevices(deviceList as DeviceDto[]);
+
+        const deviceMap: Record<string, DeviceDto> = {};
+        for (const device of deviceList) {
+            if (device.device_id) {
+                deviceMap[device.device_id] = device;
+            }
+        }
+
+        setDevices(deviceMap);
         } catch (error) {
         toast.error("Device fetching failed", {
             description: "An error occured while trying to fetch devices.",
@@ -32,16 +40,19 @@ export function useDeviceData() {
         }
     }
 
+    const getDevicesArray = (): DeviceDto[] => Object.values(devices);
+ 
     // lad os bare køre requestdevices på mount
     useEffect(() => {
         if (readyState !== 1)
             return;
-        
+
         requestDevices();
     }, [readyState])
 
   return {
     requestDevices,
+    getDevicesArray,
     devices,
     iseDevicesLoading,
   };

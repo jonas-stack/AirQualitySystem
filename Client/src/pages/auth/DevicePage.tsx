@@ -15,7 +15,8 @@ const fakeDevice: DeviceDto = {
 };
 
 export default function DevicePage() {
-    const { devices } = useDeviceData();
+    const { getDevicesArray } = useDeviceData();
+    const devices = getDevicesArray();
 
     const connectedDevicesCount = devices.filter((d) => d.IsConnected).length
     const [selectedDevice, setSelectedDevice] = useState<DeviceDto | null>(null);
@@ -31,7 +32,7 @@ export default function DevicePage() {
             setSelectedDevice(devices[0]);
         }
     }, [devices]);
-    
+
     const mockDevices: DeviceDto[] = [];
     mockDevices.push(fakeDevice);
 
