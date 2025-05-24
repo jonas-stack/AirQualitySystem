@@ -15,7 +15,14 @@ public class PingEventHandler(IConnectionManager connectionManager, ILogger<Ping
     {
         var clientId = connectionManager.GetClientIdFromSocket(socket);
         logger.LogInformation(clientId);
-        socket.SendDto(new Pong());
+
+        // vi vil gerne have requestId med
+        var pong = new Pong
+        {
+            requestId = dto.requestId
+        };
+        
+        socket.SendDto(pong);
         return Task.CompletedTask;
     }
 }

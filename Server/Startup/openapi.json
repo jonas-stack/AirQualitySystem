@@ -385,6 +385,94 @@
           "Monthly"
         ]
       },
+      "ClientRequestDeviceHistory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceId": {
+                "type": "string"
+              },
+              "pageNumber": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "pageSize": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "ServerResponseDeviceHistory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "connectionData": {
+                "$ref": "#/components/schemas/PagedResultOfDeviceConnectionHistoryDto"
+              }
+            }
+          }
+        ]
+      },
+      "PagedResultOfDeviceConnectionHistoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceConnectionHistoryDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DeviceConnectionHistoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deviceId": {
+            "type": "string"
+          },
+          "isConnected": {
+            "type": "boolean"
+          },
+          "lastSeen": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "ClientRequestDeviceStatus": {
         "allOf": [
           {
@@ -602,6 +690,8 @@
           "ServerSendsErrorMessage",
           "ClientRequestAiLiveData",
           "RequestAirQualityData",
+          "ClientRequestDeviceHistory",
+          "ServerResponseDeviceHistory",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
           "ClientRequestSensorData",

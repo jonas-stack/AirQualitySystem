@@ -310,6 +310,31 @@ export enum TimePeriod {
     Monthly = "Monthly",
 }
 
+export interface ClientRequestDeviceHistory extends BaseDto {
+    deviceId?: string;
+    pageNumber?: number;
+    pageSize?: number;
+}
+
+export interface ServerResponseDeviceHistory extends BaseDto {
+    connectionData?: PagedResultOfDeviceConnectionHistoryDto;
+}
+
+export interface PagedResultOfDeviceConnectionHistoryDto {
+    items?: DeviceConnectionHistoryDto[];
+    pageNumber?: number;
+    pageSize?: number;
+    totalCount?: number;
+    totalPages?: number;
+}
+
+export interface DeviceConnectionHistoryDto {
+    id?: number;
+    deviceId?: string;
+    isConnected?: boolean;
+    lastSeen?: number;
+}
+
 export interface ClientRequestDeviceStatus extends BaseDto {
 }
 
@@ -375,6 +400,8 @@ export enum StringConstants {
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
     ClientRequestAiLiveData = "ClientRequestAiLiveData",
     RequestAirQualityData = "RequestAirQualityData",
+    ClientRequestDeviceHistory = "ClientRequestDeviceHistory",
+    ServerResponseDeviceHistory = "ServerResponseDeviceHistory",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
     ClientRequestSensorData = "ClientRequestSensorData",

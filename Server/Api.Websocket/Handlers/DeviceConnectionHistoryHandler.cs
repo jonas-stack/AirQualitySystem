@@ -38,7 +38,7 @@ public class DeviceConnectionHistoryHandler(IDeviceService deviceService) : Base
         var response = new WebsocketMessage<ServerResponseDeviceHistory>
         {
             Topic = WebsocketTopics.Device,
-            eventType = "ServerResponseSensorData",
+            eventType = "ServerResponseDeviceHistory",
             requestId = dto.requestId,
             Data = new ServerResponseDeviceHistory
             {
