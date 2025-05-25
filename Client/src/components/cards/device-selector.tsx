@@ -69,7 +69,7 @@ export function DeviceSelector({ devices, selectedDevice, onDeviceSelect, isDevi
           </div>
           Device Selection
         </CardTitle>
-        <CardDescription>Select a device to view its sensor data</CardDescription>
+        <CardDescription>Select a device to view its data</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
         {isDevicesLoading ? (
