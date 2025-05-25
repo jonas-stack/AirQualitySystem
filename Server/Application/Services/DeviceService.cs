@@ -28,7 +28,7 @@ public class DeviceService : IDeviceService {
     public async Task<List<DeviceDto>> GetAllDeviceStatus()
     {
         var devices = await _deviceRepository.GetAllDevices();
-        var result = devices.Select(d => _devicesMapper.MapToDto(d)).ToList();
+        var result = devices.Select(d => _devicesMapper.MapToDto(d)).OrderByDescending(d => d.LastSeen).ToList();
         
         return result;
     }

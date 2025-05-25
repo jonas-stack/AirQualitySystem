@@ -14,7 +14,7 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination"
 import { formatTicksToUTC } from "@/lib/time-formatter"
-import { CpuIcon } from "lucide-react"
+import { CpuIcon, Database } from "lucide-react"
 
 interface SensorDataTableProps {
   selectedDevice: DeviceDto | null
@@ -57,15 +57,23 @@ export function SensorDataTable({
     return items
   }
 
-  if (!selectedDevice) {
-    return (
-      <Card className="h-[580px] flex items-center justify-center">
-        <CardContent>
-          <p className="text-muted-foreground">No device selected.</p>
-        </CardContent>
-      </Card>
-    )
-  }
+    if (!selectedDevice) {
+        return (
+        <Card className="h-[580px]">
+            <CardContent className="flex items-center justify-center h-full">
+                <div className="text-center space-y-4">
+                    <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-full flex items-center justify-center mx-auto">
+                        <Database className="w-10 h-10 text-muted-foreground" />
+                    </div>
+                    <div>
+                        <p className="text-lg font-semibold">No device selected</p>
+                        <p className="text-sm text-muted-foreground">Please select a device to view sensor data</p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+        )
+    }
 
   return (
     <Card className="h-[580px] flex flex-col">
@@ -134,8 +142,16 @@ export function SensorDataTable({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                      No sensor data available for this device
+                    <TableCell colSpan={5} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-full flex items-center justify-center">
+                          <Database className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">No Sensor Data</h3>
+                          <p className="text-muted-foreground">No sensor data was found for this device</p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
