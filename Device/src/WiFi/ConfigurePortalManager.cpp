@@ -33,10 +33,11 @@ void ConfigPortalManager::resetSettings() {
     _wifiManager.resetSettings();
 }
 
-void ConfigPortalManager::setConfigTimeout(int seconds) {
-    _wifiManager.setConfigPortalTimeout(seconds);
+void ConfigPortalManager::setConfigPortalBlocking(bool blocking) {
+    _wifiManager.setConfigPortalBlocking(blocking);
 }
 
-void ConfigPortalManager::setConnectTimeout(int seconds) {
-    _wifiManager.setConnectTimeout(seconds);
+void ConfigPortalManager::process() {
+    _wifiManager.process();
 }
+

@@ -41,6 +41,10 @@ const unsigned long interval = 3000;  // 3 seconds between readings
 unsigned long lastMqttPublish = 0;
 const unsigned long mqttInterval = 300000;  // 5 minutes between MQTT publishes
 
+// configportal state status for non-blocking mode
+bool configPortalActive = false;
+unsigned long lastLcdUpdate = 0;
+
 void setup() {
   Serial.begin(115200);
   delay(2000);
@@ -82,12 +86,29 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
-  if (digitalRead(WIFI_RESET_BUTTON_PIN) == LOW) {
-    Serial.println("Button pressed! Resetting WiFi and starting config portal...");
-    customWiFiManager.resetSettings();      // This erases WiFi credentials and restarts
-    // Optionally, you can also call customWiFiManager.startConfigPortal();
-    delay(1000); // Give time for message to print
-}
+  // Check for button press to start config portal
+  if (digitalRead(WIFI_RESET_BUTTON_PIN) == LOW && !configPortalActive) {
+    Serial.println("Button pressed! Starting WiFi config portal...");
+    configPortalActive = true;
+    customWiFiManager.startConfigPortal();
+    // After this, configPortalActive remains true until WiFi connects
+  }
+
+  // If config portal is active, delegate handling to CustomWiFiManager
+  if (configPortalActive) {
+    customWiFiManager.handleConfigPortal();
+
+    // Exit portal mode if WiFi is connected
+    if (customWiFiManager.isConnected()) {
+      configPortalActive = false;
+      displayMessage("WiFi Connected", "Yes");
+      Serial.println("WiFi connected successfully!" + customWiFiManager.isConnected());
+      delay(2000);
+    }
+
+    // Don't run the rest of the loop while in config portal
+    return;
+  }
 
   mqttClient.loop();
   customWiFiManager.loop();

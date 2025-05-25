@@ -17,8 +17,8 @@ public:
     bool startPortal();
     bool autoConnect();
     void resetSettings();
-    void setConfigTimeout(int seconds);
-    void setConnectTimeout(int seconds);
+    void setConfigPortalBlocking(bool blocking);
+    void process();
 };
 
 #endif // CONFIG_PORTAL_MANAGER_H

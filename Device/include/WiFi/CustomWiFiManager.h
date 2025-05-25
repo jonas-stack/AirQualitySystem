@@ -22,6 +22,7 @@ public:
     void startConfigPortal();
     void checkConfigButton();
     void loop();
+    void handleConfigPortal();
 };
 
 #endif // CUSTOM_WIFI_MANAGER_H

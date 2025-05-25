@@ -31,11 +31,8 @@ bool CustomWiFiManager::connect() {
 }
 
 bool CustomWiFiManager::isConnected() {
-    return _connection.isConnected();
-}
-
-void CustomWiFiManager::disconnect() {
-    _connection.disconnect();
+    // Only return true if connected as STA and has a valid SSID
+    return WiFi.status() == WL_CONNECTED && WiFi.SSID().length() > 0;
 }
 
 void CustomWiFiManager::resetSettings() {
@@ -44,26 +41,11 @@ void CustomWiFiManager::resetSettings() {
 }
 
 void CustomWiFiManager::startConfigPortal() {
-    Serial.println("Starting config portal");
-    displayMessage("WiFi Setup Mode", "Connect to AP:");
-    delay(1000);
-    displayMessage(_portalManager.getApName(), _portalManager.getApPassword());
-    delay(2000);
-    displayMessage("Enter in URL", "http://192.168.4.1");
-    delay(3000);
-
-    if (!_portalManager.startPortal()) {
-        Serial.println("Config portal failed");
-        displayMessage("WiFi Setup", "Failed/Timeout");
-        delay(2000);
-        ESP.restart();
-    } else {
-        Serial.println("WiFi connected via portal");
-        displayMessage("WiFi Connected", "Via Portal");
-        delay(1000);
-        displayMessage("IP:", _connection.getIp().c_str());
-        delay(1000);
-    }
+    WiFi.disconnect(true); 
+    delay(100);
+    // Start portal in non-blocking mode
+    _portalManager.setConfigPortalBlocking(false);
+    _portalManager.startPortal(); // Don't check the return value here!
 }
 
 void CustomWiFiManager::checkConfigButton() {
@@ -83,6 +65,33 @@ void CustomWiFiManager::checkConfigButton() {
         }
     }
     lastButtonState = buttonState;
+}
+
+// update the LCD display with a message in a non-blocking way repeating every 2 seconds
+void CustomWiFiManager::handleConfigPortal() {
+    static unsigned long lastLcdUpdate = 0;
+    static int lcdStep = 0;
+    unsigned long currentMillis = millis();
+
+    // Update LCD every 2 seconds with portal info, non-blocking
+    if (currentMillis - lastLcdUpdate > 2000) {
+        switch (lcdStep) {
+            case 0:
+                displayMessage("WiFi Setup", ("AP: " + String(_portalManager.getApName())).c_str());
+                break;
+            case 1:
+                displayMessage("Password:", _portalManager.getApPassword());
+                break;
+            case 2:
+                displayMessage("Go to:", "192.168.4.1");
+                break;
+        }
+        lcdStep = (lcdStep + 1) % 3;
+        lastLcdUpdate = currentMillis;
+    }
+
+    // Call process frequently!
+    _portalManager.process();
 }
 
 void CustomWiFiManager::loop() {
