@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Mappers;
+using Application.Mappers;
 using Application.Models.Dtos;
 using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
@@ -39,7 +40,7 @@ public class SensorDataRepository : ISensorDataRepository
         }
     }
 
-    public async Task<PagedResult<SensorData>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50)
+    public async Task<PagedResult<SensorDataDto>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50)
     {
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
@@ -48,10 +49,10 @@ public class SensorDataRepository : ISensorDataRepository
             .Where(sd => sd.DeviceId == guid)
             .OrderByDescending(sd => sd.Timestamp);
 
-        return await PaginationHelper.PaginateAsync(
+        return await PaginationHelper.PaginateAsync<SensorData, SensorDataDto>(
             query,
             pageNumber,
             pageSize,
-            q => q);
+            _sensorDataMapper.MapToDto);
     }
 }

@@ -43,14 +43,6 @@ public class SensorDataService(
         // den her thrower hvis fejl, så ingen grund til null checks
         await deviceRepository.GetDevice(deviceId);
 
-        var pageedSensorData = await sensorDataRepository.GetSensorDataForDeviceAsync(deviceId, pageNumber, pageSize);
-        
-        return new PagedResult<SensorDataDto>
-        {
-            TotalCount = pageedSensorData.TotalCount,
-            PageNumber = pageedSensorData.PageNumber,
-            PageSize = pageedSensorData.PageSize,
-            Items = pageedSensorData.Items.Select(sensorDataMapper.MapToDto).ToList()
-        };   
+        return await sensorDataRepository.GetSensorDataForDeviceAsync(deviceId, pageNumber, pageSize);
     }
 }

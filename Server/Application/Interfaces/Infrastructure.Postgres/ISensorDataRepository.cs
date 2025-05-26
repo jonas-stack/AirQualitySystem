@@ -9,5 +9,5 @@ public interface ISensorDataRepository
     
     Task SaveSensorDataAsync(SensorData sensorData);
 
-    Task<PagedResult<SensorData>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50);
+    Task<PagedResult<SensorDataDto>> GetSensorDataForDeviceAsync(string deviceId, int pageNumber = 1, int pageSize = 50);
 }
