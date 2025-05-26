@@ -1,5 +1,5 @@
 import { DashboardStats } from "@/types/dashboard";
-import { DeviceDto } from "@/generated-client";
+import { DeviceDto, DeviceStatsDto } from "@/generated-client";
 import { StatisticsCards } from "@/components/cards/statistics-cards";
 import { DeviceSelector } from "@/components/cards/device-selector";
 import { SensorDataTable } from "@/components/table/sensor-data-table";
@@ -12,9 +12,15 @@ import { DeviceConnectionHistoryTable } from "@/components/table/device-connecti
 
 export default function DevicePage() {
     const { readyState } = useWsClient();
-    const { getDevicesArray, iseDevicesLoading } = useDeviceData();
+    const { getDevicesArray, iseDevicesLoading, deviceStats, isDeviceStatsLoading } = useDeviceData();
     const { requestSensorDataForDevice, sensorData } = useDeviceSensorData();
     const { requestDeviceConnectionHistoryForDevice, deviceConnectionHistory } = useDeviceConnectionHistory();
+
+    const defaultDeviceStats: DeviceStatsDto = {
+      allTimeMeasurements: 0,
+      connectedDevices: 0,
+      disconnectionsLast24Hours: 0,
+    };
 
     const devices = getDevicesArray();
 
@@ -53,7 +59,7 @@ export default function DevicePage() {
 
     return (
     <div className="space-y-4 py-2">
-      <StatisticsCards stats={stats} connectedDevicesCount={connectedDevicesCount} />
+      <StatisticsCards stats={deviceStats ?? defaultDeviceStats} />
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-4">

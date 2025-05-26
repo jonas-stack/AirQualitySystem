@@ -1,13 +1,16 @@
-import { ClientRequestDeviceList, ClientRequestSensorData, DeviceDto, PagedResultOfSensorDataDto, SensorDataDto, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { ClientRequestDeviceList, ClientRequestDeviceStats, ClientRequestSensorData, DeviceDto, DeviceStatsDto, PagedResultOfSensorDataDto, SensorDataDto, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
 
 export function useDeviceData() {
+    const { sendRequest, onMessage, readyState } = useWsClient()
+
     const [devices, setDevices] = useState<Record<string, DeviceDto>>({});
     const [iseDevicesLoading, setIsDevicesLoading] = useState(true)
 
-    const { sendRequest, onMessage, readyState } = useWsClient()
+    const [deviceStats, setDeviceStats] = useState<DeviceStatsDto>();
+    const [isDeviceStatsLoading, setIsDeviceStatsLoading] = useState(true)
 
     const getDevicesArray = (): DeviceDto[] => Object.values(devices);
 
@@ -56,11 +59,43 @@ export function useDeviceData() {
         });
     };
 
+    const requestDeviceStats = async () => {
+        setIsDeviceStatsLoading(true)
+
+        const requestStats: ClientRequestDeviceStats = {
+            eventType: "ClientRequestDeviceStats"
+        }
+
+        try {
+            const statsResult: WebsocketMessage_1 = await sendRequest<ClientRequestDeviceStats, WebsocketMessage_1>(
+                requestStats,
+                "ServerResponseDeviceStats",
+            )
+
+            const rawStats = statsResult?.Data?.Stats ?? [];
+
+            const parsedStats: DeviceStatsDto = {
+                allTimeMeasurements: rawStats?.AllTimeMeasurements ?? 0,
+                connectedDevices: rawStats?.ConnectedDevices ?? 0,
+                disconnectionsLast24Hours: rawStats?.DisconnectionsLast24Hours ?? 0,
+            };
+
+            setDeviceStats(parsedStats);
+        } catch (error) {
+            toast.error("Device stats fetching failed", {
+                description: "An error occured while trying to fetch device stats.",
+            });
+    } finally {
+        setIsDeviceStatsLoading(false)
+        }
+    }
+
     // lad os bare køre requestdevices på mount
     useEffect(() => {
         if (readyState !== 1) return;
 
         requestDevices();
+        requestDeviceStats();
         const cleanupDeviceConnectionUpdates = registerDeviceConnectionUpdates();
 
         // cleanup op på unmount eller readyState
@@ -73,6 +108,8 @@ export function useDeviceData() {
     requestDevices,
     getDevicesArray,
     devices,
+    deviceStats,
+    isDeviceStatsLoading,
     iseDevicesLoading,
   };
 }

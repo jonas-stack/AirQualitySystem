@@ -98,4 +98,9 @@ public class DeviceService : IDeviceService {
             Items = items
         };
     }
+
+    public DeviceStatsDto GetDeviceStats()
+    {
+        return _deviceRepository.GetStats();
+    }
 }

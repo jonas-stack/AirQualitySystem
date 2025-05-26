@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DeviceStatsDto } from "@/generated-client"
 import { DashboardStats } from "@/types/dashboard"
 import { Activity, CableIcon, CalendarRangeIcon, FileWarning, InfoIcon, MessageCircleWarningIcon, Thermometer, WifiOff, XCircleIcon, XIcon } from "lucide-react"
 
 interface StatisticsCardsProps {
-  stats: DashboardStats
-  connectedDevicesCount: number
+  stats: DeviceStatsDto
 }
 
-export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCardsProps) {
+export function StatisticsCards({ stats }: StatisticsCardsProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       <Card className="overflow-hidden relative">
@@ -21,8 +21,7 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.totalMeasurements.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">+2,847 from last month</p>
+          <div className="text-2xl font-bold">{stats.allTimeMeasurements?.toLocaleString()}</div>
         </CardContent>
       </Card>
 
@@ -37,8 +36,7 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
           <Thermometer className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.totalDevices}</div>
-          <p className="text-xs text-muted-foreground">{connectedDevicesCount} currently online</p>
+          <div className="text-2xl font-bold">{stats.connectedDevices}</div>
         </CardContent>
       </Card>
 
@@ -53,8 +51,7 @@ export function StatisticsCards({ stats, connectedDevicesCount }: StatisticsCard
           <WifiOff className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.disconnectionsLast24h}</div>
-          <p className="text-xs text-muted-foreground">-2 from yesterday</p>
+          <div className="text-2xl font-bold">{stats.disconnectionsLast24Hours}</div>
         </CardContent>
       </Card>
     </div>

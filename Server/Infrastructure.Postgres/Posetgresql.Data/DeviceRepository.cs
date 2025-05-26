@@ -68,6 +68,21 @@ public class DeviceRepository : IDeviceRepository
         };
     }
 
+    public DeviceStatsDto GetStats()
+    {
+        var allTimeMeasurements = _dbContext.SensorData.Count();
+        var connectedDevices = _dbContext.Devices.Count(d => d.IsConnected);
+        
+        var last24Hours = DateTime.Now.AddHours(-24);
+        var disconnectionsLast24Hours = _dbContext.DeviceConnectionHistory.Count(d => d.LastSeen < last24Hours && !d.IsConnected);
+
+        return new DeviceStatsDto
+        {
+            AllTimeMeasurements = allTimeMeasurements,
+            ConnectedDevices = connectedDevices,
+            DisconnectionsLast24Hours = disconnectionsLast24Hours
+        };
+    }
 
 
     public async Task SaveDevicesAsync(Devices devices)

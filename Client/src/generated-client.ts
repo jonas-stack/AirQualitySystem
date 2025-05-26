@@ -350,6 +350,19 @@ export interface DeviceDto {
     IsConnected?: boolean;
 }
 
+export interface ClientRequestDeviceStats extends BaseDto {
+}
+
+export interface ServerResponseDeviceStats extends BaseDto {
+    stats?: DeviceStatsDto;
+}
+
+export interface DeviceStatsDto {
+    allTimeMeasurements?: number;
+    connectedDevices?: number;
+    disconnectionsLast24Hours?: number;
+}
+
 export interface ClientRequestSensorData extends BaseDto {
     sensorId?: string;
     pageNumber?: number;
@@ -405,6 +418,8 @@ export enum StringConstants {
     ServerResponseDeviceHistory = "ServerResponseDeviceHistory",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
+    ClientRequestDeviceStats = "ClientRequestDeviceStats",
+    ServerResponseDeviceStats = "ServerResponseDeviceStats",
     ClientRequestSensorData = "ClientRequestSensorData",
     ServerResponseSensorData = "ServerResponseSensorData",
     ExampleClientDto = "ExampleClientDto",

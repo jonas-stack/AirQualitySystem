@@ -11,4 +11,5 @@ public interface IDeviceService
     Task<DeviceDto> GetDeviceStatus();
     Task BroadcastData(DeviceDto entity);
     Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceHistory(string deviceId, int pageNumber, int pageSize);
+    DeviceStatsDto GetDeviceStats();
 }

@@ -43,7 +43,7 @@ export default function AirQualityTemperatureCard() {
   const newest = chartData.at(-1)
 
   const ChartLoading = () => (
-    <div className="absolute inset-0 flex items-center justify-center bg-card/50 rounded-md z-10">
+    <div className="flex items-center justify-center bg-card/50 rounded-md z-10">
       <div className="flex flex-col items-center gap-2">
         <Spinner size="md" className="text-primary" />
         <p className="text-xs text-muted-foreground">Loading data...</p>

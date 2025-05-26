@@ -1,5 +1,4 @@
-import {Route, Routes} from "react-router";
-import LoginPage from "@/pages/public/LoginPage";
+import {Navigate, Route, Routes} from "react-router";
 import { AuthenticatedLayout } from "@/components/layouts/AuthenticatedLayout";
 import DashboardPage from "@/pages/auth/DashboardPage";
 import DataPage from "@/pages/auth/DataPage";
@@ -14,9 +13,9 @@ export default function ApplicationRoutes() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Toaster />
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-
         <Route element={<AuthenticatedLayout />}>
+          <Route path="/" element={<Navigate to={ROUTE.DASHBOARD.INDEX} replace />} />
+
           <Route path={ROUTE.DASHBOARD.INDEX} element={<DashboardPage />} />
           <Route path={ROUTE.DASHBOARD.DATA} element={<DataPage />} />
           <Route path={ROUTE.DASHBOARD.AI} element={<AIPage />} />
