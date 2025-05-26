@@ -4,11 +4,13 @@
 #include <Arduino.h>
 #include "ConnectionManager.h"
 #include "TimeManager.h"
+#include "JsonSerializer.h"
 
 class DeviceStatusManager {
 private:
     ConnectionManager& _connectionManager;
     TimeManager& _timeManager;
+    JsonSerializer& _jsonSerializer;
     const char* _deviceId;
     
     unsigned long _lastStatusUpdate;
@@ -19,6 +21,7 @@ private:
 public:
     DeviceStatusManager(ConnectionManager& connectionManager, 
                         TimeManager& timeManager,
+                        JsonSerializer& jsonSerializer,
                         const char* deviceId,
                         const char* statusTopic = "airquality/status",
                         unsigned long updateInterval = 5 * 60 * 1000);

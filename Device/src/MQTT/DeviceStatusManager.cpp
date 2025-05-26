@@ -1,12 +1,14 @@
 #include "DeviceStatusManager.h"
-#include <ArduinoJson.h>
+#include "JsonSerializer.h"
 
 DeviceStatusManager::DeviceStatusManager(ConnectionManager& connectionManager, 
                                        TimeManager& timeManager,
+                                       JsonSerializer& jsonSerializer,
                                        const char* deviceId,
                                        const char* statusTopic,
                                        unsigned long updateInterval) :
     _connectionManager(connectionManager),
+    _jsonSerializer(jsonSerializer),
     _timeManager(timeManager),
     _deviceId(deviceId),
     _lastStatusUpdate(0),
@@ -15,42 +17,19 @@ DeviceStatusManager::DeviceStatusManager(ConnectionManager& connectionManager,
 }
 
 String DeviceStatusManager::prepareOfflineMessage() {
-    // Get current time as the last seen time
     String timeString = _timeManager.getCurrentTime();
-    
-    // Store connection time if not set
     if (_connectionTime.isEmpty()) {
         _connectionTime = timeString;
     }
-    
-    // Create offline message with both timestamps
-    DynamicJsonDocument doc(256);
-    doc["DeviceName"] = _deviceId;
-    doc["IsConnected"] = false;
-    doc["LastSeen"] = timeString;
-    
-    String message;
-    serializeJson(doc, message);
-    return message;
+    // Use JsonSerializer for status message
+    return _jsonSerializer.serializeStatusMessage("offline", _deviceId);
 }
 
 bool DeviceStatusManager::publishOnlineStatus() {
-    // Get current time
     String timeString = _timeManager.getCurrentTime();
-    
-    // Update connection time
     _connectionTime = timeString;
-    
-    // Create online status message
-    DynamicJsonDocument doc(256);
-    doc["DeviceName"] = _deviceId;
-    doc["IsConnected"] = true;
-    doc["LastSeen"] = timeString;
-    
-    String message;
-    serializeJson(doc, message);
-    
-    // Publish online status
+    // Use JsonSerializer for status message
+    String message = _jsonSerializer.serializeStatusMessage("online", _deviceId);
     return _connectionManager.publish(_statusTopic, message.c_str(), true);
 }
 
@@ -58,20 +37,8 @@ bool DeviceStatusManager::updateDeviceStatus() {
     if (!_connectionManager.isConnected()) {
         return false;
     }
-    
-    // Get current time for LastSeen
-    String timeString = _timeManager.getCurrentTime();
-    
-    // Create status document
-    DynamicJsonDocument doc(256);
-    doc["DeviceName"] = _deviceId;
-    doc["IsConnected"] = true;
-    doc["LastSeen"] = timeString;
-    
-    String message;
-    serializeJson(doc, message);
-    
-    // Update status
+    // Use JsonSerializer for status message
+    String message = _jsonSerializer.serializeStatusMessage("online", _deviceId);
     return _connectionManager.publish(_statusTopic, message.c_str(), true);
 }
 
