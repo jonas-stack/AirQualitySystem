@@ -32,7 +32,6 @@ public:
                       int port,
                       const char* username,
                       const char* password);
-    ~ConnectionManager();
     
     bool setup();
     void loop();
