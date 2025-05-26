@@ -1,4 +1,4 @@
-import { ClientRequestDeviceHistory, ClientRequestDeviceList, ClientRequestSensorData, DeviceConnectionHistoryDto, DeviceDto, PagedResultOfDeviceConnectionHistoryDto, PagedResultOfSensorDataDto, SensorDataDto, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { ClientRequestDeviceHistory, ClientRequestDeviceList, ClientRequestSensorData, DeviceConnectionHistoryDto, DeviceDto, PagedResultOfDeviceConnectionHistoryDto, PagedResultOfSensorDataDto, SensorDataDto, ServerResponseDeviceHistory, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
@@ -13,27 +13,27 @@ export function useDeviceConnectionHistory() {
         setIsDeviceConnectionHistoryLoading(true)
 
         const requestDevices: ClientRequestDeviceHistory = {
-            eventType: "ClientRequestDeviceHistory",
+            eventType: WebsocketEvents.ClientRequestDeviceHistory,
             deviceId: deviceId,
             pageNumber: pageNumber,
             pageSize: pageSize
         }
 
         try {
-            const deviceResult: WebsocketMessage_1 = await sendRequest<ClientRequestDeviceHistory, WebsocketMessage_1>(
+            const deviceResult: ServerResponseDeviceHistory = await sendRequest<ClientRequestDeviceHistory, ServerResponseDeviceHistory>(
                 requestDevices,
-                "ServerResponseDeviceHistory",
+                WebsocketEvents.ServerResponseDeviceHistory,
             )
 
-            const rawConnectionHistoryData = deviceResult?.Data?.ConnectionData;
+            const rawConnectionHistoryData = deviceResult?.connectionData;
 
             if (rawConnectionHistoryData) {
                 const mappedSensorData: PagedResultOfDeviceConnectionHistoryDto = {
-                    items: rawConnectionHistoryData.Items ?? [],
-                    pageNumber: rawConnectionHistoryData.PageNumber,
-                    pageSize: rawConnectionHistoryData.PageSize,
-                    totalCount: rawConnectionHistoryData.TotalCount,
-                    totalPages: rawConnectionHistoryData.TotalPages,
+                    items: rawConnectionHistoryData.items ?? [],
+                    pageNumber: rawConnectionHistoryData.pageNumber,
+                    pageSize: rawConnectionHistoryData.pageSize,
+                    totalCount: rawConnectionHistoryData.totalCount,
+                    totalPages: rawConnectionHistoryData.totalPages,
                 };
 
                 setDeviceConnectionHistory(mappedSensorData);

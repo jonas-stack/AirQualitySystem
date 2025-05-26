@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Dtos;
@@ -15,35 +16,35 @@ namespace Api.Websocket.Handlers;
 // { "eventType": "ClientRequestDeviceList" }
 public class ClientRequestDeviceHistory : BaseDto
 {
+    [JsonPropertyName("deviceId")]
     public required string DeviceId { get; set; }
     
     // sæt default values
+    [JsonPropertyName("pageNumber")]
     public int PageNumber { get; set; } = 1;
+    
+    [JsonPropertyName("pageSize")]
     public int PageSize { get; set; } = 50;
 }
 
 // serveren sender dette tilbage til klienten
 public class ServerResponseDeviceHistory : BaseDto
 {
+    [JsonPropertyName("connectionData")]
     public required PagedResult<DeviceConnectionHistoryDto> ConnectionData { get; set; }
 }
 
 public class DeviceConnectionHistoryHandler(IDeviceService deviceService) : BaseEventHandler<ClientRequestDeviceHistory>
 {
-    
     public override async Task Handle(ClientRequestDeviceHistory dto, IWebSocketConnection socket)
     {
         var historyData = await deviceService.GetDeviceHistory(dto.DeviceId, dto.PageNumber, dto.PageSize);
         
-        var response = new WebsocketMessage<ServerResponseDeviceHistory>
+        var response = new ServerResponseDeviceHistory
         {
-            Topic = WebsocketTopics.Device,
-            eventType = "ServerResponseDeviceHistory",
+            eventType = nameof(ServerResponseDeviceHistory),
             requestId = dto.requestId,
-            Data = new ServerResponseDeviceHistory
-            {
-                ConnectionData = historyData
-            }
+            ConnectionData = historyData
         };
         
         await socket.Send(JsonSerializer.Serialize(response));
