@@ -14,12 +14,14 @@ public class DeviceRepository : IDeviceRepository
 {
     private readonly MyDbContext _dbContext;
     private readonly ILogger<SensorDataRepository> _logger;
+    private readonly IDeviceConnectionHistoryMapper _deviceConnectionHistoryMapper;
     private readonly IDevicesMapper _devicesMapper;
     
-    public DeviceRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger, IDevicesMapper devicesMapper)
+    public DeviceRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger, IDeviceConnectionHistoryMapper deviceConnectionHistoryMapper, IDevicesMapper devicesMapper)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _deviceConnectionHistoryMapper = deviceConnectionHistoryMapper;
         _devicesMapper = devicesMapper;
     }
 
@@ -35,7 +37,7 @@ public class DeviceRepository : IDeviceRepository
         return _devicesMapper.MapToDto(result);
     }
 
-    public async Task<PagedResult<DeviceConnectionHistory>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize)
+    public async Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize)
     {
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
@@ -63,12 +65,12 @@ public class DeviceRepository : IDeviceRepository
             .Take(pageSize)
             .ToList();
 
-        return new PagedResult<DeviceConnectionHistory>
+        return new PagedResult<DeviceConnectionHistoryDto>
         {
             TotalCount = filtered.Count,
             PageNumber = pageNumber,
             PageSize = pageSize,
-            Items = paged
+            Items = paged.Select(_deviceConnectionHistoryMapper.MapToDto).ToList()
         };
     }
 

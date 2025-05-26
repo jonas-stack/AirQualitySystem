@@ -63,12 +63,13 @@ public class DeviceService : IDeviceService {
         var pagedEntities = await _deviceRepository.GetDeviceConnectionHistoryAsync(deviceId, pageNumber, pageSize);
         var items = new List<DeviceConnectionHistoryDto>();
 
-        DeviceConnectionHistory? nextEvent = null;
+        DeviceConnectionHistoryDto? nextEvent = null;
 
         foreach (var entry in pagedEntities.Items)
         {
-            var unixTimestamp = ((DateTimeOffset)entry.LastSeen).ToUnixTimeSeconds();
-        
+            var dateTime = new DateTime(entry.LastSeen);
+            var unixTimestamp = ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
+            
             var dto = new DeviceConnectionHistoryDto
             {
                 Id = entry.Id,
@@ -76,7 +77,7 @@ public class DeviceService : IDeviceService {
                 IsConnected = entry.IsConnected,
                 LastSeen = unixTimestamp,
                 Duration = nextEvent != null
-                    ? (long)(nextEvent.LastSeen - entry.LastSeen).TotalSeconds
+                    ? ((DateTimeOffset)new DateTime(nextEvent.LastSeen)).ToUnixTimeSeconds() - unixTimestamp
                     : null
             };
 
