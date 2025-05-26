@@ -15,22 +15,17 @@ public class DeviceService : IDeviceService {
     private readonly IDeviceRepository _deviceRepository;
     private readonly IConnectionManager _connectionManager;
     private readonly IDevicesMapper _devicesMapper;
-    private readonly IDeviceConnectionHistoryMapper _deviceConnectionHistoryMapper;
     
-    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper, IDeviceConnectionHistoryMapper deviceConnectionHistoryMapper)
+    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper)
     {
         _deviceRepository = deviceRepository;
         _connectionManager = connectionManager;
         _devicesMapper = devicesMapper;
-        _deviceConnectionHistoryMapper = deviceConnectionHistoryMapper;
     }
     
     public async Task<List<DeviceDto>> GetAllDeviceStatus()
     {
-        var devices = await _deviceRepository.GetAllDevices();
-        var result = devices.Select(d => _devicesMapper.MapToDto(d)).OrderByDescending(d => d.LastSeen).ToList();
-        
-        return result;
+        return await _deviceRepository.GetAllDevices();
     }
 
     public async Task BroadcastDeviceStatus(DeviceDto dto)
@@ -46,8 +41,7 @@ public class DeviceService : IDeviceService {
 
     public async Task<DeviceDto> GetDeviceStatus()
     {
-        var result = await _deviceRepository.GetDeviceStatus();
-        return _devicesMapper.MapToDto(result);
+        return await _deviceRepository.GetDeviceStatus();
     }
 
     public async Task BroadcastData(DeviceDto entity)

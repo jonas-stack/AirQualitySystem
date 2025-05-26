@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces.Infrastructure.Postgres;
+using Application.Interfaces.Mappers;
 using Application.Models.Dtos;
+using Application.Models.Dtos.MQTT;
 using Core.Domain.Entities;
 using Infrastructure.Postgres.Helpers;
 using Infrastructure.Postgres.Scaffolding;
@@ -12,14 +14,16 @@ public class DeviceRepository : IDeviceRepository
 {
     private readonly MyDbContext _dbContext;
     private readonly ILogger<SensorDataRepository> _logger;
+    private readonly IDevicesMapper _devicesMapper;
     
-    public DeviceRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger)
+    public DeviceRepository(MyDbContext dbContext, ILogger<SensorDataRepository> logger, IDevicesMapper devicesMapper)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _devicesMapper = devicesMapper;
     }
 
-    public async Task<Devices> GetDevice(string deviceId)
+    public async Task<DeviceDto> GetDevice(string deviceId)
     {
         if (!Guid.TryParse(deviceId, out var guid))
             throw new ArgumentException($"'{deviceId}' is not a valid GUID");
@@ -28,7 +32,7 @@ public class DeviceRepository : IDeviceRepository
         if (result == null)
             throw new ArgumentException($"'{deviceId}' does not exist");
 
-        return result;
+        return _devicesMapper.MapToDto(result);
     }
 
     public async Task<PagedResult<DeviceConnectionHistory>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize)
@@ -166,11 +170,12 @@ public class DeviceRepository : IDeviceRepository
         }
     }
     
-    public async Task<List<Devices>> GetAllDevices()
+    public async Task<List<DeviceDto>> GetAllDevices()
     {
         try
         {
-            return await _dbContext.Devices.ToListAsync();
+            var result = await _dbContext.Devices.OrderByDescending(d => d.LastSeen).ToListAsync();
+            return result.Select(d => _devicesMapper.MapToDto(d)).ToList();
         }
         catch (Exception ex)
         {
@@ -179,11 +184,12 @@ public class DeviceRepository : IDeviceRepository
         }
     }
 
-    public async Task<Devices> GetDeviceStatus()
+    public async Task<DeviceDto> GetDeviceStatus()
     {
         try
         {
-            return await _dbContext.Devices.FirstOrDefaultAsync() ?? throw new InvalidOperationException("Device not found");
+            var result = await _dbContext.Devices.FirstOrDefaultAsync() ?? throw new NullReferenceException("Device not found");
+            return _devicesMapper.MapToDto(result);
         }
         catch (Exception ex)
         {

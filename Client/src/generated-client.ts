@@ -273,8 +273,6 @@ export interface NotifyMessageDto {
 export interface WebsocketMessage_1 extends BaseDto {
     topic?: string;
     data?: T;
-    requestId?: string;
-    eventType?: string;
 }
 
 export interface T {

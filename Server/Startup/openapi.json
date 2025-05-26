@@ -244,12 +244,6 @@
               },
               "data": {
                 "$ref": "#/components/schemas/T"
-              },
-              "requestId": {
-                "type": "string"
-              },
-              "eventType": {
-                "type": "string"
               }
             }
           }
