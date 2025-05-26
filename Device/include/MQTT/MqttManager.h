@@ -8,17 +8,17 @@
 
 class MqttManager {
 public:
-    MqttManager(CustomWiFiManager* customWiFiManager, 
-              TimeManager* timeManager,
-              const char* server,
-              int port,
-              const char* username,
-              const char* password,
-              const char* deviceId,
-              const char* dataTopic,
-              const char* statusTopic);
-    
-    ~MqttManager();
+    MqttManager(CustomWiFiManager& customWiFiManager,
+            TimeManager& timeManager,
+            PubSubClient& mqttManager,
+            WiFiClientSecure& wifiClient,
+            const char* server,
+            int port,
+            const char* username,
+            const char* password,
+            const char* deviceId,
+            const char* dataTopic,
+            const char* statusTopic);
     
     bool setup();
     void loop();
@@ -26,10 +26,10 @@ public:
     bool clearRetainedMessage(const char* topic);
     
 private:
-    CustomWiFiManager* _customWiFiManager;
-    TimeManager* _timeManager;
-    PubSubClient* _mqttManager;
-    WiFiClientSecure _wifiClient;
+    CustomWiFiManager& _customWiFiManager;
+    TimeManager& _timeManager;
+    PubSubClient& _mqttManager;
+    WiFiClientSecure& _wifiClient;
     
     const char* _server;
     int _port;

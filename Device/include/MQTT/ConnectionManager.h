@@ -12,9 +12,9 @@ typedef void (*MessageCallback)(char*, byte*, unsigned int);
 
 class ConnectionManager {
 private:
-    CustomWiFiManager* _customWiFiManager;
-    WiFiClientSecure _espClient;
-    PubSubClient* _client;
+    CustomWiFiManager& _customWiFiManager;
+    WiFiClientSecure& _espClient;
+    PubSubClient& _client;
     
     const char* _server;
     int _port;
@@ -24,11 +24,14 @@ private:
     bool _configured;
     
 public:
-    ConnectionManager(CustomWiFiManager* customWiFiManager, 
-                     const char* server, 
-                     int port,
-                     const char* username,
-                     const char* password);
+    public:
+    ConnectionManager(CustomWiFiManager& customWiFiManager,
+                      PubSubClient& client,
+                      WiFiClientSecure& espClient,
+                      const char* server,
+                      int port,
+                      const char* username,
+                      const char* password);
     ~ConnectionManager();
     
     bool setup();

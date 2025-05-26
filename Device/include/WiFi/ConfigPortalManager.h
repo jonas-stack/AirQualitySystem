@@ -5,12 +5,12 @@
 
 class ConfigPortalManager {
 private:
-    WiFiManager _wifiManager;
+    WiFiManager& _wifiManager;
     const char* _apName;
     const char* _apPassword;
     
 public:
-    ConfigPortalManager(const char* apName, const char* apPassword);
+    ConfigPortalManager(WiFiManager& _wifiManager, const char* apName, const char* apPassword);
     
     const char* getApName() const { return _apName; }
     const char* getApPassword() const { return _apPassword; }

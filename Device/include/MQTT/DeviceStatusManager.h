@@ -7,8 +7,8 @@
 
 class DeviceStatusManager {
 private:
-    ConnectionManager* _connectionManager;
-    TimeManager* _timeManager;
+    ConnectionManager& _connectionManager;
+    TimeManager& _timeManager;
     const char* _deviceId;
     
     unsigned long _lastStatusUpdate;
@@ -17,8 +17,8 @@ private:
     const char* _statusTopic;
     
 public:
-    DeviceStatusManager(ConnectionManager* connectionManager, 
-                        TimeManager* timeManager,
+    DeviceStatusManager(ConnectionManager& connectionManager, 
+                        TimeManager& timeManager,
                         const char* deviceId,
                         const char* statusTopic = "airquality/status",
                         unsigned long updateInterval = 5 * 60 * 1000);

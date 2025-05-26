@@ -18,12 +18,16 @@ const char* MQTT_STATUS_TOPIC = "airquality/status";
 
 // Constructors for classes
 CustomWiFiManager customWiFiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_AP_NAME, WIFI_AP_PASSWORD, WIFI_RESET_BUTTON_PIN);
+WiFiClientSecure wifiClient;  
+PubSubClient pubSubClient(wifiClient);
 
 TimeManager timeManager;
 
 MqttManager mqttClient(
-    &customWiFiManager,
-    &timeManager,
+    customWiFiManager,  
+    timeManager,        
+    pubSubClient,       
+    wifiClient,         
     MQTT_SERVER,
     MQTT_PORT,
     MQTT_USERNAME,

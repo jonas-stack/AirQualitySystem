@@ -1,8 +1,8 @@
 #include "DeviceStatusManager.h"
 #include <ArduinoJson.h>
 
-DeviceStatusManager::DeviceStatusManager(ConnectionManager* connectionManager, 
-                                       TimeManager* timeManager,
+DeviceStatusManager::DeviceStatusManager(ConnectionManager& connectionManager, 
+                                       TimeManager& timeManager,
                                        const char* deviceId,
                                        const char* statusTopic,
                                        unsigned long updateInterval) :
@@ -16,7 +16,7 @@ DeviceStatusManager::DeviceStatusManager(ConnectionManager* connectionManager,
 
 String DeviceStatusManager::prepareOfflineMessage() {
     // Get current time as the last seen time
-    String timeString = _timeManager->getCurrentTime();
+    String timeString = _timeManager.getCurrentTime();
     
     // Store connection time if not set
     if (_connectionTime.isEmpty()) {
@@ -36,7 +36,7 @@ String DeviceStatusManager::prepareOfflineMessage() {
 
 bool DeviceStatusManager::publishOnlineStatus() {
     // Get current time
-    String timeString = _timeManager->getCurrentTime();
+    String timeString = _timeManager.getCurrentTime();
     
     // Update connection time
     _connectionTime = timeString;
@@ -51,16 +51,16 @@ bool DeviceStatusManager::publishOnlineStatus() {
     serializeJson(doc, message);
     
     // Publish online status
-    return _connectionManager->publish(_statusTopic, message.c_str(), true);
+    return _connectionManager.publish(_statusTopic, message.c_str(), true);
 }
 
 bool DeviceStatusManager::updateDeviceStatus() {
-    if (!_connectionManager->isConnected()) {
+    if (!_connectionManager.isConnected()) {
         return false;
     }
     
     // Get current time for LastSeen
-    String timeString = _timeManager->getCurrentTime();
+    String timeString = _timeManager.getCurrentTime();
     
     // Create status document
     DynamicJsonDocument doc(256);
@@ -72,11 +72,11 @@ bool DeviceStatusManager::updateDeviceStatus() {
     serializeJson(doc, message);
     
     // Update status
-    return _connectionManager->publish(_statusTopic, message.c_str(), true);
+    return _connectionManager.publish(_statusTopic, message.c_str(), true);
 }
 
 void DeviceStatusManager::checkStatusUpdate() {
-    if (!_connectionManager->isConnected()) {
+    if (!_connectionManager.isConnected()) {
         return;
     }
     
@@ -92,9 +92,9 @@ void DeviceStatusManager::resetConnectionTime() {
 }
 
 void DeviceStatusManager::updateConnectionTime() {
-    _connectionTime = _timeManager->getCurrentTime();
+    _connectionTime = _timeManager.getCurrentTime();
 }
 
 bool DeviceStatusManager::clearRetainedStatus() {
-    return _connectionManager->publish(_statusTopic, "", true);
+    return _connectionManager.publish(_statusTopic, "", true);
 }

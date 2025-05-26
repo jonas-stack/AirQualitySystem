@@ -19,11 +19,9 @@ static float voltage = 0;
 bool setupMQ135Sensor() {
     Serial.println("Initializing MQ135 sensor...");
 
-    // With this more robust approach:
+    
     pinMode(Pin, INPUT);
     int testValue = 0;
-    
-    // Use the MQ135 library's own methods instead of direct analogRead
     MQ135.init(); 
     MQ135.update();
     testValue = MQ135.getVoltage() > 0 ? 1 : 0;
@@ -40,7 +38,8 @@ bool setupMQ135Sensor() {
     
     MQ135.init();
     
-    // Important calibration step
+    // Importanat calibration step for MQ135 sensor
+    // This will calculate the R0 value based on clean air ratio
     Serial.print("Calibrating MQ135 sensor");
     float calcR0 = 0;
     for(int i = 1; i<=10; i++) {
@@ -56,7 +55,6 @@ bool setupMQ135Sensor() {
     Serial.println(calcR0/10);
     Serial.println("MQ135 sensor initialized successfully for CO2 detection.");
     
-    // Update global variables with initial values
     updateSensorValues();
     
     return true;
