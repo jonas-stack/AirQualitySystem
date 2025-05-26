@@ -15,16 +15,10 @@ namespace Api.Websocket.Handlers;
 public class ClientRequestDeviceList : BaseDto { }
 
 // serveren sender dette tilbage til klienten
-public class ServerResponseList
+public class ServerResponseDeviceList : BaseDto
 {
-    public required List<DeviceDto> DeviceList { get; set; }
+    public required List<DeviceDto> deviceList { get; set; }
 }
-
-/*
-public class ExampleServerResponse : BaseDto
-{
-    public string SomethingTheServerSends { get; set; }
-}*/
 
 public class GetAllDevicesHandler : BaseEventHandler<ClientRequestDeviceList>
 {
@@ -39,15 +33,11 @@ public class GetAllDevicesHandler : BaseEventHandler<ClientRequestDeviceList>
     {
         var result = await _deviceService.GetAllDeviceStatus();
         
-        var response = new WebsocketMessage<ServerResponseList>
+        var response = new ServerResponseDeviceList
         {
-            Topic = WebsocketTopics.Device,
-            eventType = WebsocketEvents.ServerResponseDeviceList,
+            eventType = nameof(ServerResponseDeviceList),
             requestId = dto.requestId,
-            Data = new ServerResponseList
-            {
-                DeviceList = result
-            }
+            deviceList = result.ToList()
         };
         
         await socket.Send(JsonSerializer.Serialize(response));

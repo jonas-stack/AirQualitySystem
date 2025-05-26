@@ -709,6 +709,25 @@
           }
         ]
       },
+      "ServerResponseDeviceList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceList": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          }
+        ]
+      },
       "Ping": {
         "allOf": [
           {
@@ -751,6 +770,7 @@
           "ExampleClientDto",
           "ExampleServerResponse",
           "ClientRequestDeviceList",
+          "ServerResponseDeviceList",
           "Ping",
           "Pong"
         ]

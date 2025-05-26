@@ -401,6 +401,10 @@ export interface ExampleServerResponse extends BaseDto {
 export interface ClientRequestDeviceList extends BaseDto {
 }
 
+export interface ServerResponseDeviceList extends BaseDto {
+    deviceList?: DeviceDto[];
+}
+
 export interface Ping extends BaseDto {
 }
 
@@ -425,6 +429,7 @@ export enum StringConstants {
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     ClientRequestDeviceList = "ClientRequestDeviceList",
+    ServerResponseDeviceList = "ServerResponseDeviceList",
     Ping = "Ping",
     Pong = "Pong",
 }

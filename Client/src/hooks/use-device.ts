@@ -1,4 +1,4 @@
-import { ClientRequestDeviceList, ClientRequestDeviceStats, ClientRequestSensorData, DeviceDto, DeviceStatsDto, PagedResultOfSensorDataDto, SensorDataDto, ServerResponseDeviceStats, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { ClientRequestDeviceList, ClientRequestDeviceStats, ClientRequestSensorData, DeviceDto, DeviceStatsDto, PagedResultOfSensorDataDto, SensorDataDto, ServerResponseDeviceList, ServerResponseDeviceStats, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
@@ -22,12 +22,12 @@ export function useDeviceData() {
         }
 
         try {
-            const deviceResult: WebsocketMessage_1 = await sendRequest<ClientRequestDeviceList, WebsocketMessage_1>(
+            const deviceResult: ServerResponseDeviceList = await sendRequest<ClientRequestDeviceList, ServerResponseDeviceList>(
                 requestDevices,
-                WebsocketEvents.ServerResponseDeviceList,
+                "ServerResponseDeviceList",
             )
 
-            const deviceList = deviceResult?.Data?.DeviceList ?? [];
+            const deviceList = deviceResult?.deviceList ?? [];
 
             const deviceMap: Record<string, DeviceDto> = {};
             for (const device of deviceList) {
@@ -72,12 +72,6 @@ export function useDeviceData() {
                 requestStats,
                 "ServerResponseDeviceStats",
             )
-
-            /*
-            const statsResult: WebsocketMessage_1 = await sendRequest<ClientRequestDeviceStats, WebsocketMessage_1>(
-                requestStats,
-                "ServerResponseDeviceStats",
-            )*/
 
             const rawStats = statsResult?.stats ?? {};
 
