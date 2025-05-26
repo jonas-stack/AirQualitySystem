@@ -47,7 +47,7 @@ public class GraphService(IConnectionManager connectionManager, IGraphRepository
 
             foreach (var key in dataKeys)
             {
-                if (item.Values.TryGetValue(key, out var value))
+                if (item.DataPoints.TryGetValue(key, out var value))
                 {
                     dataPoints[key] = Math.Round(value, 2);
                 }
@@ -55,7 +55,7 @@ public class GraphService(IConnectionManager connectionManager, IGraphRepository
 
             return new FlexibleGraphData
             {
-                Time = item.Timestamp,
+                Time = item.Time,
                 DataPoints = dataPoints
             };
         }).ToList();
