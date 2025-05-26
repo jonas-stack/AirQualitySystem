@@ -336,6 +336,17 @@
           }
         ]
       },
+      "ClientRequestAiLiveData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
       "RequestAirQualityData": {
         "allOf": [
           {
@@ -511,14 +522,8 @@
           "WebsocketMessage`1",
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
-          "RequestAirQualityData",
-          "ClientRequestDeviceStatus",
-          "ServerResponseDeviceStatus",
-          "ExampleClientDto",
-          "ExampleServerResponse",
-          "ClientRequestDeviceList",
-          "ServerResponseList",
           "ClientRequestAiLiveData",
+          "RequestAirQualityData",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
           "ExampleClientDto",
