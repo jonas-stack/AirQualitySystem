@@ -1,5 +1,5 @@
 #include "MQTT/MqttManager.h"
-#include <ArduinoJson.h>
+#include "JsonSerializer.h"
 #include "WiFi/CustomWiFiManager.h"
 
 MqttManager::MqttManager(
@@ -13,7 +13,8 @@ MqttManager::MqttManager(
     const char* password,
     const char* deviceId,
     const char* dataTopic,
-    const char* statusTopic
+    const char* statusTopic,
+    JsonSerializer& jsonSerializer
 ) :
     _customWiFiManager(customWiFiManager),
     _timeManager(timeManager),
@@ -26,6 +27,7 @@ MqttManager::MqttManager(
     _deviceId(deviceId),
     _dataTopic(dataTopic),
     _statusTopic(statusTopic),
+    _jsonSerializer(jsonSerializer),
     _lastStatusUpdate(0)
 {
     _clientId = "ESP32Client-";
@@ -43,18 +45,10 @@ bool MqttManager::connect() {
     if (!_customWiFiManager.isConnected()) {
         return false;
     }
-    
-    // Don't set LastSeen in the offline message
-    DynamicJsonDocument doc(256);
-    doc["DeviceName"] = _deviceId;
-    doc["IsConnected"] = false;
-    doc["LastSeen"] = _timeManager.getUnixTime();
-    
-    String offlineMsg;
-    serializeJson(doc, offlineMsg);
-    
-    // Here's where the LWT is configured - these parameters set up the LWT:
-    // LWT acts as a failsafe to infor other client connected to broker when a device disconnects
+
+    // Use JsonSerializer for offline message (LWT)
+    String offlineMsg = _jsonSerializer.serializeStatusMessage("offline", _deviceId);
+
     bool connected = _mqttManager.connect(
         _clientId.c_str(), 
         _username, 
@@ -64,13 +58,13 @@ bool MqttManager::connect() {
         true,
         offlineMsg.c_str()
     );
-    
+
     if (connected) {
         _connectionTime = _timeManager.getUnixTime();
-        String onlineMsg = createStatusJson(true);
+        String onlineMsg = _jsonSerializer.serializeStatusMessage("online", _deviceId);
         _mqttManager.publish(_statusTopic, onlineMsg.c_str(), true);
     }
-    
+
     return connected;
 }
 
@@ -93,29 +87,13 @@ void MqttManager::loop() {
 }
 
 String MqttManager::createStatusJson(bool isConnected) {
-    DynamicJsonDocument doc(256);
-    doc["DeviceName"] = _deviceId;
-    doc["IsConnected"] = isConnected;
-    doc["LastSeen"] = _timeManager.getUnixTime();
-    
-    String message;
-    serializeJson(doc, message);
-    return message;
+    // Use JsonSerializer for status message
+    return _jsonSerializer.serializeStatusMessage(isConnected ? "online" : "offline", _deviceId);
 }
 
 String MqttManager::createSensorJson(float temperature, float humidity, float gas, float particles) {
-    DynamicJsonDocument doc(256);
-    
-    doc["temperature"] = temperature;
-    doc["humidity"] = humidity;
-    doc["air_quality"] = gas;
-    doc["pm25"] = particles;
-    doc["device_id"] = _deviceId;
-    doc["timestamp"] = _timeManager.getUnixTime();
-    
-    String output;
-    serializeJson(doc, output);
-    return output;
+    // Use JsonSerializer for sensor data
+    return _jsonSerializer.serializeSensorData(temperature, humidity, gas, particles, _deviceId);
 }
 
 bool MqttManager::publishSensorData(float temperature, float humidity, float gas, float particles) {

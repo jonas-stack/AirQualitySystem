@@ -8,6 +8,7 @@
 #include "WiFi/CustomWiFiManager.h"
 #include "MQTT/TimeManager.h"
 #include "MQTT/config.h"
+#include "MQTT/JsonSerializer.h"
 
 // Define WiFi reset button pin
 #define WIFI_RESET_BUTTON_PIN 25
@@ -20,21 +21,21 @@ const char* MQTT_STATUS_TOPIC = "airquality/status";
 CustomWiFiManager customWiFiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_AP_NAME, WIFI_AP_PASSWORD, WIFI_RESET_BUTTON_PIN);
 WiFiClientSecure wifiClient;  
 PubSubClient pubSubClient(wifiClient);
-
 TimeManager timeManager;
-
+JsonSerializer jsonSerializer;
 MqttManager mqttClient(
     customWiFiManager,  
     timeManager,        
     pubSubClient,       
-    wifiClient,         
+    wifiClient,        
     MQTT_SERVER,
     MQTT_PORT,
     MQTT_USERNAME,
     MQTT_PASSWORD,
     DEVICE_ID,
     MQTT_DATA_TOPIC,
-    MQTT_STATUS_TOPIC
+    MQTT_STATUS_TOPIC,
+    jsonSerializer
 );
 
 // Global timer variables

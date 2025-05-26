@@ -5,6 +5,7 @@
 #include <WiFiClientSecure.h>
 #include "WiFi/CustomWiFiManager.h"
 #include "TimeManager.h"
+#include "JsonSerializer.h"
 
 class MqttManager {
 public:
@@ -18,7 +19,8 @@ public:
             const char* password,
             const char* deviceId,
             const char* dataTopic,
-            const char* statusTopic);
+            const char* statusTopic,
+            JsonSerializer& jsonSerializer); 
     
     bool setup();
     void loop();
@@ -39,6 +41,8 @@ private:
     const char* _dataTopic;
     const char* _statusTopic;
     
+    JsonSerializer& _jsonSerializer;
+
     String _clientId;
     unsigned long _lastStatusUpdate;
     String _connectionTime;
