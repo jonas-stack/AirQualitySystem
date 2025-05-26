@@ -1,4 +1,4 @@
-import { ClientRequestDeviceList, ClientRequestDeviceStats, ClientRequestSensorData, DeviceDto, DeviceStatsDto, PagedResultOfSensorDataDto, SensorDataDto, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { ClientRequestDeviceList, ClientRequestDeviceStats, ClientRequestSensorData, DeviceDto, DeviceStatsDto, PagedResultOfSensorDataDto, SensorDataDto, ServerResponseDeviceStats, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
@@ -67,17 +67,26 @@ export function useDeviceData() {
         }
 
         try {
-            const statsResult: WebsocketMessage_1 = await sendRequest<ClientRequestDeviceStats, WebsocketMessage_1>(
+            
+            const statsResult: ServerResponseDeviceStats = await sendRequest<ClientRequestDeviceStats, ServerResponseDeviceStats>(
                 requestStats,
                 "ServerResponseDeviceStats",
             )
 
-            const rawStats = statsResult?.Data?.Stats ?? [];
+            /*
+            const statsResult: WebsocketMessage_1 = await sendRequest<ClientRequestDeviceStats, WebsocketMessage_1>(
+                requestStats,
+                "ServerResponseDeviceStats",
+            )*/
+
+            const rawStats = statsResult?.stats ?? {};
+
+            console.log(statsResult)
 
             const parsedStats: DeviceStatsDto = {
-                allTimeMeasurements: rawStats?.AllTimeMeasurements ?? 0,
-                connectedDevices: rawStats?.ConnectedDevices ?? 0,
-                disconnectionsLast24Hours: rawStats?.DisconnectionsLast24Hours ?? 0,
+                allTimeMeasurements: rawStats?.allTimeMeasurements ?? 0,
+                connectedDevices: rawStats?.connectedDevices ?? 0,
+                disconnectionsLast24Hours: rawStats?.disconnectionsLast24Hours ?? 0,
             };
 
             setDeviceStats(parsedStats);

@@ -12,7 +12,7 @@ public class ClientRequestDeviceStats : BaseDto { }
 // serveren sender dette tilbage til klienten
 public class ServerResponseDeviceStats : BaseDto
 {
-    public required DeviceStatsDto Stats { get; set; }
+    public required DeviceStatsDto stats { get; set; }
 }
 
 public class DeviceRequestStatsHandler(IDeviceService deviceService) : BaseEventHandler<ClientRequestDeviceStats>
@@ -21,15 +21,11 @@ public class DeviceRequestStatsHandler(IDeviceService deviceService) : BaseEvent
     {
         var result = deviceService.GetDeviceStats();
             
-        var response = new WebsocketMessage<ServerResponseDeviceStats>
+        var response = new ServerResponseDeviceStats
         {
-            Topic = WebsocketTopics.Device,
-            eventType = "ServerResponseDeviceStats",
+            eventType = nameof(ServerResponseDeviceStats),
             requestId = dto.requestId,
-            Data = new ServerResponseDeviceStats
-            {
-                Stats = result,
-            }
+            stats = result
         };
         
         await socket.Send(JsonSerializer.Serialize(response));
