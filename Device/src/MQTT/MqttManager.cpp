@@ -4,7 +4,6 @@
 
 MqttManager::MqttManager(
     CustomWiFiManager& customWiFiManager,
-    TimeManager& timeManager,
     PubSubClient& mqttManager,
     WiFiClientSecure& wifiClient,
     const char* server,
@@ -17,7 +16,6 @@ MqttManager::MqttManager(
     JsonSerializer& jsonSerializer
 ) :
     _customWiFiManager(customWiFiManager),
-    _timeManager(timeManager),
     _mqttManager(mqttManager),
     _wifiClient(wifiClient),
     _server(server),
@@ -60,7 +58,7 @@ bool MqttManager::connect() {
     );
 
     if (connected) {
-        _connectionTime = _timeManager.getUnixTime();
+        _connectionTime = time(nullptr);
         String onlineMsg = _jsonSerializer.serializeStatusMessage("online", _deviceId);
         _mqttManager.publish(_statusTopic, onlineMsg.c_str(), true);
     }

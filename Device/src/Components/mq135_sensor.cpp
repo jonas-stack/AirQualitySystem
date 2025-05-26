@@ -78,15 +78,3 @@ float readMQ135Sensor() {
     updateSensorValues();  
     return correctedPPM;
 }
-
-void printMQ135SensorData() {
-    updateSensorValues();  // Update all global values
-    
-    Serial.print("Voltage: ");
-    Serial.println(voltage, 2);  
-    Serial.print("Raw sensor value: ");
-    Serial.println(rawPPM, 4);
-    Serial.print("CO2 PPM: ");
-    Serial.println(correctedPPM, 2);
-    Serial.println("---------------------");
-}

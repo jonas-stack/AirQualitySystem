@@ -6,7 +6,6 @@
 #include "devices/pm25_sensor.h"
 #include "MQTT/MqttManager.h"
 #include "WiFi/CustomWiFiManager.h"
-#include "MQTT/TimeManager.h"
 #include "MQTT/config.h"
 #include "MQTT/JsonSerializer.h"
 
@@ -21,11 +20,9 @@ const char* MQTT_STATUS_TOPIC = "airquality/status";
 CustomWiFiManager customWiFiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_AP_NAME, WIFI_AP_PASSWORD, WIFI_RESET_BUTTON_PIN);
 WiFiClientSecure wifiClient;  
 PubSubClient pubSubClient(wifiClient);
-TimeManager timeManager;
 JsonSerializer jsonSerializer;
 MqttManager mqttClient(
-    customWiFiManager,  
-    timeManager,        
+    customWiFiManager,        
     pubSubClient,       
     wifiClient,        
     MQTT_SERVER,
@@ -66,7 +63,19 @@ void setup() {
   bool success = true;
   
   if (!customWiFiManager.connect()) success = false;
-  timeManager.syncNTP();
+  
+  // NTP sync logic (UTC+2)
+  configTime(7200, 0, "pool.ntp.org");
+  unsigned long startTime = millis();
+  while (time(nullptr) < 1600000000) { // Reasonable timestamp after 2020
+    delay(100);
+    if (millis() - startTime > 30000) {
+      Serial.println("NTP SYNC FAILED");
+      success = false;
+      break;
+    }
+  }
+
   if (!setupBME280Sensor()) success = false;
   if (!setupLCDDisplay()) success = false;
   if (!setupMQ135Sensor()) success = false;

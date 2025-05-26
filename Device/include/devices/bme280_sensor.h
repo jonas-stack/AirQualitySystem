@@ -9,6 +9,5 @@ float readBME280Temperature();
 float readBME280Humidity();
 float readBME280Pressure();
 void updateBME280SensorValues();
-void printBME280SensorData();
 
 #endif

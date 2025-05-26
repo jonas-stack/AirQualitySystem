@@ -12,9 +12,6 @@ public:
     // Updated method with a formatted timestamp
     static String serializeSensorData(float temperature, float humidity, float gas, float particles, const char* device_id);
     
-    // Helper method to get formatted time
-    static String getFormattedTime();
-    
     static String serializeStatusMessage(const char* status, const char* device_id);
 };
 

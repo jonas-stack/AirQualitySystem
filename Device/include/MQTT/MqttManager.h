@@ -4,13 +4,11 @@
 #include <PubSubClient.h>
 #include <WiFiClientSecure.h>
 #include "WiFi/CustomWiFiManager.h"
-#include "TimeManager.h"
 #include "JsonSerializer.h"
 
 class MqttManager {
 public:
     MqttManager(CustomWiFiManager& customWiFiManager,
-            TimeManager& timeManager,
             PubSubClient& mqttManager,
             WiFiClientSecure& wifiClient,
             const char* server,
@@ -29,7 +27,6 @@ public:
     
 private:
     CustomWiFiManager& _customWiFiManager;
-    TimeManager& _timeManager;
     PubSubClient& _mqttManager;
     WiFiClientSecure& _wifiClient;
     

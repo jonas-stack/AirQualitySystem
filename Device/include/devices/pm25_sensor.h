@@ -6,7 +6,6 @@
 #include <HardwareSerial.h>
 
 bool setupPM25Sensor();
-void printPM25SensorData();
 float readPM25Value();
 void updatePM25SensorValues();
 

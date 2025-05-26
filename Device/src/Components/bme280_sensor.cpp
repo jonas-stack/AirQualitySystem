@@ -45,18 +45,3 @@ float readBME280Humidity() {
 float readBME280Pressure() {
   return bme.readPressure() / 100.0F; // Convert Pa to hPa (millibar)
 }
-
-void printBME280SensorData() {
-  updateBME280SensorValues();  
-
-  Serial.print("Temperature: ");
-  Serial.print(temperature);
-  Serial.println(" °C");
-  Serial.print("Humidity: ");
-  Serial.print(humidity);
-  Serial.println(" %");
-  Serial.print("Pressure: ");
-  Serial.print(pressure);
-  Serial.println(" hPa");
-  Serial.println("---------------------");
-}

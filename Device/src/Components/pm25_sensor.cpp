@@ -34,27 +34,6 @@ void updatePM25SensorValues()
     PM1Value = data.PM_AE_UG_1_0;   // PM1 value in micrograms per cubic meter
 }
 
-void printPM25SensorData()
-{
-    // Update the global values first
-    updatePM25SensorValues();
-    
-    // If we have valid data (non-negative values), print it
-    if (PM1Value >= 0) {
-        Serial.print("PM 1.0 (ug/m3): ");
-        Serial.println(PM1Value);
-        
-        Serial.print("PM 2.5 (ug/m3): ");
-        Serial.println(PM25Value);
-        
-        Serial.print("PM 10.0 (ug/m3): ");
-        Serial.println(PM10Value);
-        
-        Serial.println("---------------------");
-    } else {
-        Serial.println("Failed to read from PM2.5 sensor");
-    }
-}
 
 float readPM25Value() 
 {

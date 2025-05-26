@@ -7,7 +7,6 @@
 
 bool setupMQ135Sensor();
 float readMQ135Sensor();
-void printMQ135SensorData();
 void updateSensorValues();
 
 #endif
