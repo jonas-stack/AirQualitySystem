@@ -70,10 +70,11 @@ public class DeviceService : IDeviceService {
             var dateTime = new DateTime(entry.LastSeen);
             var unixTimestamp = ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
             
+            // lidt dumt at vi opretter en ny igen men ja
             var dto = new DeviceConnectionHistoryDto
             {
                 Id = entry.Id,
-                DeviceId = entry.DeviceId.ToString(),
+                DeviceId = entry.DeviceId,
                 IsConnected = entry.IsConnected,
                 LastSeen = unixTimestamp,
                 Duration = nextEvent != null
