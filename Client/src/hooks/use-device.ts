@@ -24,7 +24,7 @@ export function useDeviceData() {
         try {
             const deviceResult: ServerResponseDeviceList = await sendRequest<ClientRequestDeviceList, ServerResponseDeviceList>(
                 requestDevices,
-                "ServerResponseDeviceList",
+                WebsocketEvents.ServerResponseDeviceList,
             )
 
             const deviceList = deviceResult?.deviceList ?? [];
@@ -63,19 +63,17 @@ export function useDeviceData() {
         setIsDeviceStatsLoading(true)
 
         const requestStats: ClientRequestDeviceStats = {
-            eventType: "ClientRequestDeviceStats"
+            eventType: WebsocketEvents.ClientRequestDeviceStats
         }
 
         try {
             
             const statsResult: ServerResponseDeviceStats = await sendRequest<ClientRequestDeviceStats, ServerResponseDeviceStats>(
                 requestStats,
-                "ServerResponseDeviceStats",
+                WebsocketEvents.ServerResponseDeviceStats,
             )
 
             const rawStats = statsResult?.stats ?? {};
-
-            console.log(statsResult)
 
             const parsedStats: DeviceStatsDto = {
                 allTimeMeasurements: rawStats?.allTimeMeasurements ?? 0,

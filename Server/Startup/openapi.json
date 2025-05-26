@@ -790,18 +790,34 @@
       },
       "WebsocketEvents": {
         "type": "string",
-        "description": "Websocket Events enums",
+        "description": "Websocket event types (constants + BaseDto inheritors)",
         "enum": [
-          "GraphTotalMeasurement",
-          "ClientRequestDeviceList",
-          "ServerResponseDeviceList",
+          "AllDeviceStatus",
           "BroadcastDeviceConnectionUpdate",
           "BroadcastDeviceSensorDataUpdate",
-          "AllDeviceStatus",
+          "ClientRequestAiLiveData",
+          "ClientRequestDeviceHistory",
+          "ClientRequestDeviceList",
+          "ClientRequestDeviceStats",
+          "ClientRequestDeviceStatus",
+          "ClientRequestSensorData",
           "DeviceUpdateStatus",
+          "ExampleClientDto",
+          "ExampleServerResponse",
           "GraphGetMeasurement",
           "GraphTemperatureUpdate",
-          "RequestAirQualityData"
+          "GraphTotalMeasurement",
+          "LiveAiFeedbackDto",
+          "Ping",
+          "Pong",
+          "RequestAirQualityData",
+          "ServerResponseDeviceHistory",
+          "ServerResponseDeviceList",
+          "ServerResponseDeviceStats",
+          "ServerResponseDeviceStatus",
+          "ServerResponseSensorData",
+          "ServerSendsErrorMessage",
+          "WebsocketMessage`1"
         ]
       }
     }

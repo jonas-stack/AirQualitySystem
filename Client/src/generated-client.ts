@@ -445,18 +445,34 @@ export enum WebsocketTopics {
     GraphTotalMeasurements = "GraphTotalMeasurements",
 }
 
-/** Websocket Events enums */
+/** Websocket event types (constants + BaseDto inheritors) */
 export enum WebsocketEvents {
-    GraphTotalMeasurement = "GraphTotalMeasurement",
-    ClientRequestDeviceList = "ClientRequestDeviceList",
-    ServerResponseDeviceList = "ServerResponseDeviceList",
+    AllDeviceStatus = "AllDeviceStatus",
     BroadcastDeviceConnectionUpdate = "BroadcastDeviceConnectionUpdate",
     BroadcastDeviceSensorDataUpdate = "BroadcastDeviceSensorDataUpdate",
-    AllDeviceStatus = "AllDeviceStatus",
+    ClientRequestAiLiveData = "ClientRequestAiLiveData",
+    ClientRequestDeviceHistory = "ClientRequestDeviceHistory",
+    ClientRequestDeviceList = "ClientRequestDeviceList",
+    ClientRequestDeviceStats = "ClientRequestDeviceStats",
+    ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
+    ClientRequestSensorData = "ClientRequestSensorData",
     DeviceUpdateStatus = "DeviceUpdateStatus",
+    ExampleClientDto = "ExampleClientDto",
+    ExampleServerResponse = "ExampleServerResponse",
     GraphGetMeasurement = "GraphGetMeasurement",
     GraphTemperatureUpdate = "GraphTemperatureUpdate",
+    GraphTotalMeasurement = "GraphTotalMeasurement",
+    LiveAiFeedbackDto = "LiveAiFeedbackDto",
+    Ping = "Ping",
+    Pong = "Pong",
     RequestAirQualityData = "RequestAirQualityData",
+    ServerResponseDeviceHistory = "ServerResponseDeviceHistory",
+    ServerResponseDeviceList = "ServerResponseDeviceList",
+    ServerResponseDeviceStats = "ServerResponseDeviceStats",
+    ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
+    ServerResponseSensorData = "ServerResponseSensorData",
+    ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    WebsocketMessage_1 = "WebsocketMessage`1",
 }
 
 export interface FileResponse {
