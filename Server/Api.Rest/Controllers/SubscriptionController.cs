@@ -16,7 +16,7 @@ public class SubscriptionController(
     
     [HttpPost]
     [Route(SubscriptionRoute)]
-    public async Task<ActionResult> Subscribe([FromHeader] string authorization, [FromBody] ChangeSubscriptionDto dto)
+    public async Task<ActionResult> Subscribe([FromBody] ChangeSubscriptionDto dto)
     {
         await websocketSubscriptionService.SubscribeToTopic(dto.ClientId, dto.TopicIds);
         return Ok();
@@ -24,7 +24,7 @@ public class SubscriptionController(
 
     [HttpPost]
     [Route(UnsubscribeRoute)]
-    public async Task<ActionResult> Unsubscribe([FromHeader] string authorization, [FromBody] ChangeSubscriptionDto dto)
+    public async Task<ActionResult> Unsubscribe([FromBody] ChangeSubscriptionDto dto)
     {
         await websocketSubscriptionService.UnsubscribeFromTopic(dto.ClientId, dto.TopicIds);
         return Ok();

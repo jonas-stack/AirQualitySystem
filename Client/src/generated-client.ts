@@ -116,7 +116,7 @@ export class SubscriptionClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    subscribe(authorization: string | undefined, dto: ChangeSubscriptionDto): Promise<FileResponse> {
+    subscribe(dto: ChangeSubscriptionDto): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/Subscription/Subscribe";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -126,7 +126,6 @@ export class SubscriptionClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/octet-stream"
             }
@@ -159,7 +158,7 @@ export class SubscriptionClient {
         return Promise.resolve<FileResponse>(null as any);
     }
 
-    unsubscribe(authorization: string | undefined, dto: ChangeSubscriptionDto): Promise<FileResponse> {
+    unsubscribe(dto: ChangeSubscriptionDto): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/Subscription/Unsubscribe";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -169,7 +168,6 @@ export class SubscriptionClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/octet-stream"
             }
@@ -401,27 +399,6 @@ export interface Ping extends BaseDto {
 }
 
 export interface Pong extends BaseDto {
-}
-
-/** Available eventType constants */
-export enum StringConstants {
-    WebsocketMessage_1 = "WebsocketMessage`1",
-    LiveAiFeedbackDto = "LiveAiFeedbackDto",
-    ServerSendsErrorMessage = "ServerSendsErrorMessage",
-    ClientRequestAiLiveData = "ClientRequestAiLiveData",
-    RequestAirQualityData = "RequestAirQualityData",
-    ClientRequestDeviceHistory = "ClientRequestDeviceHistory",
-    ServerResponseDeviceHistory = "ServerResponseDeviceHistory",
-    ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
-    ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
-    ClientRequestDeviceStats = "ClientRequestDeviceStats",
-    ServerResponseDeviceStats = "ServerResponseDeviceStats",
-    ClientRequestSensorData = "ClientRequestSensorData",
-    ServerResponseSensorData = "ServerResponseSensorData",
-    ClientRequestDeviceList = "ClientRequestDeviceList",
-    ServerResponseDeviceList = "ServerResponseDeviceList",
-    Ping = "Ping",
-    Pong = "Pong",
 }
 
 /** Websocket Topic Enums */

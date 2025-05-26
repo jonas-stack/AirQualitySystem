@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Dtos.Ai;
@@ -17,6 +18,7 @@ public class ClientRequestDeviceStatus : BaseDto { }
 // serveren sender dette tilbage til klienten
 public class ServerResponseDeviceStatus : BaseDto
 {
+    [JsonPropertyName("deviceStatus")]
     public required DeviceDto DeviceStatus { get; set; }
 }
 
@@ -33,13 +35,11 @@ public class DeviceCurrentStatusHandler : BaseEventHandler<ClientRequestDeviceSt
     {
         var result = await _deviceService.GetDeviceStatus();
         
-        var response = new WebsocketMessage<ServerResponseDeviceStatus>
+        var response = new ServerResponseDeviceStatus
         {
-            Topic = WebsocketTopics.Device,
-            Data = new ServerResponseDeviceStatus
-            {
-                DeviceStatus = result
-            }
+            eventType = nameof(ServerResponseDeviceStatus),
+            requestId = dto.requestId,
+            DeviceStatus = result
         };
         
         await socket.Send(JsonSerializer.Serialize(response));

@@ -39,7 +39,7 @@ public class DeviceSensorDataHandler(ISensorDataService sensorDataService) : Bas
         
         var response = new ServerResponseSensorData
         {
-            eventType = "ServerResponseSensorData",
+            eventType = nameof(ServerResponseSensorData),
             requestId = dto.requestId,
             SensorData = sensorData,
         };
