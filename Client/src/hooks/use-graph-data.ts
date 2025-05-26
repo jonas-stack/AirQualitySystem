@@ -1,4 +1,4 @@
-import { RequestAirQualityData, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { RequestAirQualityData, ServerResponseAirQualityData, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
@@ -20,12 +20,14 @@ export function useGraphData() {
         }
 
         try {
-        const graphResult: WebsocketMessage_1 = await sendRequest<RequestAirQualityData, WebsocketMessage_1>(
+        const graphResult: ServerResponseAirQualityData = await sendRequest<RequestAirQualityData, ServerResponseAirQualityData>(
             requestData,
-            WebsocketEvents.GraphGetMeasurement,
+            WebsocketEvents.ServerResponseAirQualityData,
         )
 
-        setChartData(((graphResult as any)?.Data?.Data) ?? []);
+        const data = graphResult.data ?? [];
+
+        setChartData(data);
         setLastFetch(new Date())
         } catch (error) {
         toast.error("Chart data fetching failed", {

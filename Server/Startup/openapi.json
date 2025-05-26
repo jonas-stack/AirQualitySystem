@@ -365,6 +365,35 @@
           "Monthly"
         ]
       },
+      "ServerResponseAirQualityData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requestedData": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "timePeriod": {
+                "$ref": "#/components/schemas/TimePeriod"
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        ]
+      },
       "ClientRequestDeviceHistory": {
         "allOf": [
           {
@@ -732,6 +761,7 @@
           "Ping",
           "Pong",
           "RequestAirQualityData",
+          "ServerResponseAirQualityData",
           "ServerResponseDeviceHistory",
           "ServerResponseDeviceList",
           "ServerResponseDeviceStats",

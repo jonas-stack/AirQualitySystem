@@ -308,6 +308,12 @@ export enum TimePeriod {
     Monthly = "Monthly",
 }
 
+export interface ServerResponseAirQualityData extends BaseDto {
+    requestedData?: string[];
+    timePeriod?: TimePeriod;
+    data?: { [key: string]: any; }[];
+}
+
 export interface ClientRequestDeviceHistory extends BaseDto {
     deviceId?: string;
     pageNumber?: number;
@@ -431,6 +437,7 @@ export enum WebsocketEvents {
     Ping = "Ping",
     Pong = "Pong",
     RequestAirQualityData = "RequestAirQualityData",
+    ServerResponseAirQualityData = "ServerResponseAirQualityData",
     ServerResponseDeviceHistory = "ServerResponseDeviceHistory",
     ServerResponseDeviceList = "ServerResponseDeviceList",
     ServerResponseDeviceStats = "ServerResponseDeviceStats",

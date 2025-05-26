@@ -50,12 +50,16 @@ public class RequestAirQualityData : BaseDto
     }
 }
  */
-public class AirQualityDataGraph
+public class ServerResponseAirQualityData : BaseDto
 {
+    [JsonPropertyName("requestedData")]
     public required List<string> RequestedData { get; set; }
     
+    [JsonPropertyName("timePeriod")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public TimePeriod TimePeriod { get; set; }
+    
+    [JsonPropertyName("data")]
     public required List<Dictionary<string, object>> Data { get; set; }
 }
 
@@ -80,17 +84,13 @@ public class AirQualityGraphEventHandler(IGraphService graphService) : BaseEvent
             return dict;
         }).ToList();
         
-        var response = new WebsocketMessage<AirQualityDataGraph>
+        var response = new ServerResponseAirQualityData
         {
-            Topic = WebsocketTopics.Dashboard,
             requestId = dto.requestId,
-            eventType = WebsocketEvents.GraphGetMeasurement,
-            Data = new AirQualityDataGraph
-            {
-                RequestedData = dto.Data,
-                TimePeriod = dto.TimePeriod,
-                Data = flattenedData
-            },
+            eventType = nameof(ServerResponseAirQualityData),
+            RequestedData = dto.Data,
+            TimePeriod = dto.TimePeriod,
+            Data = flattenedData
         };
         
         await socket.Send(JsonSerializer.Serialize(response));
