@@ -390,14 +390,6 @@ export interface SensorDataDto {
     timestamp?: number;
 }
 
-export interface ExampleClientDto extends BaseDto {
-    somethingTheClientSends?: string;
-}
-
-export interface ExampleServerResponse extends BaseDto {
-    somethingTheServerSends?: string;
-}
-
 export interface ClientRequestDeviceList extends BaseDto {
 }
 
@@ -426,8 +418,6 @@ export enum StringConstants {
     ServerResponseDeviceStats = "ServerResponseDeviceStats",
     ClientRequestSensorData = "ClientRequestSensorData",
     ServerResponseSensorData = "ServerResponseSensorData",
-    ExampleClientDto = "ExampleClientDto",
-    ExampleServerResponse = "ExampleServerResponse",
     ClientRequestDeviceList = "ClientRequestDeviceList",
     ServerResponseDeviceList = "ServerResponseDeviceList",
     Ping = "Ping",
@@ -457,8 +447,6 @@ export enum WebsocketEvents {
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ClientRequestSensorData = "ClientRequestSensorData",
     DeviceUpdateStatus = "DeviceUpdateStatus",
-    ExampleClientDto = "ExampleClientDto",
-    ExampleServerResponse = "ExampleServerResponse",
     GraphGetMeasurement = "GraphGetMeasurement",
     GraphTemperatureUpdate = "GraphTemperatureUpdate",
     GraphTotalMeasurement = "GraphTotalMeasurement",

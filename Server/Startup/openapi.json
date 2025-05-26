@@ -666,38 +666,6 @@
           }
         }
       },
-      "ExampleClientDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseDto"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "somethingTheClientSends": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "ExampleServerResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseDto"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "somethingTheServerSends": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
       "ClientRequestDeviceList": {
         "allOf": [
           {
@@ -767,8 +735,6 @@
           "ServerResponseDeviceStats",
           "ClientRequestSensorData",
           "ServerResponseSensorData",
-          "ExampleClientDto",
-          "ExampleServerResponse",
           "ClientRequestDeviceList",
           "ServerResponseDeviceList",
           "Ping",
@@ -802,8 +768,6 @@
           "ClientRequestDeviceStatus",
           "ClientRequestSensorData",
           "DeviceUpdateStatus",
-          "ExampleClientDto",
-          "ExampleServerResponse",
           "GraphGetMeasurement",
           "GraphTemperatureUpdate",
           "GraphTotalMeasurement",

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Dtos;
@@ -25,14 +26,9 @@ public class ClientRequestSensorData : BaseDto
 // serveren sender dette tilbage til klienten
 public class ServerResponseSensorData : BaseDto
 {
+    [JsonPropertyName("sensorData")]
     public required PagedResult<SensorDataDto> SensorData { get; set; }
 }
-
-/*
-public class ExampleServerResponse : BaseDto
-{
-    public string SomethingTheServerSends { get; set; }
-}*/
 
 public class DeviceSensorDataHandler(ISensorDataService sensorDataService) : BaseEventHandler<ClientRequestSensorData>
 {
@@ -41,15 +37,11 @@ public class DeviceSensorDataHandler(ISensorDataService sensorDataService) : Bas
     {
         var sensorData = await sensorDataService.GetSensorDataForDeviceAsync(dto.SensorId, dto.PageNumber, dto.PageSize);
         
-        var response = new WebsocketMessage<ServerResponseSensorData>
+        var response = new ServerResponseSensorData
         {
-            Topic = WebsocketTopics.Device,
             eventType = "ServerResponseSensorData",
             requestId = dto.requestId,
-            Data = new ServerResponseSensorData
-            {
-                SensorData = sensorData
-            }
+            SensorData = sensorData,
         };
         
         await socket.Send(JsonSerializer.Serialize(response));

@@ -1,4 +1,4 @@
-import { ClientRequestDeviceList, ClientRequestSensorData, DeviceDto, PagedResultOfSensorDataDto, SensorDataDto, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { ClientRequestDeviceList, ClientRequestSensorData, DeviceDto, PagedResultOfSensorDataDto, SensorDataDto, ServerResponseSensorData, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";
@@ -13,27 +13,28 @@ export function useDeviceSensorData() {
         setIsSensorDataLoading(true)
 
         const requestDevices: ClientRequestSensorData = {
-            eventType: "ClientRequestSensorData",
+            eventType: WebsocketEvents.ClientRequestSensorData,
             sensorId: deviceId,
             pageNumber: pageNumber,
             pageSize: pageSize
         }
 
         try {
-            const deviceResult: WebsocketMessage_1 = await sendRequest<ClientRequestSensorData, WebsocketMessage_1>(
+            const deviceResult: ServerResponseSensorData = await sendRequest<ClientRequestSensorData, WebsocketMessage_1>(
                 requestDevices,
-                "ServerResponseSensorData",
+                WebsocketEvents.ServerResponseSensorData,
             )
 
-            const rawSensorData = deviceResult?.Data?.SensorData;
+            const rawSensorData = deviceResult?.sensorData;
+            console.log(rawSensorData)
 
             if (rawSensorData) {
                 const mappedSensorData: PagedResultOfSensorDataDto = {
-                    items: rawSensorData.Items ?? [],
-                    pageNumber: rawSensorData.PageNumber,
-                    pageSize: rawSensorData.PageSize,
-                    totalCount: rawSensorData.TotalCount,
-                    totalPages: rawSensorData.TotalPages,
+                    items: rawSensorData.items ?? [],
+                    pageNumber: rawSensorData.pageNumber,
+                    pageSize: rawSensorData.pageSize,
+                    totalCount: rawSensorData.totalCount,
+                    totalPages: rawSensorData.totalPages,
                 };
 
                 setSensorData(mappedSensorData);
