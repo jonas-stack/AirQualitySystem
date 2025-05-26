@@ -5,10 +5,10 @@
 constexpr int WIFI_CONFIG_BUTTON_DEBOUNCE = 50;
 
 CustomWiFiManager::CustomWiFiManager(const char* ssid, const char* password, 
-                                     const char* apName, const char* apPassword,
-                                     int configButtonPin)
+                                    const char* apName, const char* apPassword,
+                                    int configButtonPin)
     : _connection(ssid, password),
-      _portalManager(apName, apPassword),
+      _portalManager(_wifiManager, apName, apPassword),  // <-- Fixed
       _configButtonPin(configButtonPin)
 {
     if (_configButtonPin >= 0) {

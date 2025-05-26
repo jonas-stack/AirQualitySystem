@@ -40,6 +40,6 @@ public class AiCommunicationService(IAiService aiService, IConnectionManager con
                 } 
             };
                 
-        connectionManager.BroadcastToTopic(WebsocketTopics.Ai, response);
+        _connectionManager.BroadcastToTopic(WebsocketTopics.Ai, response);
     }
 }

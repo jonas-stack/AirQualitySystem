@@ -2,7 +2,7 @@
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-Adafruit_BME280 bme; // I2C
+Adafruit_BME280 bme;
 
 static float temperature = 0.0;
 static float humidity = 0.0;
@@ -11,7 +11,7 @@ static float pressure = 0.0;
 bool setupBME280Sensor() {
   Serial.println("Initializing BME280 sensor...");
   
-  // Try address 0x76 first
+  // try to initialize the BME280 sensor with the default I2C address 0x76
   bool status = bme.begin(0x76);
   
   if (!status) {
@@ -29,9 +29,9 @@ bool setupBME280Sensor() {
 }
 
 void updateBME280SensorValues() {
-  temperature = bme.readTemperature(); // °C
-  humidity = bme.readHumidity(); // %
-  pressure = bme.readPressure() / 100.0F; // hPa
+  temperature = bme.readTemperature(); 
+  humidity = bme.readHumidity(); 
+  pressure = bme.readPressure() / 100.0F;
 }
 
 float readBME280Temperature() {

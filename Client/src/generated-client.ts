@@ -27,7 +27,7 @@ export class AiClient {
 
         let options_: RequestInit = {
             body: content_,
-            method: "GET",
+            method: "POST",
             headers: {
                 "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export class AiClient {
 
         let options_: RequestInit = {
             body: content_,
-            method: "GET",
+            method: "POST",
             headers: {
                 "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
@@ -308,6 +308,12 @@ export enum TimePeriod {
 }
 
 export interface ClientRequestDeviceStatus extends BaseDto {
+
+}
+export interface ClientRequestAiLiveData extends BaseDto {
+}
+
+export interface ClientRequestDeviceStatus extends BaseDto {
 }
 
 export interface ServerResponseDeviceStatus extends BaseDto {
@@ -350,6 +356,7 @@ export enum StringConstants {
     RequestAirQualityData = "RequestAirQualityData",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
+    ClientRequestAiLiveData = "ClientRequestAiLiveData",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     ClientRequestDeviceList = "ClientRequestDeviceList",

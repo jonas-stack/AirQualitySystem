@@ -6,14 +6,15 @@
 
 class CustomWiFiManager {
 private:
-    WiFiConnection _connection;
+    WiFiConnection _connection;  
+    WiFiManager _wifiManager;
     ConfigPortalManager _portalManager;
     int _configButtonPin;
     
 public:
     CustomWiFiManager(const char* ssid, const char* password, 
-                    const char* apName, const char* apPassword,
-                    int configButtonPin = -1);
+                     const char* apName, const char* apPassword,
+                     int configButtonPin);
     
     bool connect();
     bool isConnected();

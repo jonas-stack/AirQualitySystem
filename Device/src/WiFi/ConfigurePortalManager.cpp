@@ -1,7 +1,8 @@
 #include "WiFi/ConfigPortalManager.h"
 #include "devices/lcd_display.h"
 
-ConfigPortalManager::ConfigPortalManager(const char* apName, const char* apPassword) :
+ConfigPortalManager::ConfigPortalManager(WiFiManager& _wifiManager, const char* apName, const char* apPassword) :
+    _wifiManager(_wifiManager),
     _apName(apName),
     _apPassword(apPassword) {
 }

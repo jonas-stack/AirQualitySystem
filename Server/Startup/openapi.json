@@ -7,7 +7,7 @@
   },
   "paths": {
     "/api/Ai/chat": {
-      "get": {
+      "post": {
         "tags": [
           "Ai"
         ],
@@ -50,7 +50,7 @@
       }
     },
     "/api/Ai/historical_data_analysis": {
-      "get": {
+      "post": {
         "tags": [
           "Ai"
         ],
@@ -512,6 +512,13 @@
           "LiveAiFeedbackDto",
           "ServerSendsErrorMessage",
           "RequestAirQualityData",
+          "ClientRequestDeviceStatus",
+          "ServerResponseDeviceStatus",
+          "ExampleClientDto",
+          "ExampleServerResponse",
+          "ClientRequestDeviceList",
+          "ServerResponseList",
+          "ClientRequestAiLiveData",
           "ClientRequestDeviceStatus",
           "ServerResponseDeviceStatus",
           "ExampleClientDto",
