@@ -1,4 +1,4 @@
-import { ClientRequestDeviceList, ClientRequestDeviceStats, ClientRequestSensorData, DeviceDto, DeviceStatsDto, PagedResultOfSensorDataDto, SensorDataDto, ServerResponseDeviceList, ServerResponseDeviceStats, TimePeriod, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
+import { ClientRequestDeviceList, ClientRequestDeviceStats, DeviceDto, DeviceStatsDto, ServerResponseDeviceList, ServerResponseDeviceStats, WebsocketEvents, WebsocketMessage_1 } from "@/generated-client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWsClient } from "ws-request-hook";

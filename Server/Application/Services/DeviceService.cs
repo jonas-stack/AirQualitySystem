@@ -15,14 +15,12 @@ public class DeviceService : IDeviceService {
     
     private readonly IDeviceRepository _deviceRepository;
     private readonly IConnectionManager _connectionManager;
-    private readonly IDevicesMapper _devicesMapper;
     private readonly IMqttPublisher _mqttPublisher;
     
-    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper, IMqttPublisher mqttPublisher)
+    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IMqttPublisher mqttPublisher)
     {
         _deviceRepository = deviceRepository;
         _connectionManager = connectionManager;
-        _devicesMapper = devicesMapper;
         _mqttPublisher = mqttPublisher;
     }
     
@@ -103,25 +101,23 @@ public class DeviceService : IDeviceService {
         return _deviceRepository.GetStats();
     }
     
-    public async Task UpdateDeviceInterval(DeviceIntervalUpdateDto dto)
+    public async Task<bool> UpdateDeviceInterval(DeviceIntervalUpdateDto dto)
     {
-        if (dto.Interval <= 0)
-        {
-            throw new ArgumentOutOfRangeException("Interval must be greater than zero.");
-        }
-        
         if (string.IsNullOrWhiteSpace(dto.DeviceId))
-        {
             throw new ArgumentException("DeviceId cannot be null or empty.");
-        }
         
         if (!Guid.TryParse(dto.DeviceId, out var deviceId))
-        {
             throw new ArgumentException($"'{dto.DeviceId}' is not a valid GUID");
-        }
+
+        if (dto.Interval < 10000)
+            throw new ArgumentOutOfRangeException("Interval must be greater than 10 seconds.");
+
+        var exists = await _deviceRepository.DeviceExistsAsync(deviceId);
+        if (!exists)
+            throw new ArgumentException($"Device with id '{deviceId}' does not exist.");
         
         await _deviceRepository.UpdateDeviceInterval(dto);
-        
         await _mqttPublisher.Publish(dto, "AirQuality/Server/UpdateInterval");
+        return true;
     }
 }

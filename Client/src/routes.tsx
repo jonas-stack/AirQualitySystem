@@ -7,10 +7,12 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "@/components/ui/sonner";
 import AIPage from "@/pages/auth/AIPage.tsx";
 import DevicePage from "./pages/auth/DevicePage";
+import { TooltipProvider } from "./components/ui/tooltip";
 
 export default function ApplicationRoutes() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <TooltipProvider>
       <Toaster />
       <Routes>
         <Route element={<AuthenticatedLayout />}>
@@ -23,6 +25,7 @@ export default function ApplicationRoutes() {
     </Route>
 
       </Routes>
+      </TooltipProvider>
     </ThemeProvider>
   )
 }
