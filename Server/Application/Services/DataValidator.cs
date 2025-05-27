@@ -134,6 +134,7 @@ public class DataValidator : IDataValidator
             return false;
         }
         return true;
+        
     }
 
     private bool HasValidDeviceStatus(DeviceDto dto)

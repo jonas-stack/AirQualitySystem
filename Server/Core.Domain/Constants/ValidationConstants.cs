@@ -2,6 +2,7 @@
 
 public static class ValidationConstants
 {
+    
     public const double MIN_TEMPERATURE = -100;
     public const double MAX_TEMPERATURE = 100;
     public const double MIN_HUMIDITY = 0;
