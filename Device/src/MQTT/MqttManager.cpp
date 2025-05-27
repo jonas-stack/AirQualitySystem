@@ -121,8 +121,13 @@ void MqttManager::onMqttMessage(char* topic, byte* payload, unsigned int length)
     Serial.println(message);
 
     if (String(topic) == _topicDeviceUpdateInterval) {
-        DynamicJsonDocument doc(128);
+        DynamicJsonDocument doc(256);
         DeserializationError error = deserializeJson(doc, message);
+        if (error) {
+            Serial.print("Failed to parse JSON: ");
+            Serial.println(error.c_str());
+            return;
+        }
         if (!error && doc.containsKey("interval")) {
             int newInterval = doc["interval"];
             if (newInterval >= 10000) { // Minimum 10 seconds
@@ -164,6 +169,8 @@ bool MqttManager::publishSensorData(float temperature, float humidity, float gas
     }
     
     String jsonString = createSensorJson(temperature, humidity, gas, particles);
+    Serial.print("Publishing sensor data: ");
+    Serial.println(jsonString);
     return _mqttManager.publish(_dataTopic, jsonString.c_str(), false);
 }
 
