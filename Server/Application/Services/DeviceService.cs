@@ -105,20 +105,18 @@ public class DeviceService : IDeviceService {
     
     public async Task UpdateDeviceInterval(DeviceIntervalUpdateDto dto)
     {
-        if (dto.Interval <= 0)
-        {
-            throw new ArgumentOutOfRangeException("Interval must be greater than zero.");
-        }
-        
         if (string.IsNullOrWhiteSpace(dto.DeviceId))
-        {
             throw new ArgumentException("DeviceId cannot be null or empty.");
-        }
         
         if (!Guid.TryParse(dto.DeviceId, out var deviceId))
-        {
             throw new ArgumentException($"'{dto.DeviceId}' is not a valid GUID");
-        }
+        
+        if (dto.Interval <= 0)
+            throw new ArgumentOutOfRangeException("Interval must be greater than zero.");
+
+        var exists = await _deviceRepository.DeviceExistsAsync(deviceId);
+        if (!exists)
+            throw new ArgumentException($"Device with id '{deviceId}' does not exist.");
         
         await _deviceRepository.UpdateDeviceInterval(dto);
         
