@@ -4,17 +4,21 @@ import { StatisticsCards } from "@/components/cards/statistics-cards";
 import { DeviceSelector } from "@/components/cards/device-selector";
 import { SensorDataTable } from "@/components/table/sensor-data-table";
 import { useEffect, useState } from "react";
-import { useDeviceData, useDeviceSensorData } from "@/hooks";
+import { useDeviceData, useDeviceSensorData, useDeviecUpdateInterval } from "@/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWsClient } from "ws-request-hook";
 import { useDeviceConnectionHistory } from "@/hooks/use-device-connection-history";
 import { DeviceConnectionHistoryTable } from "@/components/table/device-connection-history-table";
+import { u } from "node_modules/framer-motion/dist/types.d-DDSxwf0n";
+import { toast } from "sonner";
 
 export default function DevicePage() {
     const { readyState } = useWsClient();
+
     const { getDevicesArray, iseDevicesLoading, deviceStats } = useDeviceData();
     const { requestSensorDataForDevice, sensorData } = useDeviceSensorData();
     const { requestDeviceConnectionHistoryForDevice, deviceConnectionHistory } = useDeviceConnectionHistory();
+    const { success, updateDeviceInterval } = useDeviecUpdateInterval();
 
     const defaultDeviceStats: DeviceStatsDto = {
       allTimeMeasurements: 0,
@@ -23,7 +27,7 @@ export default function DevicePage() {
     };
 
     const deviceUpdateInterval = (device: DeviceDto, interval: number) => {
-      
+      updateDeviceInterval(device, interval)
     }
 
     const devices = getDevicesArray();
@@ -59,7 +63,7 @@ export default function DevicePage() {
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <DeviceSelector devices={devices} isDevicesLoading={iseDevicesLoading} selectedDevice={selectedDevice} onDeviceSelect={setSelectedDevice} />
+          <DeviceSelector devices={devices} isDevicesLoading={iseDevicesLoading} selectedDevice={selectedDevice} onDeviceSelect={setSelectedDevice} intervalUpdatedSuccess={success} onUpdateIntervalChange={deviceUpdateInterval}/>
         </div>
 
         <div className="lg:col-span-8">

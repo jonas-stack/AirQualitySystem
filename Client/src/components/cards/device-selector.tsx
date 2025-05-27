@@ -17,7 +17,6 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider,
 } from "@/components/ui/tooltip"
 
 interface DeviceSelectorProps {
@@ -26,6 +25,7 @@ interface DeviceSelectorProps {
   isDevicesLoading: boolean
   onDeviceSelect: (device: DeviceDto) => void
   onUpdateIntervalChange?: (device: DeviceDto, interval: number) => void
+  intervalUpdatedSuccess: boolean
 }
 
 export function DeviceSelector({
@@ -34,6 +34,7 @@ export function DeviceSelector({
   onDeviceSelect,
   isDevicesLoading,
   onUpdateIntervalChange,
+  intervalUpdatedSuccess
 }: DeviceSelectorProps) {
   const { readyState } = useWsClient()
   const [editingInterval, setEditingInterval] = useState<DeviceDto | null>(null)
@@ -128,11 +129,12 @@ export function DeviceSelector({
                   className={`border cursor-pointer rounded-lg p-4 transition-colors ${
                     selectedDevice?.device_id === device.device_id ? "bg-secondary border-primary" : "hover:bg-muted/50"
                   }`}
+                    onClick={() => onDeviceSelect(device)}
+
                 >
                   <Button
                     variant="ghost"
                     className="w-full justify-start h-auto p-0"
-                    onClick={() => onDeviceSelect(device)}
                   >
                     <div className="flex items-center justify-between w-full">
                       <div className="text-left">
@@ -181,17 +183,32 @@ export function DeviceSelector({
                             }}
                             autoFocus
                           />
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 w-7 p-0"
-                            onClick={() => handleIntervalSave(device)}
-                          >
-                            <CheckIcon className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={handleIntervalCancel}>
-                            <XIcon className="h-3 w-3" />
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 w-7 p-0 cursor-pointer"
+                                onClick={() => handleIntervalSave(device)}
+                              >
+                                <CheckIcon className="h-3 w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Save</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger>
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 cursor-pointer" onClick={handleIntervalCancel}>
+                              <XIcon className="h-3 w-3" />
+                            </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cancel</p>
+                            </TooltipContent>
+                          </Tooltip>
+
                         </div>
                       ) : (
                     <Tooltip>
