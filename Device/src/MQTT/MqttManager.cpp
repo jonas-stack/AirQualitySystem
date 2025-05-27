@@ -80,7 +80,7 @@ bool MqttManager::connect() {
         String onlineMsg = this->createStatusJson(connected);
         _mqttManager.publish(_statusTopic, onlineMsg.c_str(), true);
 
-        _mqttManager.subscribe("AirQuality/Server/UpdateInterval"); // Subscribe to command topic
+        _mqttManager.subscribe(_topicDeviceUpdateInterval); // Subscribe to command topic
     }
 
     return connected;
@@ -120,7 +120,7 @@ void MqttManager::onMqttMessage(char* topic, byte* payload, unsigned int length)
     Serial.print(" -> ");
     Serial.println(message);
 
-    if (String(topic) == "AirQuality/Server/UpdateInterval") {
+    if (String(topic) == _topicDeviceUpdateInterval) {
         DynamicJsonDocument doc(128);
         DeserializationError error = deserializeJson(doc, message);
         if (!error && doc.containsKey("interval")) {
