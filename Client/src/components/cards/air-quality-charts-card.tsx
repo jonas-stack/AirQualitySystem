@@ -96,7 +96,6 @@ export function AirQualityChartsCard({className = "", onRefresh, lastUpdated = n
         setCurrentTab(["airquality"])
         break
       case "pm25":
-        setTimePeriod(TimePeriod.Monthly)
         setCurrentTab(["pm25"])
         break
       default:
@@ -240,6 +239,15 @@ export function AirQualityChartsCard({className = "", onRefresh, lastUpdated = n
           </TabsContent>
 
           <TabsContent value="pm25" className="mt-0 pt-4 flex-1 flex flex-col">
+            <div className="px-4 pb-2">
+              <Tabs defaultValue={TimePeriod.Daily} onValueChange={handleTimeShift}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value={TimePeriod.Daily}>Daily</TabsTrigger>
+                  <TabsTrigger value={TimePeriod.Weekly}>Weekly</TabsTrigger>
+                  <TabsTrigger value={TimePeriod.Monthly}>Monthly</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
             <div className="px-4 flex-1">
               {isLoading ? (
                 <ChartLoading />
