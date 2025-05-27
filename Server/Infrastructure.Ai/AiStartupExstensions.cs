@@ -11,8 +11,14 @@ public static class AiStartupExstensions
         services.AddHttpClient<IAiService, AiApiService>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(30000);
-            client.BaseAddress = new Uri(appOptions.AiApiBaseUrl);
+    
+            if (!string.IsNullOrWhiteSpace(appOptions.AiApiBaseUrl) &&
+                Uri.TryCreate(appOptions.AiApiBaseUrl, UriKind.Absolute, out var uri))
+            {
+                client.BaseAddress = uri;
+            }
         });
+
         return services;
     }
 }
