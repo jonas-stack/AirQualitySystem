@@ -157,6 +157,39 @@
           }
         }
       }
+    },
+    "/api/Test/Test": {
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "Test_Subscribe",
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIntervalUpdateDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -182,6 +215,19 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "DeviceIntervalUpdateDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deviceId": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -479,6 +525,10 @@
           },
           "IsConnected": {
             "type": "boolean"
+          },
+          "updateInterval": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

@@ -111,6 +111,29 @@ public class DeviceRepository : IDeviceRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task UpdateDeviceInterval(DeviceIntervalUpdateDto dto)
+    {
+        if (!Guid.TryParse(dto.DeviceId, out var guid))
+            throw new ArgumentException($"'{dto.DeviceId}' is not a valid GUID");
+
+        var device = await _dbContext.Devices.FirstOrDefaultAsync(d => d.DeviceId == guid);
+        if (device == null)
+            throw new ArgumentException($"Device with ID '{dto.DeviceId}' does not exist");
+
+        device.Updateinterval = dto.Interval;
+        _dbContext.Update(device);
+        
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public Task<int> GetDeviceUpdateIntervalAsync(Devices device)
+    {
+        return _dbContext.Devices
+            .Where(d => d.DeviceId == device.DeviceId)
+            .Select(d => d.Updateinterval)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task SaveDevicesAsync(Devices devices)
     {
         try
@@ -175,7 +198,8 @@ public class DeviceRepository : IDeviceRepository
                 DeviceId = deviceId,
                 DeviceName = deviceName,
                 IsConnected = true,
-                LastSeen = new DateTime(lastSeen.Ticks, DateTimeKind.Unspecified)
+                LastSeen = new DateTime(lastSeen.Ticks, DateTimeKind.Unspecified),
+                Updateinterval = 30000
             };
 
             await SaveDevicesAsync(newDevice);

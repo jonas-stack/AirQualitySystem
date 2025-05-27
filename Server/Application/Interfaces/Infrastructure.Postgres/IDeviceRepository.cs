@@ -17,5 +17,8 @@ public interface IDeviceRepository
     Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize);
     DeviceStatsDto GetStats();
     Task AddDeviceConnectionHistory(Devices devices, Devices? existingDevice);
+    Task UpdateDeviceInterval(DeviceIntervalUpdateDto dto);
+    
+    Task<int> GetDeviceUpdateIntervalAsync(Devices devices);
 
 }

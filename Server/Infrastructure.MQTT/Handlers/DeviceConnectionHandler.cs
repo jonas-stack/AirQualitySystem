@@ -21,6 +21,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
     private readonly IDevicesMapper _mapper;
     private readonly IDataValidator _validator;
     private readonly IDeviceService _deviceService;
+    private readonly IMqttPublisher _mqttPublisher;
     
 
     public DeviceConnectionHandler(
@@ -28,7 +29,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
         DeviceConnectionTracker connectionTracker,
         IDeviceRepository deviceRepository, IDataValidator validator, IDevicesMapper mapper,
         IJsonDeserializer deserializer,
-        IDeviceService deviceService)
+        IDeviceService deviceService, IMqttPublisher mqttPublisher)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -37,6 +38,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
         _mapper = mapper;
         _deserializer = deserializer;
         _deviceService = deviceService;
+        _mqttPublisher = mqttPublisher;
     }
 
     public string TopicFilter => "airquality/status";
@@ -85,6 +87,17 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             
             // send en entity til repository for at gemme i database
             await _deviceRepository.SaveDevicesAsync(entity);
+
+            if (entity.IsConnected)
+            {
+                var updateInterval = await _deviceRepository.GetDeviceUpdateIntervalAsync(entity);
+                var updateIntervalDto = new DeviceIntervalUpdateDto
+                {
+                    DeviceId = entity.DeviceId.ToString(),
+                    Interval = updateInterval
+                };
+                await _mqttPublisher.Publish(updateIntervalDto, "AirQuality/Server/UpdateInterval");
+            }
             
             // opdaterer device status i connection tracker
              _connectionTracker.UpdateDeviceStatus(entity.DeviceId, entity.LastSeen, dto.IsConnected);

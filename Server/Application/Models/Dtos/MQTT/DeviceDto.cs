@@ -16,4 +16,7 @@ public class DeviceDto
     
     [JsonPropertyName("IsConnected")]
     public bool IsConnected { get; set; }
+    
+    [JsonPropertyName("updateInterval")]
+    public int UpdateInterval { get; set; }
 }

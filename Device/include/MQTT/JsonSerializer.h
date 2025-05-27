@@ -29,7 +29,7 @@ public:
      * @param device_id Device identifier string.
      * @return JSON string with status and device ID.
      */
-    static String serializeStatusMessage(const char* status, const char* device_id);
+    static String serializeStatusMessage(const char* status, const char* device_id, int updateinterval);
 };
 
 #endif // JSON_SERIALIZER_H

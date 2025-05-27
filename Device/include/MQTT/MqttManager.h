@@ -64,6 +64,14 @@ public:
      * @return true if cleared successfully, false otherwise.
      */
     bool clearRetainedMessage(const char* topic);
+
+    int getMqttInterval() const {
+        return mqttInterval;
+    }
+
+    void setMqttInterval (int interval) {
+        mqttInterval = interval;
+    }
     
 private:
     CustomWiFiManager& _customWiFiManager;   // Reference to WiFi manager.
@@ -77,6 +85,7 @@ private:
     const char* _deviceId;                   // Device identifier.
     const char* _dataTopic;                  // MQTT topic for sensor data.
     const char* _statusTopic;                // MQTT topic for device status.
+    int mqttInterval = 300000;              // Interval for publishing status (5 minutes).
     
     JsonSerializer& _jsonSerializer;         // Reference to JSON serializer.
 
@@ -84,6 +93,9 @@ private:
     unsigned long _lastStatusUpdate;         // Last status publish time (ms).
     String _connectionTime;                  // Time of last successful connection.
     
+
+    void onMqttMessage(char* topic, byte* payload, unsigned int length);
+
     /**
      * @brief Connects to the MQTT broker.
      * @return true if connected, false otherwise.

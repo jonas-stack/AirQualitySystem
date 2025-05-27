@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS "Devices" (
     "DeviceId" UUID PRIMARY KEY,
     "DeviceName" VARCHAR(100) NOT NULL,
     "IsConnected" BOOLEAN NOT NULL DEFAULT FALSE,
-    "LastSeen" TIMESTAMP NOT NULL
+    "LastSeen" TIMESTAMP NOT NULL,
+    "Updateinterval" INT NOT NULL DEFAULT 30000
 );
 
 -- Device connection history
@@ -33,3 +34,4 @@ CREATE TABLE IF NOT EXISTS "SensorData" (
     CONSTRAINT "FK_TestSensorData_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("DeviceId"),
     CONSTRAINT "uq_deviceid_timestamp" UNIQUE ("DeviceId", "Timestamp")
 );
+

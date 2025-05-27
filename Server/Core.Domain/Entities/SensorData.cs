@@ -18,6 +18,4 @@ public partial class SensorData
     public Guid DeviceId { get; set; }
 
     public DateTime Timestamp { get; set; }
-
-    public virtual Devices Device { get; set; } = null!;
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Interfaces.Mappers;
@@ -15,12 +16,14 @@ public class DeviceService : IDeviceService {
     private readonly IDeviceRepository _deviceRepository;
     private readonly IConnectionManager _connectionManager;
     private readonly IDevicesMapper _devicesMapper;
+    private readonly IMqttPublisher _mqttPublisher;
     
-    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper)
+    public DeviceService(IDeviceRepository deviceRepository, IConnectionManager connectionManager, IDevicesMapper devicesMapper, IMqttPublisher mqttPublisher)
     {
         _deviceRepository = deviceRepository;
         _connectionManager = connectionManager;
         _devicesMapper = devicesMapper;
+        _mqttPublisher = mqttPublisher;
     }
     
     public async Task<List<DeviceDto>> GetAllDeviceStatus()
@@ -98,5 +101,27 @@ public class DeviceService : IDeviceService {
     public DeviceStatsDto GetDeviceStats()
     {
         return _deviceRepository.GetStats();
+    }
+    
+    public async Task UpdateDeviceInterval(DeviceIntervalUpdateDto dto)
+    {
+        if (dto.Interval <= 0)
+        {
+            throw new ArgumentOutOfRangeException("Interval must be greater than zero.");
+        }
+        
+        if (string.IsNullOrWhiteSpace(dto.DeviceId))
+        {
+            throw new ArgumentException("DeviceId cannot be null or empty.");
+        }
+        
+        if (!Guid.TryParse(dto.DeviceId, out var deviceId))
+        {
+            throw new ArgumentException($"'{dto.DeviceId}' is not a valid GUID");
+        }
+        
+        await _deviceRepository.UpdateDeviceInterval(dto);
+        
+        await _mqttPublisher.Publish(dto, "AirQuality/Server/UpdateInterval");
     }
 }
