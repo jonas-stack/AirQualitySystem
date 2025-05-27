@@ -22,7 +22,7 @@ export default function AirQualityTemperatureCard() {
   useEffect(() => {
     if (readyState !== 1) return
 
-    requestGraphData(["temperature"], TimePeriod.Daily)
+    requestGraphData(["temperature"], TimePeriod.Hourly)
 
     const reactToMessageSetup = onMessage<WebsocketMessage_1>(WebsocketEvents.GraphTemperatureUpdate, (dto) => {
       setChartData((prevData) => {
@@ -43,7 +43,7 @@ export default function AirQualityTemperatureCard() {
   const newest = chartData.at(-1)
 
   const ChartLoading = () => (
-    <div className="absolute inset-0 flex items-center justify-center bg-card/50 rounded-md z-10">
+    <div className="flex items-center justify-center bg-card/50 rounded-md z-10">
       <div className="flex flex-col items-center gap-2">
         <Spinner size="md" className="text-primary" />
         <p className="text-xs text-muted-foreground">Loading data...</p>
@@ -56,9 +56,11 @@ export default function AirQualityTemperatureCard() {
       <div className="h-full flex flex-col">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
+            <div className="space-y-2">
               <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <Thermometer className="h-5 w-5 text-primary" />
+                <div className="p-2 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg">
+                  <Thermometer className="h-5 w-5 text-white" />
+                </div>
                 Current Temperature
               </CardTitle>
               <p className="text-sm text-muted-foreground">Measured in celsius</p>

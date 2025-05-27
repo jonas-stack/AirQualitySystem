@@ -3,39 +3,19 @@ import { AppSidebar } from '../sidebar/AppSidebar';
 import { Outlet } from 'react-router-dom';
 import { Separator } from '../ui/separator';
 import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
 import DynamicBreadcrumbs from '../header/DynamicBreadcrumbs';
-import { SearchForm } from '../header/SearchForm';
-import { useEffect, useMemo, useState } from 'react';
+import {useMemo} from 'react';
 import { ThemeToggle } from './ThemeToggle';
-import { SearchDialog } from '../command/SearchDialog';
-import { LogOut } from 'lucide-react';
-import { WebsocketTopics } from '@/generated-client';
-import { useAutoSubscription } from '@/hooks';
+import {useSubscriptionHook} from '@/hooks/use-subscribe-to-topic';
+import {WebsocketTopics} from "@/generated-client.ts";
+import {useAutoSubscription} from "@/hooks/use-auto-subscription.ts";
 
 export const AuthenticatedLayout = () => {
-    const [commandSearchOpen, setCommandSearchOpen] = useState(false);
-
-    // brug memo for at sikre den ikke bliver oprettet på ny heletiden og kalder flere gange
-    const topicIds = useMemo(() => [WebsocketTopics.Dashboard], []);
-    useAutoSubscription(topicIds);
+    useSubscriptionHook();
   
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-          if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-            event.preventDefault();
-            setCommandSearchOpen(true);
-          }
-        };
-    
-        window.addEventListener('keydown', handleKeyDown);
-    
-        return () => {
-          window.removeEventListener('keydown', handleKeyDown);
-        };
-      }, []);
-    
-
+    // brug memo for at sikre den ikke bliver oprettet på ny heletiden og kalder flere gange
+    const topicIds = useMemo(() => [WebsocketTopics.Dashboard, WebsocketTopics.Ai, WebsocketTopics.Device], []);
+    useAutoSubscription(topicIds);
   return (
     <>
     <SidebarProvider>
@@ -53,19 +33,14 @@ export const AuthenticatedLayout = () => {
                     variant="default"
                     className="mr-2"
                   >
-                    Kasper Mortensen
+                    Local
                   </Badge>
-                  
-                  <SearchForm setOpen={setCommandSearchOpen} />
-                  <div className="flex items-center gap-0.5">
-                    <ThemeToggle />
-                  </div>
                   <div className='h-5'>
                     <Separator className='h-[20px]' orientation='vertical' />
                   </div>
-                  <Button variant='ghost' size='icon'>
-                    <LogOut />
-                  </Button>
+                  <div className="flex items-center gap-0.5">
+                    <ThemeToggle />
+                  </div>
                 </div>
               </div>
             </header>
@@ -75,7 +50,6 @@ export const AuthenticatedLayout = () => {
           </div>
         </main>
     </SidebarProvider>
-    <SearchDialog open={commandSearchOpen} setOpen={setCommandSearchOpen} />
     </>
   );
 };

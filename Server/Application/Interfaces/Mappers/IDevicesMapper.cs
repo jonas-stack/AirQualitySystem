@@ -6,4 +6,5 @@ namespace Application.Interfaces.Mappers;
 public interface IDevicesMapper
 {
     Devices MapToEntity(DeviceDto dto);
+    DeviceDto MapToDto(Devices entity);
 }

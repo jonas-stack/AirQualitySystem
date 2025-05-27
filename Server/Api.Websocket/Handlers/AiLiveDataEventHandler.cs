@@ -8,7 +8,9 @@ using WebSocketBoilerplate;
 
 namespace Api.Websocket.Handlers;
 
-public class AiLiveDataEventHandler : BaseEventHandler<LiveAiFeedbackDto>
+public class ClientRequestAiLiveData : BaseDto {} 
+
+public class AiLiveDataEventHandler : BaseEventHandler<ClientRequestAiLiveData>
 {
     
     private readonly IAiCommunication _aiCommunication;
@@ -18,17 +20,15 @@ public class AiLiveDataEventHandler : BaseEventHandler<LiveAiFeedbackDto>
         _aiCommunication = aiCommunication;
     }
     
-    public override async Task Handle(LiveAiFeedbackDto dto, IWebSocketConnection socket)
+    public override async Task Handle(ClientRequestAiLiveData dto, IWebSocketConnection socket)
     {
         var result = await _aiCommunication.AnalyzeLiveData();
 
-        var response = new WebsocketMessage<LiveAiFeedbackDto>
+        var response = new LiveAiFeedbackDto
         {
-            Topic = WebsocketTopics.Ai,
-            Data = new LiveAiFeedbackDto
-            {
-                AiAdvice = result
-            }
+            eventType = WebsocketTopics.Ai,
+            requestId = dto.requestId,
+            AiAdvice = result
         };
         
         await socket.Send(JsonSerializer.Serialize(response));

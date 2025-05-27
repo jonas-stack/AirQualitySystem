@@ -12,4 +12,6 @@ public partial class DeviceConnectionHistory
     public bool IsConnected { get; set; }
 
     public DateTime LastSeen { get; set; }
+
+    public virtual Devices Device { get; set; } = null!;
 }

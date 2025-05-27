@@ -12,7 +12,7 @@ public class MessageFromClient
 [Route("api/[controller]")]
 public class AiController(IAiCommunication aiCommunication) : ControllerBase
 {
-    [HttpGet]
+    [HttpPost]
     [Route("chat")]
     public async Task<ActionResult> Subscribe([FromHeader] string authorization, [FromBody] MessageFromClient message)
     {
@@ -27,7 +27,7 @@ public class AiController(IAiCommunication aiCommunication) : ControllerBase
         }
     }
     
-    [HttpGet]
+    [HttpPost]
     [Route("historical_data_analysis")]
     public async Task<ActionResult> HistoricalDataAnalysis(
         [FromHeader] string authorization,

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle2, WifiOff, Loader2, AlertTriangle } from "lucide-react"
+import { CheckCircle2, WifiOff, Loader2, AlertTriangle, Thermometer } from "lucide-react"
 import { useWsClient } from "ws-request-hook"
 
 export interface ConnectionStatusCardProps {
@@ -49,6 +49,7 @@ export function ConnectionStatusCard({
           ),
           title: "You are currently connected!",
           description: "All systems operational",
+          gradient: "from-green-400 to-green-600",
         }
       case 2:
         return {
@@ -60,6 +61,7 @@ export function ConnectionStatusCard({
           icon: <AlertTriangle className="h-8 w-8 text-orange-500" />,
           title: "Connection closing",
           description: "The connection is in the process of closing",
+          gradient: "from-orange-500 to-orange-600",
         }
       case 3:
       default:
@@ -68,6 +70,7 @@ export function ConnectionStatusCard({
           icon: <WifiOff className="h-8 w-8 text-destructive" />,
           title: "Connection lost",
           description: "Please check your network",
+          gradient: "from-red-500 to-red-600",
         }
     }
   }
@@ -78,7 +81,12 @@ export function ConnectionStatusCard({
     <Card className={`w-full ${className}`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-bold">{title}</CardTitle>
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <div className={`p-2 bg-gradient-to-br ${statusInfo.gradient} rounded-lg`}>
+                <Thermometer className="h-5 w-5 text-white" />
+              </div>
+              {title}
+            </CardTitle>
           <Badge className={statusInfo.badge.className} variant={statusInfo.badge.variant as any}>
             {statusInfo.badge.text}
           </Badge>

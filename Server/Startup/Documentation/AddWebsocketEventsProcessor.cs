@@ -2,6 +2,7 @@
 using NJsonSchema;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
+using WebSocketBoilerplate;
 
 namespace Startup.Documentation;
 
@@ -19,15 +20,38 @@ public sealed class AddWebsocketEventsProcessor : IDocumentProcessor
             .Distinct()
             .ToList();
 
+        var baseDtoType = typeof(BaseDto);
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        var derivedTypeNames = assemblies
+            .SelectMany(a =>
+            {
+                try { return a.GetTypes(); }
+                catch { return Array.Empty<Type>(); }
+            })
+            .Where(t =>
+                t != baseDtoType &&
+                !t.IsAbstract &&
+                baseDtoType.IsAssignableFrom(t))
+            .Select(t => t.Name)
+            .Distinct()
+            .ToList();
+
+        var combinedEnumValues = constants
+            .Concat(derivedTypeNames)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
         var schema = new JsonSchema
         {
             Type = JsonObjectType.String,
-            Description = "Websocket Events enums"
+            Description = "Websocket event types (constants + BaseDto inheritors)"
         };
 
-        foreach (var topic in constants)
-            schema.Enumeration.Add(topic);
-
+        foreach (var val in combinedEnumValues)
+            schema.Enumeration.Add(val);
+        
         context.Document.Definitions["WebsocketEvents"] = schema;
     }
 }

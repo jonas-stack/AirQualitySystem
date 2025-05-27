@@ -2,6 +2,7 @@
 using Application.Enums;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Models.Dtos.MQTT;
+using Application.Models.Websocket.Graph;
 using Core.Domain.Entities;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ public class GraphRepository : IGraphRepository {
         _logger = logger;
     }
     
-    public async Task<List<MultiGraphEntity>> GetGraphDataAsync(TimePeriod timePeriod, DateTime? referenceDate = null)
+    public async Task<List<FlexibleGraphData>> GetGraphDataAsync(TimePeriod timePeriod, DateTime? referenceDate = null)
     {
         // start med at finde ud af hvornår vi skal starte med at kigge
         // f.eks. en dag siden, en uge siden osv.
@@ -57,7 +58,7 @@ public class GraphRepository : IGraphRepository {
         };
     }
     
-    private async Task<List<MultiGraphEntity>> AggregateDataByTimePeriod(IQueryable<SensorData> query, TimePeriod timePeriod, int? maxResults = null) 
+    private async Task<List<FlexibleGraphData>> AggregateDataByTimePeriod(IQueryable<SensorData> query, TimePeriod timePeriod, int? maxResults = null) 
     {
         switch (timePeriod)
         {
@@ -80,10 +81,10 @@ public class GraphRepository : IGraphRepository {
 
                 var hourly = await hourlyGrouped.ToListAsync();
 
-                return hourly.Select(d => new MultiGraphEntity
+                return hourly.Select(d => new FlexibleGraphData
                 {
-                    Timestamp = d.TimeKey.ToString("HH:mm"),
-                    Values = BuildValuesDictionary(d)
+                    Time = d.TimeKey.ToString("HH:mm"),
+                    DataPoints = BuildValuesDictionary(d)
                 }).ToList();
 
             case TimePeriod.Daily:
@@ -112,10 +113,10 @@ public class GraphRepository : IGraphRepository {
                 
                 var daily = await dailyGrouped.ToListAsync();
 
-                return daily.Select(d => new MultiGraphEntity
+                return daily.Select(d => new FlexibleGraphData
                 {
-                    Timestamp = d.DayOfWeek.ToString().Substring(0, 3),
-                    Values = BuildValuesDictionary(d)
+                    Time = d.DayOfWeek.ToString().Substring(0, 3),
+                    DataPoints = BuildValuesDictionary(d)
                 }).ToList();
 
             case TimePeriod.Weekly:
@@ -143,10 +144,10 @@ public class GraphRepository : IGraphRepository {
                 if (maxResults.HasValue)
                     weeklyGrouped = weeklyGrouped.Take(maxResults.Value);
 
-                return weeklyGrouped.Select(d => new MultiGraphEntity
+                return weeklyGrouped.Select(d => new FlexibleGraphData
                 {
-                    Timestamp = $"Week {d.Week}",
-                    Values = BuildValuesDictionary(d)
+                    Time = $"Week {d.Week}",
+                    DataPoints = BuildValuesDictionary(d)
                 }).ToList();
 
             case TimePeriod.Monthly:
@@ -171,13 +172,13 @@ public class GraphRepository : IGraphRepository {
                     monthlyGrouped = monthlyGrouped.Take(maxResults.Value);
 
                 return monthlyGrouped
-                    .Select(d => new MultiGraphEntity
+                    .Select(d => new FlexibleGraphData
                     {
-                        Timestamp = CultureInfo.CurrentCulture.DateTimeFormat
+                        Time = CultureInfo.CurrentCulture.DateTimeFormat
                             .GetMonthName(d.Month)
                             .Substring(0, 1).ToUpper() + CultureInfo.CurrentCulture.DateTimeFormat
                             .GetMonthName(d.Month).Substring(1), // lidt bøvl men første uppercase månede
-                        Values = BuildValuesDictionary(d)
+                        DataPoints = BuildValuesDictionary(d)
                     })
                     .ToList();
             
