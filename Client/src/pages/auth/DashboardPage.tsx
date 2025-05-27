@@ -127,20 +127,12 @@ export default function DashboardPage() {
             <div className="lg:col-span-3">
                 <ConnectionStatusCard className="h-60" />
             </div>
-
-            <div className="lg:col-span-4">
-                <AirQualityInsightsCard
-                  cards={airQualityData}
-                  onRefresh={() => console.log("Refreshing air quality data...")}
-                  lastUpdated={new Date()}
-                />
-            </div>
-
-            <div className="lg:col-span-4">
+            
+            <div className="lg:col-span-6">
                 <LiveDataCard className="h-[500px] lg:h-[496px]" title="Environment Watcher" />
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-6">
                 <SimpleAirQualityChartsCard className="h-[496px]" onRefresh={() => console.log("Refreshing chart data...")} />
             </div>
         </div>
