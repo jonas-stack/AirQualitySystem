@@ -80,7 +80,7 @@ public class DeviceRepository : IDeviceRepository
         var connectedDevices = _dbContext.Devices.Count(d => d.IsConnected);
         
         var last24Hours = DateTime.Now.AddHours(-24);
-        var disconnectionsLast24Hours = _dbContext.DeviceConnectionHistory.Count(d => d.LastSeen < last24Hours && !d.IsConnected);
+        var disconnectionsLast24Hours = _dbContext.DeviceConnectionHistory.Count(d => d.LastSeen > last24Hours && !d.IsConnected);
 
         return new DeviceStatsDto
         {
