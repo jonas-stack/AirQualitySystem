@@ -1,6 +1,8 @@
 # IoT Indoor Air Quality Monitoring System
 Link to the webapp: https://airqualitysystem.netlify.app/dashboard
 
+If you want to run the use the Ai module, you have to build this docker from the root, and run it locally: docker-compose.yml 
+
 ## Overview
 This project is a prototype IoT-based environmental monitoring system designed to measure air quality and atmospheric parameters indoors. The system provides real-time data on pollutants, temperature, pressure, and gas levels to help identify potential health and safety issues.
 

@@ -67,7 +67,7 @@ public class DeviceService : IDeviceService {
 
         foreach (var entry in pagedEntities.Items)
         {
-            var dateTime = new DateTime(entry.LastSeen);
+            var dateTime = new DateTime(entry.LastSeen, DateTimeKind.Unspecified);
             var unixTimestamp = ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
             
             // lidt dumt at vi opretter en ny igen men ja

@@ -35,25 +35,17 @@ export function formatTicksToUTC(ticks: number): string {
 }
 
 export const unixToDateString = (unixTimestamp: number): string => {
-  const date = new Date(unixTimestamp * 1000);
+  const adjustedTimestamp = unixTimestamp - 2 * 3600;
 
-  const options: Intl.DateTimeFormatOptions = {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Europe/Copenhagen',
-  };
+  const date = new Date(adjustedTimestamp * 1000);
 
-  const timeFormatter = new Intl.DateTimeFormat('da-DK', options);
-  const time = timeFormatter.format(date).replace('.', ':');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
 
-  const copenhagenDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }));
-
-  const day = copenhagenDate.getDate().toString().padStart(2, '0');
-  const month = (copenhagenDate.getMonth() + 1).toString().padStart(2, '0');
-  const year = copenhagenDate.getFullYear();
-
-  return `${time} ${day}-${month}-${year}`;
+  return `${hours}:${minutes} ${day}-${month}-${year}`;
 };
 
 export const formatDuration = (seconds: number): string => {
