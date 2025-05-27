@@ -58,7 +58,7 @@ def run_history_tool(range_str: str = "7d") -> str:
     data = get_history_data(range_str)
     summary = summarize_history(data)
     explanation = history_data_chain.run({"history": summary})
-    return explanation
+    return get_history_advice(summary) + "\n\n" + explanation
 
 
 def get_history_advice(summary: str) -> str:
