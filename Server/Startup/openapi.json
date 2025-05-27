@@ -233,6 +233,26 @@
           }
         }
       },
+      "DeviceIntervalUpdateDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceId": {
+                "type": "string"
+              },
+              "interval": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
       "LiveAiFeedbackDto": {
         "allOf": [
           {
@@ -479,6 +499,10 @@
           },
           "IsConnected": {
             "type": "boolean"
+          },
+          "updateInterval": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -624,6 +648,22 @@
           }
         }
       },
+      "ServerResponseDeviceUpdateInterval": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "success": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
       "ClientRequestDeviceList": {
         "allOf": [
           {
@@ -702,6 +742,7 @@
           "ClientRequestDeviceStats",
           "ClientRequestDeviceStatus",
           "ClientRequestSensorData",
+          "DeviceIntervalUpdateDto",
           "DeviceUpdateStatus",
           "GraphGetMeasurement",
           "GraphTemperatureUpdate",
@@ -715,6 +756,7 @@
           "ServerResponseDeviceList",
           "ServerResponseDeviceStats",
           "ServerResponseDeviceStatus",
+          "ServerResponseDeviceUpdateInterval",
           "ServerResponseSensorData",
           "ServerSendsErrorMessage",
           "WebsocketMessage`1"

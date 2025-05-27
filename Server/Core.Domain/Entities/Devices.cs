@@ -13,7 +13,5 @@ public partial class Devices
 
     public DateTime LastSeen { get; set; }
 
-    public virtual ICollection<DeviceConnectionHistory> DeviceConnectionHistory { get; set; } = new List<DeviceConnectionHistory>();
-
-    public virtual ICollection<SensorData> SensorData { get; set; } = new List<SensorData>();
+    public int Updateinterval { get; set; }
 }

@@ -14,7 +14,8 @@ public class DevicesMapper : IDevicesMapper
             DeviceId = DataTypeConverter.GetDeviceGuid(dto.DeviceName),
             DeviceName = dto.DeviceName,
             IsConnected = dto.IsConnected,
-            LastSeen = DataTypeConverter.GetLocalDateTime(dto.LastSeen)
+            LastSeen = DataTypeConverter.GetLocalDateTime(dto.LastSeen),
+            Updateinterval = dto.UpdateInterval
         };
     }
 
@@ -25,7 +26,8 @@ public class DevicesMapper : IDevicesMapper
             DeviceGuid = entity.DeviceId.ToString(),
             DeviceName = entity.DeviceName,
             IsConnected = entity.IsConnected,
-            LastSeen = entity.LastSeen.Ticks
+            LastSeen = entity.LastSeen.Ticks,
+            UpdateInterval = entity.Updateinterval
         };
     }
 }

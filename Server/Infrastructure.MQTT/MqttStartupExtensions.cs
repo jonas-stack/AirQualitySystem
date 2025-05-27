@@ -57,6 +57,7 @@ public static class MqttExtensions
         services.AddScoped<IJsonDeserializer, JsonDeserializer>();
         services.AddScoped<ISensorDataMapper, SensorDataMapper>();
         services.AddScoped<IDevicesMapper, DevicesMapper>();
+        services.AddSingleton<IMqttPublisher, MqttPublisher>();
 
         return services;
     }

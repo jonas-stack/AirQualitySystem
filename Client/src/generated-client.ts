@@ -225,6 +225,11 @@ export interface ApplicationBaseDto {
     topic?: string;
 }
 
+export interface DeviceIntervalUpdateDto extends BaseDto {
+    deviceId?: string;
+    interval?: number;
+}
+
 export interface LiveAiFeedbackDto extends BaseDto {
     aiAdvice?: string;
 }
@@ -292,6 +297,7 @@ export interface DeviceDto {
     DeviceName?: string;
     LastSeen?: number;
     IsConnected?: boolean;
+    updateInterval?: number;
 }
 
 export interface ClientRequestDeviceStats extends BaseDto {
@@ -334,6 +340,10 @@ export interface SensorDataDto {
     timestamp?: number;
 }
 
+export interface ServerResponseDeviceUpdateInterval extends BaseDto {
+    success?: boolean;
+}
+
 export interface ClientRequestDeviceList extends BaseDto {
 }
 
@@ -369,6 +379,7 @@ export enum WebsocketEvents {
     ClientRequestDeviceStats = "ClientRequestDeviceStats",
     ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
     ClientRequestSensorData = "ClientRequestSensorData",
+    DeviceIntervalUpdateDto = "DeviceIntervalUpdateDto",
     DeviceUpdateStatus = "DeviceUpdateStatus",
     GraphGetMeasurement = "GraphGetMeasurement",
     GraphTemperatureUpdate = "GraphTemperatureUpdate",
@@ -382,6 +393,7 @@ export enum WebsocketEvents {
     ServerResponseDeviceList = "ServerResponseDeviceList",
     ServerResponseDeviceStats = "ServerResponseDeviceStats",
     ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
+    ServerResponseDeviceUpdateInterval = "ServerResponseDeviceUpdateInterval",
     ServerResponseSensorData = "ServerResponseSensorData",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
     WebsocketMessage_1 = "WebsocketMessage`1",

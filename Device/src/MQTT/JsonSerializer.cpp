@@ -15,11 +15,12 @@ String JsonSerializer::serializeSensorData(float temperature, float humidity, fl
     return output;
 }
 
-String JsonSerializer::serializeStatusMessage(const char* status, const char* device_id) {
+String JsonSerializer::serializeStatusMessage(const char* status, const char* device_id, int update_interval) {
     DynamicJsonDocument doc(256);
     doc["DeviceName"] = device_id;
     doc["IsConnected"] = (strcmp(status, "online") == 0);
     doc["LastSeen"] = time(nullptr);
+    doc["Updateinterval"] = update_interval;
     String jsonString;
     serializeJson(doc, jsonString);
     return jsonString;

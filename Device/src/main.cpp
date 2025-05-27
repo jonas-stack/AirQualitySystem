@@ -154,7 +154,7 @@ void loop() {
     updateLCDDisplay(temp, humidity, gas, particles);
 
     // Publish sensor data to MQTT at defined interval
-    if (currentMillis - lastMqttPublish >= mqttInterval) {
+    if (currentMillis - lastMqttPublish >= mqttClient.getMqttInterval()) {
       lastMqttPublish = currentMillis;
       mqttClient.publishSensorData(temp, humidity, gas, particles);
     }

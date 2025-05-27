@@ -44,6 +44,10 @@ bool MqttManager::setup() {
     _wifiClient.setInsecure();
     _mqttManager.setServer(_server, _port);
     _mqttManager.setBufferSize(1024);
+    _mqttManager.setCallback([this](char* topic, byte* payload, unsigned int length) {
+        this->onMqttMessage(topic, payload, length);
+    });
+
     return connect();
 }
 
@@ -59,7 +63,7 @@ bool MqttManager::connect() {
     }
 
     // Prepare offline message for LWT.
-    String offlineMsg = _jsonSerializer.serializeStatusMessage("offline", _deviceId);
+    String offlineMsg = _jsonSerializer.serializeStatusMessage("offline", _deviceId, this->getMqttInterval());
 
     bool connected = _mqttManager.connect(
         _clientId.c_str(), 
@@ -73,8 +77,10 @@ bool MqttManager::connect() {
 
     if (connected) {
         _connectionTime = time(nullptr);
-        String onlineMsg = _jsonSerializer.serializeStatusMessage("online", _deviceId);
+        String onlineMsg = this->createStatusJson(connected);
         _mqttManager.publish(_statusTopic, onlineMsg.c_str(), true);
+
+        _mqttManager.subscribe(_topicDeviceUpdateInterval); // Subscribe to command topic
     }
 
     return connected;
@@ -102,13 +108,39 @@ void MqttManager::loop() {
     }
 }
 
+void MqttManager::onMqttMessage(char* topic, byte* payload, unsigned int length) {
+    // Convert payload to String
+    String message;
+    for (unsigned int i = 0; i < length; i++) {
+        message += (char)payload[i];
+    }
+    // Handle the message as needed
+    Serial.print("Received message on topic: ");
+    Serial.print(topic);
+    Serial.print(" -> ");
+    Serial.println(message);
+
+    if (String(topic) == _topicDeviceUpdateInterval) {
+        DynamicJsonDocument doc(128);
+        DeserializationError error = deserializeJson(doc, message);
+        if (!error && doc.containsKey("interval")) {
+            int newInterval = doc["interval"];
+            if (newInterval >= 10000) { // Minimum 10 seconds
+                setMqttInterval(newInterval);
+                Serial.print("MQTT publish interval updated to: ");
+                Serial.println(getMqttInterval());
+            }
+        }
+    }
+}
+
 /**
  * Creates a JSON status message using the JsonSerializer.
  * @param isConnected Whether the device is online.
  * @return JSON string representing the status.
  */
 String MqttManager::createStatusJson(bool isConnected) {
-    return _jsonSerializer.serializeStatusMessage(isConnected ? "online" : "offline", _deviceId);
+    return _jsonSerializer.serializeStatusMessage(isConnected ? "online" : "offline", _deviceId, this->getMqttInterval());
 }
 
 /**

@@ -25,11 +25,6 @@ public partial class MyDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("DeviceConnectionHistory_pkey");
 
             entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
-
-            entity.HasOne(d => d.Device).WithMany(p => p.DeviceConnectionHistory)
-                .HasForeignKey(d => d.DeviceId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DeviceConnection_Devices");
         });
 
         modelBuilder.Entity<Devices>(entity =>
@@ -40,6 +35,7 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.DeviceName).HasMaxLength(100);
             entity.Property(e => e.IsConnected).HasDefaultValue(false);
             entity.Property(e => e.LastSeen).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.Updateinterval).HasDefaultValue(30000);
         });
 
         modelBuilder.Entity<SensorData>(entity =>
@@ -50,11 +46,6 @@ public partial class MyDbContext : DbContext
 
             entity.Property(e => e.Pm25).HasColumnName("PM25");
             entity.Property(e => e.Timestamp).HasColumnType("timestamp without time zone");
-
-            entity.HasOne(d => d.Device).WithMany(p => p.SensorData)
-                .HasForeignKey(d => d.DeviceId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_TestSensorData_Devices");
         });
 
         OnModelCreatingPartial(modelBuilder);

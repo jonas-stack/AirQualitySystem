@@ -93,13 +93,48 @@ public class DataValidator : IDataValidator
     
     private bool HasValidSensorData(SensorDataDto dto)
     {
-        return !string.IsNullOrWhiteSpace(dto.DeviceId) &&
-               dto.Temperature >= ValidationConstants.MIN_TEMPERATURE && 
-               dto.Temperature <= ValidationConstants.MAX_TEMPERATURE &&
-               dto.Humidity >= ValidationConstants.MIN_HUMIDITY && 
-               dto.Humidity <= ValidationConstants.MAX_HUMIDITY &&
-               dto.AirQuality >= ValidationConstants.MIN_AIR_QUALITY &&
-               dto.Pm25 >= ValidationConstants.MIN_PM25;
+        if (string.IsNullOrWhiteSpace(dto.DeviceId))
+        {
+            _logger.LogWarning("DeviceId is null or whitespace.");
+            return false;
+        }
+        if (dto.Temperature < ValidationConstants.MIN_TEMPERATURE)
+        {
+            _logger.LogWarning("Temperature below minimum: {Value} < {Min}", dto.Temperature, ValidationConstants.MIN_TEMPERATURE);
+            return false;
+        }
+        if (dto.Temperature > ValidationConstants.MAX_TEMPERATURE)
+        {
+            _logger.LogWarning("Temperature above maximum: {Value} > {Max}", dto.Temperature, ValidationConstants.MAX_TEMPERATURE);
+            return false;
+        }
+        if (dto.Humidity < ValidationConstants.MIN_HUMIDITY)
+        {
+            _logger.LogWarning("Humidity below minimum: {Value} < {Min}", dto.Humidity, ValidationConstants.MIN_HUMIDITY);
+            return false;
+        }
+        if (dto.Humidity > ValidationConstants.MAX_HUMIDITY)
+        {
+            _logger.LogWarning("Humidity above maximum: {Value} > {Max}", dto.Humidity, ValidationConstants.MAX_HUMIDITY);
+            return false;
+        }
+        if (dto.AirQuality < ValidationConstants.MIN_AIR_QUALITY)
+        {
+            _logger.LogWarning("AirQuality below minimum: {Value} < {Min}", dto.AirQuality, ValidationConstants.MIN_AIR_QUALITY);
+            return false;
+        }
+        if (dto.AirQuality > ValidationConstants.MAX_AIR_QUALITY)
+        {
+            _logger.LogWarning("AirQuality above maximum: {Value} > {Max}", dto.AirQuality, ValidationConstants.MAX_AIR_QUALITY);
+            return false;
+        }
+        if (dto.Pm25 < ValidationConstants.MIN_PM25)
+        {
+            _logger.LogWarning("PM2.5 below minimum: {Value} < {Min}", dto.Pm25, ValidationConstants.MIN_PM25);
+            return false;
+        }
+        return true;
+        
     }
 
     private bool HasValidDeviceStatus(DeviceDto dto)
