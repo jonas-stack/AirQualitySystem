@@ -2,6 +2,9 @@
 #include "JsonSerializer.h"
 #include "WiFi/CustomWiFiManager.h"
 
+/**
+ * Constructs an MqttManager with all required dependencies and configuration.
+ */
 MqttManager::MqttManager(
     CustomWiFiManager& customWiFiManager,
     PubSubClient& mqttManager,
@@ -28,10 +31,15 @@ MqttManager::MqttManager(
     _jsonSerializer(jsonSerializer),
     _lastStatusUpdate(0)
 {
+    // Generate a unique MQTT client ID, for connecting to the broker.
     _clientId = "ESP32Client-";
     _clientId += String(random(0xffff), HEX);
 }
 
+/**
+ * Initializes the MQTT client and attempts initial connection.
+ * @return true if connected, false otherwise.
+ */
 bool MqttManager::setup() {
     _wifiClient.setInsecure();
     _mqttManager.setServer(_server, _port);
@@ -39,12 +47,18 @@ bool MqttManager::setup() {
     return connect();
 }
 
+/**
+ * Connects to the MQTT broker.
+ * Sets up the Last Will and Testament (LWT) message.
+ * Publishes an "online" status message upon successful connection.
+ * @return true if connected, false otherwise.
+ */
 bool MqttManager::connect() {
     if (!_customWiFiManager.isConnected()) {
         return false;
     }
 
-    // Use JsonSerializer for offline message (LWT)
+    // Prepare offline message for LWT.
     String offlineMsg = _jsonSerializer.serializeStatusMessage("offline", _deviceId);
 
     bool connected = _mqttManager.connect(
@@ -66,6 +80,10 @@ bool MqttManager::connect() {
     return connected;
 }
 
+/**
+ * Main loop for MQTT handling.
+ * Reconnects if disconnected and periodically publishes status.
+ */
 void MqttManager::loop() {
     if (!_mqttManager.connected()) {
         connect();
@@ -73,7 +91,7 @@ void MqttManager::loop() {
     
     _mqttManager.loop();
     
-    // Update status every 5 minutes
+    // Publish status every 5 minutes.
     unsigned long now = millis();
     if (now - _lastStatusUpdate > 300000) {
         _lastStatusUpdate = now;
@@ -84,16 +102,28 @@ void MqttManager::loop() {
     }
 }
 
+/**
+ * Creates a JSON status message using the JsonSerializer.
+ * @param isConnected Whether the device is online.
+ * @return JSON string representing the status.
+ */
 String MqttManager::createStatusJson(bool isConnected) {
-    // Use JsonSerializer for status message
     return _jsonSerializer.serializeStatusMessage(isConnected ? "online" : "offline", _deviceId);
 }
 
+/**
+ * Creates a JSON sensor data message using the JsonSerializer.
+ * @return JSON string with sensor readings.
+ */
 String MqttManager::createSensorJson(float temperature, float humidity, float gas, float particles) {
-    // Use JsonSerializer for sensor data
     return _jsonSerializer.serializeSensorData(temperature, humidity, gas, particles, _deviceId);
 }
 
+/**
+ * Publishes sensor data to the MQTT broker.
+ * Connects if not already connected.
+ * @return true if published successfully, false otherwise.
+ */
 bool MqttManager::publishSensorData(float temperature, float humidity, float gas, float particles) {
     if (!_mqttManager.connected()) {
         if (!connect()) {
@@ -105,6 +135,12 @@ bool MqttManager::publishSensorData(float temperature, float humidity, float gas
     return _mqttManager.publish(_dataTopic, jsonString.c_str(), false);
 }
 
+/**
+ * Clears a retained MQTT message on the specified topic.
+ * Connects if not already connected.
+ * @param topic The MQTT topic to clear.
+ * @return true if cleared successfully, false otherwise.
+ */
 bool MqttManager::clearRetainedMessage(const char* topic) {
     if (!_mqttManager.connected()) {
         if (!connect()) {
