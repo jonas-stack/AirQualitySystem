@@ -90,13 +90,33 @@ public class DeviceRepository : IDeviceRepository
         };
     }
 
+    public async Task AddDeviceConnectionHistory(Devices devices, Devices? existingDevice)
+    {
+        if (existingDevice != null)
+        {
+            if (devices.IsConnected == existingDevice.IsConnected)
+                return;
+        }
+        
+        var newDeviceHistory = new DeviceConnectionHistory()
+        {
+            DeviceId = devices.DeviceId,
+            IsConnected = devices.IsConnected,
+            LastSeen = devices.LastSeen
+        };
+
+        await _dbContext.AddAsync(newDeviceHistory);
+        _logger.LogInformation("Device saved successfully: {DeviceId}", devices.DeviceId);
+
+        await _dbContext.SaveChangesAsync();
+    }
 
     public async Task SaveDevicesAsync(Devices devices)
     {
         try
         {
             var existingDevice = await _dbContext.Devices.FindAsync(devices.DeviceId);
-
+            
             if (!devices.IsConnected)
             {
                 devices.LastSeen = new DateTime(DateTime.Now.Ticks, DateTimeKind.Unspecified);
@@ -106,11 +126,15 @@ public class DeviceRepository : IDeviceRepository
                 devices.LastSeen = new DateTime(devices.LastSeen.Ticks, DateTimeKind.Unspecified);
             }
 
+            // opdater historien her efter vi har opdateret tiden
+            await AddDeviceConnectionHistory(devices, existingDevice);
+
             if (existingDevice != null)
             {
                 existingDevice.DeviceName = devices.DeviceName;
                 existingDevice.IsConnected = devices.IsConnected;
                 existingDevice.LastSeen = devices.LastSeen;
+                
                 _dbContext.Update(existingDevice);
             }
             else
@@ -118,17 +142,9 @@ public class DeviceRepository : IDeviceRepository
                 _dbContext.Add(devices);
             }
 
-            var newDeviceHistory = new DeviceConnectionHistory()
-            {
-                DeviceId = devices.DeviceId,
-                IsConnected = devices.IsConnected,
-                LastSeen = devices.LastSeen
-            };
-
-            _dbContext.Add(newDeviceHistory);
-
+            _logger.LogInformation("Device saved successfully: {DeviceId}", devices.DeviceId);
+            
             await _dbContext.SaveChangesAsync();
-            _logger.LogDebug("Device saved successfully: {DeviceId}", devices.DeviceId);
         }
         catch (Exception ex)
         {

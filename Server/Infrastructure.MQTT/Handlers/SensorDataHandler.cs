@@ -109,7 +109,6 @@ public class SensorDataHandler : IMqttMessageHandler
 
             await _graphService.BroadcastMeasurementsAsync(entity);
             await _sensorDataService.Broadcast(dto);
-            //await _deviceService.BroadcastData(entity);
 
             await _aiCommunication.BroadCastData();
 

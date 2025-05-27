@@ -16,4 +16,6 @@ public interface IDeviceRepository
     Task<DeviceDto> GetDevice(string deviceId);
     Task<PagedResult<DeviceConnectionHistoryDto>> GetDeviceConnectionHistoryAsync(string deviceId, int pageNumber, int pageSize);
     DeviceStatsDto GetStats();
+    Task AddDeviceConnectionHistory(Devices devices, Devices? existingDevice);
+
 }
