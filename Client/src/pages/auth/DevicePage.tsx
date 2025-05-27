@@ -12,7 +12,7 @@ import { DeviceConnectionHistoryTable } from "@/components/table/device-connecti
 
 export default function DevicePage() {
     const { readyState } = useWsClient();
-    const { getDevicesArray, iseDevicesLoading, deviceStats, isDeviceStatsLoading } = useDeviceData();
+    const { getDevicesArray, iseDevicesLoading, deviceStats } = useDeviceData();
     const { requestSensorDataForDevice, sensorData } = useDeviceSensorData();
     const { requestDeviceConnectionHistoryForDevice, deviceConnectionHistory } = useDeviceConnectionHistory();
 
@@ -22,21 +22,17 @@ export default function DevicePage() {
       disconnectionsLast24Hours: 0,
     };
 
-    const devices = getDevicesArray();
+    const deviceUpdateInterval = (device: DeviceDto, interval: number) => {
+      
+    }
 
-    const connectedDevicesCount = devices.filter((d) => d.IsConnected).length
+    const devices = getDevicesArray();
     const [selectedDevice, setSelectedDevice] = useState<DeviceDto | null>(null);
 
     const [activeTab, setActiveTab] = useState("sensor-data")
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-
-    const stats: DashboardStats = {
-        totalMeasurements: 15847,
-        totalDevices: 1,
-        disconnectionsLast24h: 3,
-    }
 
     useEffect(() => {
       if (readyState !== 1) {
