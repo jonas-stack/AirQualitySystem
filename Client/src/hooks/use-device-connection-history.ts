@@ -56,7 +56,7 @@ export function useDeviceConnectionHistory() {
         }
     }
 
-    const reqisterDeviceConnectionHistoryUpdate = () => {
+    const registerDeviceConnectionHistoryUpdate = () => {
         return onMessage<WebsocketMessage_1>(WebsocketEvents.BroadcastDeviceSensorDataUpdate, (dto) => {
             const updatedSensorData = dto.data as DeviceConnectionHistoryDto;
             if (!updatedSensorData) return;
@@ -96,7 +96,7 @@ export function useDeviceConnectionHistory() {
     useEffect(() => {
         if (readyState !== 1) return;
 
-        const cleanupSensorDataUpdates = reqisterDeviceConnectionHistoryUpdate();
+        const cleanupSensorDataUpdates = registerDeviceConnectionHistoryUpdate();
 
         // cleanup op på unmount eller readyState
         return () => {
