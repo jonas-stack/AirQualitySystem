@@ -157,6 +157,8 @@ void loop() {
     if (currentMillis - lastMqttPublish >= mqttClient.getMqttInterval()) {
       lastMqttPublish = currentMillis;
       mqttClient.publishSensorData(temp, humidity, gas, particles);
+      Serial.printf("Published sensor data: Temp=%.2f, Humidity=%.2f, Gas=%.2f, PM2.5=%.2f\n", 
+                    temp, humidity, gas, particles);
     }
 
     // Blink status LED to indicate activity

@@ -85,7 +85,7 @@ private:
     const char* _deviceId;                   // Device identifier.
     const char* _dataTopic;                  // MQTT topic for sensor data.
     const char* _statusTopic;                // MQTT topic for device status.
-    int mqttInterval = 300000;              // Interval for publishing status (5 minutes).
+    int mqttInterval = 10000;              // Interval for publishing status (5 minutes).
     const char* _topicDeviceUpdateInterval = "AirQuality/Server/UpdateInterval"; // Topic for update interval commands.
     
     JsonSerializer& _jsonSerializer;         // Reference to JSON serializer.
