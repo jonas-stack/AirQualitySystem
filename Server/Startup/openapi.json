@@ -98,16 +98,6 @@
           "Subscription"
         ],
         "operationId": "Subscription_Subscribe",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          }
-        ],
         "requestBody": {
           "x-name": "dto",
           "content": {
@@ -118,7 +108,7 @@
             }
           },
           "required": true,
-          "x-position": 2
+          "x-position": 1
         },
         "responses": {
           "200": {
@@ -141,55 +131,12 @@
           "Subscription"
         ],
         "operationId": "Subscription_Unsubscribe",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          }
-        ],
         "requestBody": {
           "x-name": "dto",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ChangeSubscriptionDto"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/WebsocketNotifier/NotifyRoute": {
-      "post": {
-        "tags": [
-          "WebsocketNotifier"
-        ],
-        "operationId": "WebsocketNotifier_Notify",
-        "requestBody": {
-          "x-name": "dto",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotifyMessageDto"
               }
             }
           },
@@ -238,18 +185,6 @@
           }
         }
       },
-      "NotifyMessageDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "topic": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      },
       "WebsocketMessage_1": {
         "allOf": [
           {
@@ -264,12 +199,6 @@
               },
               "data": {
                 "$ref": "#/components/schemas/T"
-              },
-              "requestId": {
-                "type": "string"
-              },
-              "eventType": {
-                "type": "string"
               }
             }
           }
@@ -385,6 +314,128 @@
           "Monthly"
         ]
       },
+      "ServerResponseAirQualityData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requestedData": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "timePeriod": {
+                "$ref": "#/components/schemas/TimePeriod"
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ClientRequestDeviceHistory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deviceId": {
+                "type": "string"
+              },
+              "pageNumber": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "pageSize": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "ServerResponseDeviceHistory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "connectionData": {
+                "$ref": "#/components/schemas/PagedResultOfDeviceConnectionHistoryDto"
+              }
+            }
+          }
+        ]
+      },
+      "PagedResultOfDeviceConnectionHistoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceConnectionHistoryDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DeviceConnectionHistoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deviceId": {
+            "type": "string"
+          },
+          "isConnected": {
+            "type": "boolean"
+          },
+          "lastSeen": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        }
+      },
       "ClientRequestDeviceStatus": {
         "allOf": [
           {
@@ -431,7 +482,18 @@
           }
         }
       },
-      "ExampleClientDto": {
+      "ClientRequestDeviceStats": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ServerResponseDeviceStats": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -440,14 +502,32 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "somethingTheClientSends": {
-                "type": "string"
+              "stats": {
+                "$ref": "#/components/schemas/DeviceStatsDto"
               }
             }
           }
         ]
       },
-      "ExampleServerResponse": {
+      "DeviceStatsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "allTimeMeasurements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "connectedDevices": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "disconnectionsLast24Hours": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ClientRequestSensorData": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -456,12 +536,93 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "somethingTheServerSends": {
+              "sensorId": {
                 "type": "string"
+              },
+              "pageNumber": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "pageSize": {
+                "type": "integer",
+                "format": "int32"
               }
             }
           }
         ]
+      },
+      "ServerResponseSensorData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "sensorData": {
+                "$ref": "#/components/schemas/PagedResultOfSensorDataDto"
+              }
+            }
+          }
+        ]
+      },
+      "PagedResultOfSensorDataDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SensorDataDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SensorDataDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "humidity": {
+            "type": "number",
+            "format": "double"
+          },
+          "air_quality": {
+            "type": "number",
+            "format": "double"
+          },
+          "pm25": {
+            "type": "number",
+            "format": "double"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
       },
       "ClientRequestDeviceList": {
         "allOf": [
@@ -474,7 +635,7 @@
           }
         ]
       },
-      "ServerResponseList": {
+      "ServerResponseDeviceList": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseDto"
@@ -515,25 +676,6 @@
           }
         ]
       },
-      "StringConstants": {
-        "type": "string",
-        "description": "Available eventType constants",
-        "enum": [
-          "WebsocketMessage`1",
-          "LiveAiFeedbackDto",
-          "ServerSendsErrorMessage",
-          "ClientRequestAiLiveData",
-          "RequestAirQualityData",
-          "ClientRequestDeviceStatus",
-          "ServerResponseDeviceStatus",
-          "ExampleClientDto",
-          "ExampleServerResponse",
-          "ClientRequestDeviceList",
-          "ServerResponseList",
-          "Ping",
-          "Pong"
-        ]
-      },
       "WebsocketTopics": {
         "type": "string",
         "description": "Websocket Topic Enums",
@@ -549,14 +691,33 @@
       },
       "WebsocketEvents": {
         "type": "string",
-        "description": "Websocket Events enums",
+        "description": "Websocket event types (constants + BaseDto inheritors)",
         "enum": [
-          "GraphTotalMeasurement",
           "AllDeviceStatus",
+          "BroadcastDeviceConnectionUpdate",
+          "BroadcastDeviceSensorDataUpdate",
+          "ClientRequestAiLiveData",
+          "ClientRequestDeviceHistory",
+          "ClientRequestDeviceList",
+          "ClientRequestDeviceStats",
+          "ClientRequestDeviceStatus",
+          "ClientRequestSensorData",
           "DeviceUpdateStatus",
           "GraphGetMeasurement",
           "GraphTemperatureUpdate",
-          "RequestAirQualityData"
+          "GraphTotalMeasurement",
+          "LiveAiFeedbackDto",
+          "Ping",
+          "Pong",
+          "RequestAirQualityData",
+          "ServerResponseAirQualityData",
+          "ServerResponseDeviceHistory",
+          "ServerResponseDeviceList",
+          "ServerResponseDeviceStats",
+          "ServerResponseDeviceStatus",
+          "ServerResponseSensorData",
+          "ServerSendsErrorMessage",
+          "WebsocketMessage`1"
         ]
       }
     }

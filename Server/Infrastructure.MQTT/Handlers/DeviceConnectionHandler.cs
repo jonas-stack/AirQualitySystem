@@ -21,6 +21,7 @@ public class DeviceConnectionHandler : IMqttMessageHandler
     private readonly IDevicesMapper _mapper;
     private readonly IDataValidator _validator;
     private readonly IDeviceService _deviceService;
+    
 
     public DeviceConnectionHandler(
         ILogger<DeviceConnectionHandler> logger,
@@ -92,7 +93,8 @@ public class DeviceConnectionHandler : IMqttMessageHandler
             // ID'et kommer fra entity når den er gemt i databasen, før det ved vi ikke hvad ID er
             // for at sørge for at entity igen får korrekt ID, sætter vi fra entity til dto.
             dto.DeviceGuid = entity.DeviceId.ToString();
-            await _deviceService.BroadcastDeviceStatus(dto);
+            dto.LastSeen = entity.LastSeen.Ticks;
+            await _deviceService.BroadcastData(dto);
 
             _logger.LogInformation("Device status saved successfully for device: {DeviceId}", entity.DeviceId);
         }

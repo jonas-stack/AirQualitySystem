@@ -22,6 +22,8 @@ public class SensorDataHandler : IMqttMessageHandler
     private readonly IDataValidator _validator;
     private readonly IAiCommunication _aiCommunication;
     private readonly IGraphService _graphService;
+    private readonly ISensorDataService _sensorDataService;
+    
 
     public SensorDataHandler(
         ILogger<SensorDataHandler> logger,
@@ -29,7 +31,9 @@ public class SensorDataHandler : IMqttMessageHandler
         IDataValidator validator,
         ISensorDataMapper mapper,
         ISensorDataRepository sensorDataRepository, IJsonDeserializer deserializer, IDeviceRepository deviceRepository,
-        IAiCommunication aiCommunicator)
+        IAiCommunication aiCommunicator,
+        IGraphService graphService,
+        ISensorDataService sensorDataService)
     {
         _logger = logger;
         _connectionTracker = connectionTracker;
@@ -39,6 +43,8 @@ public class SensorDataHandler : IMqttMessageHandler
         _deserializer = deserializer;
         _deviceRepository = deviceRepository;
         _aiCommunication = aiCommunicator;
+        _graphService = graphService;
+        _sensorDataService = sensorDataService;
     }
 
     public string TopicFilter => "AirQuality/Data";
@@ -93,9 +99,16 @@ public class SensorDataHandler : IMqttMessageHandler
 
             // opdater device status
             _connectionTracker.UpdateDeviceStatus(entity.DeviceId, entity.Timestamp);
-
+            
             // Send entity til repository for at gemme i database
             await _sensorDataRepository.SaveSensorDataAsync(entity);
+            
+            // opdater DTO så vi kan bruge den andre steder
+            dto.DeviceId = entity.DeviceId.ToString();
+            dto.TimestampUnix = entity.Timestamp.Ticks;
+
+            await _graphService.BroadcastMeasurementsAsync(entity);
+            await _sensorDataService.Broadcast(dto);
 
             await _aiCommunication.BroadCastData();
 

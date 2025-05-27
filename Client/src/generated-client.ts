@@ -116,7 +116,7 @@ export class SubscriptionClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    subscribe(authorization: string | undefined, dto: ChangeSubscriptionDto): Promise<FileResponse> {
+    subscribe(dto: ChangeSubscriptionDto): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/Subscription/Subscribe";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -126,7 +126,6 @@ export class SubscriptionClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/octet-stream"
             }
@@ -159,7 +158,7 @@ export class SubscriptionClient {
         return Promise.resolve<FileResponse>(null as any);
     }
 
-    unsubscribe(authorization: string | undefined, dto: ChangeSubscriptionDto): Promise<FileResponse> {
+    unsubscribe(dto: ChangeSubscriptionDto): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/Subscription/Unsubscribe";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -169,7 +168,6 @@ export class SubscriptionClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/octet-stream"
             }
@@ -203,59 +201,6 @@ export class SubscriptionClient {
     }
 }
 
-export class WebsocketNotifierClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    notify(dto: NotifyMessageDto): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/api/WebsocketNotifier/NotifyRoute";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(dto);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processNotify(_response);
-        });
-    }
-
-    protected processNotify(response: Response): Promise<FileResponse> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse>(null as any);
-    }
-}
-
 export interface MessageFromClient {
     message?: string;
 }
@@ -265,18 +210,11 @@ export interface ChangeSubscriptionDto {
     topicIds?: string[];
 }
 
-export interface NotifyMessageDto {
-    topic?: string;
-    message?: string;
-}
-
 
 
 export interface WebsocketMessage_1 extends BaseDto {
     topic?: string;
     data?: T;
-    requestId?: string;
-    eventType?: string;
 }
 
 export interface T {
@@ -310,6 +248,38 @@ export enum TimePeriod {
     Monthly = "Monthly",
 }
 
+export interface ServerResponseAirQualityData extends BaseDto {
+    requestedData?: string[];
+    timePeriod?: TimePeriod;
+    data?: { [key: string]: any; }[];
+}
+
+export interface ClientRequestDeviceHistory extends BaseDto {
+    deviceId?: string;
+    pageNumber?: number;
+    pageSize?: number;
+}
+
+export interface ServerResponseDeviceHistory extends BaseDto {
+    connectionData?: PagedResultOfDeviceConnectionHistoryDto;
+}
+
+export interface PagedResultOfDeviceConnectionHistoryDto {
+    items?: DeviceConnectionHistoryDto[];
+    pageNumber?: number;
+    pageSize?: number;
+    totalCount?: number;
+    totalPages?: number;
+}
+
+export interface DeviceConnectionHistoryDto {
+    id?: number;
+    deviceId?: string;
+    isConnected?: boolean;
+    lastSeen?: number;
+    duration?: number | undefined;
+}
+
 export interface ClientRequestDeviceStatus extends BaseDto {
 }
 
@@ -324,18 +294,50 @@ export interface DeviceDto {
     IsConnected?: boolean;
 }
 
-export interface ExampleClientDto extends BaseDto {
-    somethingTheClientSends?: string;
+export interface ClientRequestDeviceStats extends BaseDto {
 }
 
-export interface ExampleServerResponse extends BaseDto {
-    somethingTheServerSends?: string;
+export interface ServerResponseDeviceStats extends BaseDto {
+    stats?: DeviceStatsDto;
+}
+
+export interface DeviceStatsDto {
+    allTimeMeasurements?: number;
+    connectedDevices?: number;
+    disconnectionsLast24Hours?: number;
+}
+
+export interface ClientRequestSensorData extends BaseDto {
+    sensorId?: string;
+    pageNumber?: number;
+    pageSize?: number;
+}
+
+export interface ServerResponseSensorData extends BaseDto {
+    sensorData?: PagedResultOfSensorDataDto;
+}
+
+export interface PagedResultOfSensorDataDto {
+    items?: SensorDataDto[];
+    pageNumber?: number;
+    pageSize?: number;
+    totalCount?: number;
+    totalPages?: number;
+}
+
+export interface SensorDataDto {
+    temperature?: number;
+    humidity?: number;
+    air_quality?: number;
+    pm25?: number;
+    device_id?: string;
+    timestamp?: number;
 }
 
 export interface ClientRequestDeviceList extends BaseDto {
 }
 
-export interface ServerResponseList extends BaseDto {
+export interface ServerResponseDeviceList extends BaseDto {
     deviceList?: DeviceDto[];
 }
 
@@ -343,23 +345,6 @@ export interface Ping extends BaseDto {
 }
 
 export interface Pong extends BaseDto {
-}
-
-/** Available eventType constants */
-export enum StringConstants {
-    WebsocketMessage_1 = "WebsocketMessage`1",
-    LiveAiFeedbackDto = "LiveAiFeedbackDto",
-    ServerSendsErrorMessage = "ServerSendsErrorMessage",
-    ClientRequestAiLiveData = "ClientRequestAiLiveData",
-    RequestAirQualityData = "RequestAirQualityData",
-    ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
-    ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
-    ExampleClientDto = "ExampleClientDto",
-    ExampleServerResponse = "ExampleServerResponse",
-    ClientRequestDeviceList = "ClientRequestDeviceList",
-    ServerResponseList = "ServerResponseList",
-    Ping = "Ping",
-    Pong = "Pong",
 }
 
 /** Websocket Topic Enums */
@@ -373,14 +358,33 @@ export enum WebsocketTopics {
     GraphTotalMeasurements = "GraphTotalMeasurements",
 }
 
-/** Websocket Events enums */
+/** Websocket event types (constants + BaseDto inheritors) */
 export enum WebsocketEvents {
-    GraphTotalMeasurement = "GraphTotalMeasurement",
     AllDeviceStatus = "AllDeviceStatus",
+    BroadcastDeviceConnectionUpdate = "BroadcastDeviceConnectionUpdate",
+    BroadcastDeviceSensorDataUpdate = "BroadcastDeviceSensorDataUpdate",
+    ClientRequestAiLiveData = "ClientRequestAiLiveData",
+    ClientRequestDeviceHistory = "ClientRequestDeviceHistory",
+    ClientRequestDeviceList = "ClientRequestDeviceList",
+    ClientRequestDeviceStats = "ClientRequestDeviceStats",
+    ClientRequestDeviceStatus = "ClientRequestDeviceStatus",
+    ClientRequestSensorData = "ClientRequestSensorData",
     DeviceUpdateStatus = "DeviceUpdateStatus",
     GraphGetMeasurement = "GraphGetMeasurement",
     GraphTemperatureUpdate = "GraphTemperatureUpdate",
+    GraphTotalMeasurement = "GraphTotalMeasurement",
+    LiveAiFeedbackDto = "LiveAiFeedbackDto",
+    Ping = "Ping",
+    Pong = "Pong",
     RequestAirQualityData = "RequestAirQualityData",
+    ServerResponseAirQualityData = "ServerResponseAirQualityData",
+    ServerResponseDeviceHistory = "ServerResponseDeviceHistory",
+    ServerResponseDeviceList = "ServerResponseDeviceList",
+    ServerResponseDeviceStats = "ServerResponseDeviceStats",
+    ServerResponseDeviceStatus = "ServerResponseDeviceStatus",
+    ServerResponseSensorData = "ServerResponseSensorData",
+    ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    WebsocketMessage_1 = "WebsocketMessage`1",
 }
 
 export interface FileResponse {

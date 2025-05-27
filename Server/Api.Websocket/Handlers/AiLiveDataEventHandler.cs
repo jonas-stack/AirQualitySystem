@@ -24,13 +24,11 @@ public class AiLiveDataEventHandler : BaseEventHandler<ClientRequestAiLiveData>
     {
         var result = await _aiCommunication.AnalyzeLiveData();
 
-        var response = new WebsocketMessage<LiveAiFeedbackDto>
+        var response = new LiveAiFeedbackDto
         {
-            Topic = WebsocketTopics.Ai,
-            Data = new LiveAiFeedbackDto
-            {
-                AiAdvice = result
-            }
+            eventType = WebsocketTopics.Ai,
+            requestId = dto.requestId,
+            AiAdvice = result
         };
         
         await socket.Send(JsonSerializer.Serialize(response));

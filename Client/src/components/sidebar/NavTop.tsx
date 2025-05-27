@@ -13,8 +13,10 @@ import { Link } from "react-router-dom"
   
 
   export function NavTop({
+    title,
     items,
   }: {
+    title: string,
     items: {
       name: string
       url: string
@@ -24,7 +26,7 @@ import { Link } from "react-router-dom"
   
     return (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>Home</SidebarGroupLabel>
+        <SidebarGroupLabel>{title}</SidebarGroupLabel>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.name}>

@@ -2,6 +2,7 @@ import * as React from "react"
 import {
   Bot,
   ChartArea,
+  Cpu,
   LayoutGrid,
   Wrench,
 } from "lucide-react"
@@ -42,24 +43,9 @@ const data = {
   ],
   navMain: [
     {
-      title: "Device",
-      url: ROUTE.DASHBOARD.INDEX,
-      icon: Wrench,
-      isActive: true,
-      items: [
-        {
-          title: "Panel",
-          url: ROUTE.DASHBOARD.DEVICE.INDEX,
-        },
-        {
-          title: "Data",
-          url: ROUTE.DASHBOARD.DEVICE.DATA,
-        },
-        {
-          title: "Configuration",
-          url: ROUTE.DASHBOARD.DEVICE.CONFIG,
-        },
-      ],
+      name: "Device",
+      url: ROUTE.DASHBOARD.DEVICE.INDEX,
+      icon: Cpu,
     },
   ],
 }
@@ -71,8 +57,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavHeader/>
       </SidebarHeader>
       <SidebarContent>
-        <NavTop items={data.top} />
-        <NavMain items={data.navMain} />
+        <NavTop title="Home" items={data.top} />
+        <NavTop title="Platform" items={data.navMain} />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
