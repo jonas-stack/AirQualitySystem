@@ -48,8 +48,8 @@ export function useDeviceConnectionHistory() {
             }
 
         } catch (error) {
-            toast.error("Device connection history fetching failed", {
-                description: "An error occured while trying to device connection history.",
+            toast.error("Failed to fetch device connection history", {
+                description: "An error occurred while fetching the device connection history.",
             });
     } finally {
         setIsDeviceConnectionHistoryLoading(false)
