@@ -96,7 +96,7 @@ Sensor → ESP32E → HiveMQ (MQTT) → .NET Backend → PostgreSQL + WebSocket 
 
 ## Software Architecture
 
-![Architecture Diagram](Images/System.png)
+![Architecture Diagram](Images/System.PNG)
 
 
 ### Frontend (React + TypeScript)
